@@ -112,6 +112,13 @@ var ts_for_full_time = "for full time"
 var ts_all = "all"
 var ts_Smooth = "Smooth"
 var ts_Linear = "Linear"
+var ts_Monday = "Monday"
+var ts_Tuesday = "Tuesday"
+var ts_Wednesday = "Wednesday"
+var ts_Thursday = "Thursday"
+var ts_Friday = "Friday"
+var ts_Saturday = "Saturday"
+var ts_Sunday = "Sunday"
 
 fun changeLanguage() {
     if (language == Languages.RU) {
@@ -218,6 +225,13 @@ fun changeLanguage() {
         ts_all = "всё"
         ts_Smooth = "Плавно"
         ts_Linear = "Линейно"
+        ts_Monday = "Понедельник"
+        ts_Tuesday = "Вторник"
+        ts_Wednesday = "Среда"
+        ts_Thursday = "Четверг"
+        ts_Friday = "Пятница"
+        ts_Saturday = "Суббота"
+        ts_Sunday = "Воскресенье"
     } else {
         ts_Edit = "Edit"
         ts_Cancel = "Cancel"
@@ -322,5 +336,12 @@ fun changeLanguage() {
         ts_all = "all"
         ts_Smooth = "Smooth"
         ts_Linear = "Linear"
+        ts_Monday = "Monday"
+        ts_Tuesday = "Tuesday"
+        ts_Wednesday = "Wednesday"
+        ts_Thursday = "Thursday"
+        ts_Friday = "Friday"
+        ts_Saturday = "Saturday"
+        ts_Sunday = "Sunday"
     }
 }
