@@ -22,9 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-expect fun saveValue()
-expect fun loadValue()
-
 @Composable
 fun LoadingContent() {
     Box(
@@ -51,7 +48,7 @@ private var indexToDateUpdate = 0
 fun loading(viewModel: AppViewModel) {
     indexToDateUpdate = countFilesLoad - 2
     if (countFilesLoad == 1) {
-        loadValue()
+        loadAllValues()
     } else if (indexToDateUpdate >= 0 && indexToDateUpdate < habits.size - 1) {
         habits[indexToDateUpdate].updateDate(false)
     } else if (indexToDateUpdate == habits.size - 1) {

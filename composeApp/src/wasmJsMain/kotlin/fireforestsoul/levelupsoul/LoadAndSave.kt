@@ -42,7 +42,7 @@ actual fun saveValue() {
     localStorage.setItem("withExponent", withExponent.toString())
 }
 
-actual fun loadValue() {
+actual fun old1001000000LoadAllValues() {
 
     val oldAppVersion = localStorage.getItem("app_version")?.toLong()
     if (oldAppVersion != null) {

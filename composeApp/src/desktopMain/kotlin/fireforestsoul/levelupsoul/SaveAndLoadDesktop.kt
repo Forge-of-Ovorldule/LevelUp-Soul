@@ -1,48 +1,57 @@
+/**Copyright 2025 Forge-of-Ovorldule (https://github.com/Forge-of-Ovorldule) and Mr-Soul-Forest (https://github.com/Mr-Soul-Forest)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 package fireforestsoul.levelupsoul
 
 import androidx.compose.ui.graphics.Color
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import kotlinx.datetime.LocalDate
 import java.io.File
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
+import kotlinx.serialization.json.*
 
-actual fun saveValue() {
-    File(save_file_name).printWriter().use { out ->
-        out.println(app_version.toString())
-        out.println(habits.size.toString())
-        for (x in 0 until habits.size) {
-            out.println(habits[x].nameOfHabit)
-            out.println(habits[x].nameOfUnitsOfDimension)
-            out.println(habits[x].typeOfGoalHabits.toString())
-            out.println(habits[x].needGoal.toString())
-            out.println(habits[x].needDays.toString())
-            out.println(habits[x].typeOfColorHabits.toString())
-            out.println(habits[x].colorGood.value.toString(16))
-            out.println(habits[x].changeLevel.toString())
-            out.println(habits[x].changeNeedGoalWithLevel.toString())
-            out.println(habits[x].changeNeedDaysWithLevel.toString())
-            out.println(habits[x].startDate.toString())
-            out.println(habits[x].lastLevelChangeDate.toString())
-            out.println(habits[x].level.toString())
-            out.println(habits[x].iconChar)
-            out.println(habits[x].habitDay.size.toString())
-            for (y in 0 until habits[x].habitDay.size) {
-                out.println(habits[x].habitDay[y].today.toString())
-                out.println(habits[x].habitDay[y].totalOfAPeriod.toString())
-                out.println(habits[x].habitDay[y].correctly.toString())
-            }
-        }
-        out.println(soul_color_type.toString())
-        out.println(soul_color.value.toString(16))
-        out.println(soul_name)
-        out.println(soul_level.toString())
-        out.println(soul_last_level_change_date.toString())
-        out.println(language.toString())
-        out.println(withExponent).toString()
-    }
+private val json = Json { prettyPrint = true }
+private val settingsFile = File("$save_file_name.json")
+
+private fun readSettings(): MutableMap<String, JsonElement> {
+    if (!settingsFile.exists()) return mutableMapOf()
+    val text = settingsFile.readText()
+    if (text.isBlank()) return mutableMapOf()
+    return json.parseToJsonElement(text).jsonObject.toMutableMap()
 }
 
-actual fun loadValue() {
-    val file = File(save_file_name)
+private fun writeSettings(settings: Map<String, JsonElement>) {
+    settingsFile.writeText(json.encodeToString(JsonObject(settings)))
+}
+
+actual fun saveValue(value: Any, name: String) {
+    val settings = readSettings().toMutableMap()
+    val element = when (value) {
+        is Color -> JsonPrimitive(value.value.toString(16))
+        else -> JsonPrimitive(value.toString())
+    }
+    settings[name] = element
+    writeSettings(settings)
+}
+
+actual fun <T> loadValue(value: T, name: String): T {
+    val settings = readSettings()
+    val jsonElement = settings[name] ?: return value
+    var element = jsonElement.jsonPrimitive.toString()
+    element = element.substring(1, element.length - 1)
+    println(element)
+
+    return element.loadedElementToVal(value)
+}
+
+actual fun old1001000000LoadAllValues() {
+    val file = File(old1001000000_save_file_name)
     if (file.exists()) {
         val input = file.readLines()
 
@@ -151,7 +160,6 @@ actual fun loadValue() {
 
                             if (oldAppVersion >= 1001000000) {
                                 withExponent = input.getOrNull(index).toBoolean()
-                                index++
                             }
                         }
                     }

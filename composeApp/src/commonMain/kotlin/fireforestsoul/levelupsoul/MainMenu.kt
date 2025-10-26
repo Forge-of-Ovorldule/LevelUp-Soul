@@ -117,7 +117,7 @@ fun MainMenuContent(
                         )
                         if ("Android" !in getPlatform().name) {
                             IconButton(onClick = {
-                                saveValue()
+                                saveAllValues()
                                 export()
                             }) {
                                 Image(
@@ -128,7 +128,7 @@ fun MainMenuContent(
                                 )
                             }
                             IconButton(onClick = {
-                                saveValue()
+                                saveAllValues()
                                 import {
                                     countFilesLoad = 0
                                     viewModel.setStatus(AppStatus.LOADING)
@@ -186,7 +186,7 @@ fun MainMenuContent(
                                             language = mode
                                             expanded0 = false
                                             countFilesLoad = 0
-                                            saveValue()
+                                            saveAllValues()
                                             viewModel.setStatus(AppStatus.LOADING)
                                         },
                                         text = {
