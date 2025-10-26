@@ -70,14 +70,17 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.times
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
+import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.coroutines.delay
 import kotlinx.datetime.DayOfWeek
 import org.jetbrains.compose.resources.painterResource
@@ -379,25 +382,28 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             color = UICT_see
                         )
                     }
-                    when (habitStatisticsStatus) {
-                        HabitStatisticsStatus.GOAL -> {
-                            GoalContent(progressPeriodSetting)
-                            LaunchedEffect(Unit) {
-                                while (true) {
-                                    progressPeriodSetting = pps_for_habit_statistic
-                                    delay(50)
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        when (habitStatisticsStatus) {
+                            HabitStatisticsStatus.GOAL -> {
+                                GoalContent(progressPeriodSetting)
+                                LaunchedEffect(Unit) {
+                                    while (true) {
+                                        progressPeriodSetting = pps_for_habit_statistic
+                                        delay(50)
+                                    }
                                 }
                             }
+
+                            HabitStatisticsStatus.PROGRESS -> ProgressContent(progressPeriodSetting)
+                            HabitStatisticsStatus.LEVEL -> LevelContent(progressPeriodSetting)
+                            HabitStatisticsStatus.PROGRESS_GRAPH -> ProgressGraphContent(progressPeriodSetting)
+                            HabitStatisticsStatus.BAR_CHART -> BarChartContent()
+                            HabitStatisticsStatus.CALENDAR -> CalendarContent()
+                            HabitStatisticsStatus.STREAKS -> StreaksContent()
+                            HabitStatisticsStatus.DISTRIBUTION_BY_DAY_OF_THE_WEEK -> DistributionByDayOfTheWeekContent()
                         }
-
-                        HabitStatisticsStatus.PROGRESS -> ProgressContent(progressPeriodSetting)
-                        HabitStatisticsStatus.LEVEL -> LevelContent(progressPeriodSetting)
-                        HabitStatisticsStatus.PROGRESS_GRAPH -> ProgressGraphContent(progressPeriodSetting)
-                        HabitStatisticsStatus.BAR_CHART -> BarChartContent()
-                        HabitStatisticsStatus.CALENDAR -> CalendarContent()
-                        HabitStatisticsStatus.STREAKS -> StreaksContent()
-
-                        else -> {}
                     }
                 }
             }
@@ -1383,13 +1389,13 @@ private fun BarChartContent() {
 
                     val textLayout = textMeasurer.measure(
                         text = AnnotatedString(label),
-                        style = androidx.compose.ui.text.TextStyle(
+                        style = TextStyle(
                             fontSize = 11.2.sp,
                             fontFamily = JetBrainsFont(),
                             fontWeight = FontWeight.Thin,
                             color = Color.Unspecified,
                         ),
-                        constraints = androidx.compose.ui.unit.Constraints()
+                        constraints = Constraints()
                     )
                     val textWidth = textLayout.size.width.toFloat()
                     val textHeight = textLayout.size.height.toFloat()
@@ -1419,13 +1425,13 @@ private fun BarChartContent() {
                     if (dateLabel.isNotEmpty()) {
                         val dateLayout = textMeasurer.measure(
                             text = AnnotatedString(dateLabel),
-                            style = androidx.compose.ui.text.TextStyle(
+                            style = TextStyle(
                                 fontSize = 11.2.sp,
                                 fontFamily = JetBrainsFont(),
                                 fontWeight = FontWeight.Light,
                                 color = UICT_see
                             ),
-                            constraints = androidx.compose.ui.unit.Constraints()
+                            constraints = Constraints()
                         )
                         val dateWidth = dateLayout.size.width.toFloat()
 
@@ -1616,5 +1622,254 @@ fun StreaksContent() {
                 )
             }
         }
+    }
+}
+
+@Composable
+fun DistributionByDayOfTheWeekContent() {
+
+    data class DataBox(var x: Float, var y: Float, var width: Float, var height: Float)
+
+    var dataBoxes = mutableListOf<DataBox>()
+
+    fun calculateProportionalAreaChart(
+        modifier: DataBox,
+        values: List<BigDecimal>,
+        spacing: Float = 14.4f,
+        horizontal: Boolean = true,
+        first: Boolean = false
+    ): MutableList<DataBox> {
+        if (values.isEmpty()) return dataBoxes
+
+        var sumValues = BigDecimal.ZERO
+        for (i in values) {
+            sumValues += i
+        }
+
+        val height = modifier.height
+        val width = modifier.width
+        val x = modifier.x
+        val y = modifier.y
+
+        if (horizontal) {
+            val needHeight =
+                if (values.size == 1) height * (values[0].saveDiv(sumValues)).floatValue(false)
+                else (height - spacing) * ((values[0] + values[1]).saveDiv(sumValues)).floatValue(false)
+
+            val db1Width =
+                if (values.size == 1) width
+                else (width - spacing) * (values[0].saveDiv(values[0] + values[1])).floatValue(false)
+            if (first)
+                dataBoxes = mutableListOf(
+                    DataBox(
+                        x,
+                        y,
+                        db1Width,
+                        needHeight
+                    )
+                )
+            else dataBoxes.add(
+                DataBox(
+                    x,
+                    y,
+                    db1Width,
+                    needHeight
+                )
+            )
+
+            if (values.size != 1) {
+                dataBoxes.add(
+                    DataBox(
+                        x + db1Width + spacing,
+                        y,
+                        width - spacing - db1Width,
+                        needHeight
+                    )
+                )
+            }
+
+            if (values.size > 2) {
+                calculateProportionalAreaChart(
+                    modifier = DataBox(
+                        x,
+                        y + needHeight + spacing,
+                        width,
+                        height - needHeight - spacing
+                    ),
+                    values = values.subList(2, values.size),
+                    spacing = spacing,
+                    horizontal = false
+                )
+            }
+        } else {
+            val needWidth =
+                if (values.size == 1) width * (values[0].saveDiv(sumValues)).floatValue(false)
+                else (width - spacing) * ((values[0] + values[1]).saveDiv(sumValues)).floatValue(false)
+
+            val db1Height =
+                if (values.size == 1) height
+                else (height - spacing) * (values[0].saveDiv(values[0] + values[1])).floatValue(false)
+            if (first) dataBoxes = mutableListOf(
+                DataBox(
+                    x,
+                    y,
+                    needWidth,
+                    db1Height
+                )
+            )
+            else dataBoxes.add(
+                DataBox(
+                    x,
+                    y,
+                    needWidth,
+                    db1Height
+                )
+            )
+
+            if (values.size != 1) {
+                dataBoxes.add(
+                    DataBox(
+                        x,
+                        y + db1Height + spacing,
+                        needWidth,
+                        height - db1Height - spacing
+                    )
+                )
+            }
+
+            if (values.size > 2) {
+                calculateProportionalAreaChart(
+                    modifier = DataBox(
+                        x + needWidth + spacing,
+                        y,
+                        width - needWidth - spacing,
+                        height
+                    ),
+                    values = values.subList(2, values.size),
+                    spacing = spacing,
+                    horizontal = true
+                )
+            }
+        }
+
+        return dataBoxes
+    }
+
+    @Composable
+    fun ProportionalAreaChart(
+        modifier: Modifier = Modifier.fillMaxWidth().height(400.dp),
+        labels: List<String>,
+        values: List<BigDecimal>,
+        realValues: List<BigDecimal>,
+        spacing: Dp = 7.6.dp,
+        horizontal: Boolean = true
+    ) {
+        @Composable
+        fun labelText(
+            index: Int,
+            k: Float
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = labels[index],
+                    color = checkBackgroundBright(
+                        seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
+                        UICT_see
+                    ),
+                    fontSize = 12.8.sp,
+                    fontFamily = JetBrainsFont(),
+                    fontWeight = FontWeight.Normal,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "${(k * 100).toInt()}%",
+                    color = checkBackgroundBright(
+                        seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
+                        UICT_see
+                    ),
+                    fontSize = 16.sp,
+                    fontFamily = JetBrainsFont(),
+                    fontWeight = FontWeight.ExtraBold,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "${realValues[index].toBestString()} ${habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension}",
+                    color = checkBackgroundBright(
+                        seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
+                        UICT_see
+                    ),
+                    fontSize = 12.8.sp,
+                    fontFamily = JetBrainsFont(),
+                    fontWeight = FontWeight.Normal,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+        if (values.isEmpty()) return
+
+        var sumValues = BigDecimal.ZERO
+        for (i in values) {
+            sumValues += i
+        }
+
+        BoxWithConstraints(modifier = modifier) {
+            val boxes = remember(maxWidth, maxHeight, values, horizontal) {
+                calculateProportionalAreaChart(
+                    DataBox(0f, 0f, maxWidth.value, maxHeight.value),
+                    values = values,
+                    spacing = spacing.value,
+                    horizontal = horizontal,
+                    first = true
+                )
+            }
+
+            for (i in 0 until boxes.size) {
+                val k = values[i].saveDiv(sumValues).floatValue(false)
+
+                Box(
+                    modifier = Modifier.offset(boxes[i].x.dp, boxes[i].y.dp)
+                        .size(boxes[i].width.dp, boxes[i].height.dp)
+                        .background(
+                            seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
+                            RoundedCornerShape(14.4.dp)
+                        )
+                ) {
+                    labelText(i, k)
+                }
+            }
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = 29.2.dp)
+            .padding(top = 32.8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        val labels = mutableListOf<String>()
+        val realValues = mutableListOf<BigDecimal>()
+        var minValue: BigDecimal = Double.MAX_VALUE.toBigDecimal()
+        for (i in habitDistributionByDayOfTheWeekContent(habit_statistics_and_edit_x)) {
+            labels.add(i.dayOfWeek)
+            realValues.add(i.value)
+            minValue = minOf(minValue, i.value)
+        }
+        var values = mutableListOf<BigDecimal>()
+        if (minValue < BigDecimal.ZERO) {
+            for (i in realValues) {
+                values.add(i - minValue)
+            }
+        } else values = realValues
+
+        ProportionalAreaChart(
+            labels = labels,
+            values = values,
+            realValues = realValues
+        )
     }
 }

@@ -12,6 +12,7 @@ package fireforestsoul.levelupsoul
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 
@@ -310,5 +311,47 @@ fun habitStreaks(
 
     list.removeAll { it == 0 }
     list.sortDescending()
+    return list
+}
+
+data class DistributionByDayOfTheWeekContent(var dayOfWeek: String, var value: BigDecimal)
+
+fun habitDistributionByDayOfTheWeekContent(
+    habitIndex: Int,
+    sorted: Boolean = false
+): List<DistributionByDayOfTheWeekContent> {
+    var monday = BigDecimal.ZERO
+    var tuesday = BigDecimal.ZERO
+    var wednesday = BigDecimal.ZERO
+    var thursday = BigDecimal.ZERO
+    var friday = BigDecimal.ZERO
+    var saturday = BigDecimal.ZERO
+    var sunday = BigDecimal.ZERO
+
+    for (i in 0 until habits[habitIndex].habitDay.size) {
+        val day = habits[habitIndex].startDate.plus(i, DateTimeUnit.DAY).dayOfWeek
+        when (day) {
+            DayOfWeek.MONDAY -> monday += habits[habitIndex].habitDay[i].today
+            DayOfWeek.TUESDAY -> tuesday += habits[habitIndex].habitDay[i].today
+            DayOfWeek.WEDNESDAY -> wednesday += habits[habitIndex].habitDay[i].today
+            DayOfWeek.THURSDAY -> thursday += habits[habitIndex].habitDay[i].today
+            DayOfWeek.FRIDAY -> friday += habits[habitIndex].habitDay[i].today
+            DayOfWeek.SATURDAY -> saturday += habits[habitIndex].habitDay[i].today
+            DayOfWeek.SUNDAY -> sunday += habits[habitIndex].habitDay[i].today
+            else -> {}
+        }
+    }
+
+    val list = mutableListOf(
+        DistributionByDayOfTheWeekContent(ts_Monday, monday),
+        DistributionByDayOfTheWeekContent(ts_Tuesday, tuesday),
+        DistributionByDayOfTheWeekContent(ts_Wednesday, wednesday),
+        DistributionByDayOfTheWeekContent(ts_Thursday, thursday),
+        DistributionByDayOfTheWeekContent(ts_Friday, friday),
+        DistributionByDayOfTheWeekContent(ts_Saturday, saturday),
+        DistributionByDayOfTheWeekContent(ts_Sunday, sunday)
+    )
+    if (sorted)
+        list.sortByDescending { it.value }
     return list
 }
