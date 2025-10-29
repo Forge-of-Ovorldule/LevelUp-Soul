@@ -15,6 +15,12 @@ import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.datetime.LocalDate
 
 expect fun saveValue(value: Any, name: String)
+fun Any.savedElementToString(): String {
+    return when (val value = this) {
+        is Color -> value.value.toString(16)
+        else -> value.toString()
+    }
+}
 
 fun saveAllValues() {
     saveValue(app_version, "app_version")

@@ -32,10 +32,7 @@ private fun writeSettings(settings: Map<String, JsonElement>) {
 
 actual fun saveValue(value: Any, name: String) {
     val settings = readSettings().toMutableMap()
-    val element = when (value) {
-        is Color -> JsonPrimitive(value.value.toString(16))
-        else -> JsonPrimitive(value.toString())
-    }
+    val element = JsonPrimitive(value.savedElementToString())
     settings[name] = element
     writeSettings(settings)
 }
@@ -45,7 +42,6 @@ actual fun <T> loadValue(value: T, name: String): T {
     val jsonElement = settings[name] ?: return value
     var element = jsonElement.jsonPrimitive.toString()
     element = element.substring(1, element.length - 1)
-    println(element)
 
     return element.loadedElementToVal(value)
 }
