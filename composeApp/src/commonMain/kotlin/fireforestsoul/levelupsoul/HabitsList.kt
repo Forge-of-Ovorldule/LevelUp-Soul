@@ -54,6 +54,10 @@ import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 @Composable
 fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel) {
     backStatus = AppStatus.HABITS_LIST_UPDATER
+    val sortedHabits = MutableList(habits.size) { it }
+    sortedHabits.sortSystem()
+    println(habits + "\n" + sortedHabits)
+
     Box(
         modifier = Modifier.fillMaxSize()
             .background(UIC_dark)
@@ -71,7 +75,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                         .height(101.15.dp)
                         .background(UIC, RoundedCornerShape(13.03.dp))
                         .clickable {
-                            habit_statistics_and_edit_x = x
+                            habit_statistics_and_edit_x = sortedHabits[x]
                             viewModel.setStatus(AppStatus.HABIT_STATISTICS)
                         }
                 ) {
@@ -82,9 +86,9 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                         horizontalArrangement = Arrangement.spacedBy(12.26.dp)
                     ) {
                         Text(
-                            text = habits[x].iconChar,
+                            text = habits[sortedHabits[x]].iconChar,
                             textAlign = TextAlign.Center,
-                            color = seeColorByIndex(x),
+                            color = seeColorByIndex(sortedHabits[x]),
                             modifier = Modifier.size(57.47.dp),
                             maxLines = 1,
                             fontSize = 45.sp,
@@ -98,7 +102,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Text(
-                                text = habits[x].nameOfHabit,
+                                text = habits[sortedHabits[x]].nameOfHabit,
                                 fontSize = 16.5.sp,
                                 fontWeight = FontWeight.W500,
                                 color = UICT_see,
@@ -121,7 +125,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                 verticalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "$ts_Completed ${habits[x].habitDay[habits[x].habitDay.size - 1].today.toBestString()} ${habits[x].nameOfUnitsOfDimension}",
+                                    text = "$ts_Completed ${habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today.toBestString()} ${habits[sortedHabits[x]].nameOfUnitsOfDimension}",
                                     color = UICT_no_see,
                                     fontSize = 13.sp,
                                     maxLines = 1,
@@ -132,27 +136,27 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                     modifier = Modifier.fillMaxWidth()
                                         .height(5.75.dp)
                                         .background(
-                                            if (habits[x].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST) UIC_light
-                                            else seeColorByIndex(x),
+                                            if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST) UIC_light
+                                            else seeColorByIndex(sortedHabits[x]),
                                             RoundedCornerShape(2.88.dp)
                                         )
                                         .shadow(5.dp)
                                 ) {
                                     val needToday =
-                                        habits[x].needGoal - habits[x].habitDay[habits[x].habitDay.size - 1].totalOfAPeriod + habits[x].habitDay[habits[x].habitDay.size - 1].today
+                                        habits[sortedHabits[x]].needGoal - habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod + habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today
                                     Box(
                                         modifier = Modifier.fillMaxHeight()
                                             .background(
-                                                if (habits[x].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST) seeColorByIndex(
-                                                    x
+                                                if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST) seeColorByIndex(
+                                                    sortedHabits[x]
                                                 )
                                                 else UIC_light,
                                                 RoundedCornerShape(2.88.dp)
                                             )
                                             .width(
-                                                if (habits[x].habitDay[habits[x].habitDay.size - 1].totalOfAPeriod <= habits[x].needGoal)
+                                                if (habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod <= habits[sortedHabits[x]].needGoal)
                                                     maxWidth * (1.toBigDecimal()
-                                                        .saveDiv(if (needToday != "0".toBigDecimal()) needToday else 1.toBigDecimal()) * habits[x].habitDay[habits[x].habitDay.size - 1].today).toString()
+                                                        .saveDiv(if (needToday != "0".toBigDecimal()) needToday else 1.toBigDecimal()) * habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today).toString()
                                                         .toFloat()
                                                 else
                                                     maxWidth
@@ -160,14 +164,14 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                     )
                                 }
                                 Text(
-                                    text = if (habits[x].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST)
-                                        if (habits[x].habitDay[habits[x].habitDay.size - 1].totalOfAPeriod < habits[x].needGoal)
-                                            "$ts_You_need ${(habits[x].needGoal - habits[x].habitDay[habits[x].habitDay.size - 1].totalOfAPeriod).toBestString()} ${habits[x].nameOfUnitsOfDimension} $ts_more"
+                                    text = if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST)
+                                        if (habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod < habits[sortedHabits[x]].needGoal)
+                                            "$ts_You_need ${(habits[sortedHabits[x]].needGoal - habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod).toBestString()} ${habits[sortedHabits[x]].nameOfUnitsOfDimension} $ts_more"
                                         else
                                             ts_Its_all_done
                                     else
-                                        if (habits[x].habitDay[habits[x].habitDay.size - 1].totalOfAPeriod <= habits[x].needGoal)
-                                            "$ts_You_can_have ${(habits[x].needGoal - habits[x].habitDay[habits[x].habitDay.size - 1].totalOfAPeriod).toBestString()} ${habits[x].nameOfUnitsOfDimension} $ts_more"
+                                        if (habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod <= habits[sortedHabits[x]].needGoal)
+                                            "$ts_You_can_have ${(habits[sortedHabits[x]].needGoal - habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod).toBestString()} ${habits[sortedHabits[x]].nameOfUnitsOfDimension} $ts_more"
                                         else
                                             ts_You_failed,
                                     color = UICT_no_see,
@@ -183,7 +187,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                     onDismissRequest = { showDialog = false },
                                     title = {
                                         Text(
-                                            text = "$ts_Do_you_want_to_set_a_value_for \"${habits[x].nameOfHabit}\"?",
+                                            text = "$ts_Do_you_want_to_set_a_value_for \"${habits[sortedHabits[x]].nameOfHabit}\"?",
                                             fontWeight = FontWeight.Normal,
                                             fontSize = 16.sp,
                                             color = UICT_see
@@ -195,7 +199,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                             onValueChange = { inputText = it },
                                             label = {
                                                 Text(
-                                                    "$ts_Old: ${habits[x].habitDay[habits[x].habitDay.size - 1].today.toBestString()}",
+                                                    "$ts_Old: ${habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today.toBestString()}",
                                                     fontSize = 12.sp,
                                                     fontWeight = FontWeight.Normal,
                                                     color = UICT_no_see
@@ -244,9 +248,9 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                             modifier = Modifier.clickable {
                                                 val value = inputText.toDoubleOrNull()
                                                 if (value != null) {
-                                                    habits[x].habitDay[habits[x].habitDay.size - 1].today =
+                                                    habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today =
                                                         inputText.toBigDecimal()
-                                                    habits[x].update()
+                                                    habits[sortedHabits[x]].update(sortedHabits)
                                                 }
                                                 showDialog = false
                                                 viewModel.setStatus(AppStatus.HABITS_LIST_UPDATER)

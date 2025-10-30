@@ -87,7 +87,7 @@ fun loadAllValues() {
             loadValue(habits[x].nameOfUnitsOfDimension, "habits[x]s-$x-nameOfUnitsOfDimension")
         habits[x].typeOfGoalHabits = loadValue(habits[x].typeOfGoalHabits, "habits-$x-typeOfGoalHabits")
         habits[x].needGoal = loadValue(habits[x].needGoal, "habits-$x-needGoal")
-        habits[x].needDays = loadValue(habits[x].needDays, "habits-$x-needDays")
+        habits[x].loadNeedDays(loadValue(habits[x].needDays, "habits-$x-needDays"))
         habits[x].typeOfColorHabits = loadValue(habits[x].typeOfColorHabits, "habits-$x-typeOfColorHabits")
         habits[x].colorGood = loadValue(habits[x].colorGood, "habits-$x-colorGood")
         habits[x].changeLevel = loadValue(habits[x].changeLevel, "habits-$x-changeLevel")

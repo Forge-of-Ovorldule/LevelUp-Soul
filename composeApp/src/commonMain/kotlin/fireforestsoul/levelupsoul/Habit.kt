@@ -37,7 +37,7 @@ class Habit(
     var habitDay: MutableList<HabitDay> = MutableList(1) { HabitDay(0.toBigDecimal()) }
     var phantomNeedDays = needDays.toBigDecimal()
 
-    fun updateDate(sort: Boolean = true) {
+    fun updateDate() {
         val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
         val addDays: Int = (today.toEpochDays() - startDate.toEpochDays() - habitDay.size + 1)
 
@@ -45,7 +45,7 @@ class Habit(
             habitDay.addAll(List(addDays) { HabitDay(0.toBigDecimal()) })
         }
 
-        update(sort)
+        update()
     }
 
     fun updateHabitDay(index: Int) {
@@ -60,15 +60,13 @@ class Habit(
         }
     }
 
-    fun update(sort: Boolean = true) {
+    fun update(sortedHabits: MutableList<Int> = mutableListOf()) {
         for (i in 0..<habitDay.size) {
             updateHabitDay(i)
         }
 
-        if (sort) {
-            habits.sortByDescending { if (habitStreaks(it).isNotEmpty()) habitStreaks(it)[0] else 0 }
-            habits.sortByDescending { it.level }
-            habits.sortByDescending { progress(it) }
+        if (sortedHabits.isNotEmpty()) {
+            sortedHabits.sortSystem()
         }
 
         if (changeLevel) {
@@ -208,4 +206,10 @@ class Habit(
         needDays = value
         phantomNeedDays = value.toBigDecimal()
     }
+}
+
+fun MutableList<Int>.sortSystem() {
+    this.sortByDescending { if (habitStreaks(it).isNotEmpty()) habitStreaks(it)[0] else 0 }
+    this.sortByDescending { habits[it].level }
+    this.sortByDescending { progress(it) }
 }

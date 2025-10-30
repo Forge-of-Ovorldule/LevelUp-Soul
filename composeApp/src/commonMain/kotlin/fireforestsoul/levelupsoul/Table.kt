@@ -65,7 +65,9 @@ fun TableContent(
     horizontalScroll: ScrollState,
     countdownDate: LocalDate
 ) {
-    backStatus = AppStatus.TABLE_UPDATER
+    val sortedHabits = MutableList(habits.size) { it }
+    sortedHabits.sortSystem()
+    println(habits + "\n" + sortedHabits)
 
     val firstCellSizeX = 200.dp
     val firstCellSizeY = 40.dp
@@ -106,8 +108,8 @@ fun TableContent(
                     contentAlignment = Alignment.Center
                 ) {}
                 for (y in 0 until habits.size) {
-                    val seeColor = seeColorByIndex(y)
-                    val noSeeColor = noSeeColorByIndex(y)
+                    val seeColor = seeColorByIndex(sortedHabits[y])
+                    val noSeeColor = noSeeColorByIndex(sortedHabits[y])
 
                     Box(
                         modifier = Modifier
@@ -118,7 +120,7 @@ fun TableContent(
                                 shape = RoundedCornerShape(roundedBorder)
                             )
                             .clickable {
-                                habit_statistics_and_edit_x = y
+                                habit_statistics_and_edit_x = sortedHabits[y]
                                 viewModel.setStatus(AppStatus.HABIT_STATISTICS)
                             },
                         contentAlignment = Alignment.Center
@@ -133,7 +135,7 @@ fun TableContent(
                                 modifier = Modifier.padding(start = 8.dp)
                             ) {
                                 DonutChart(
-                                    values = listOf(progress(y), 1f - progress(y)),
+                                    values = listOf(progress(sortedHabits[y]), 1f - progress(sortedHabits[y])),
                                     colors = listOf(seeColor, noSeeColor),
                                     modifier = Modifier
                                         .size(24.25.dp)
@@ -141,7 +143,7 @@ fun TableContent(
                                     strokeWidth = 3.5.dp
                                 )
                                 Text(
-                                    text = "${habits[y].level}",
+                                    text = "${habits[sortedHabits[y]].level}",
                                     fontSize = 11.sp,
                                     color = seeColor
                                 )
@@ -151,15 +153,15 @@ fun TableContent(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text(
-                                    text = habits[y].nameOfHabit,
+                                    text = habits[sortedHabits[y]].nameOfHabit,
                                     color = seeColor,
                                     fontWeight = FontWeight.Normal,
                                     fontSize = firstSellFontSize
                                 )
                                 val needOrCanMore =
-                                    habits[y].needGoal - habits[y].habitDay[habits[y].habitDay.size - 1].totalOfAPeriod
+                                    habits[sortedHabits[y]].needGoal - habits[sortedHabits[y]].habitDay[habits[sortedHabits[y]].habitDay.size - 1].totalOfAPeriod
                                 Text(
-                                    text = if (habits[y].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST)
+                                    text = if (habits[sortedHabits[y]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST)
                                         "$ts_Need ${needOrCanMore.toBestString()} $ts_more"
                                     else "$ts_You_can_have ${needOrCanMore.toBestString()} $ts_more",
                                     color = noSeeColor,
@@ -217,8 +219,8 @@ fun TableContent(
                     }
                     //results
                     for (y in 0 until habits.size) {
-                        val seeColor = seeColorByIndex(y)
-                        val noSeeColor = noSeeColorByIndex(y)
+                        val seeColor = seeColorByIndex(sortedHabits[y])
+                        val noSeeColor = noSeeColorByIndex(sortedHabits[y])
 
                         Column(
                             verticalArrangement = Arrangement.Center,
@@ -241,7 +243,7 @@ fun TableContent(
                                     max(maxCellX, 10)
                                 )) {
                                     val xIndex =
-                                        habits[y].habitDay.size - 1 - x + (countdownDate.toEpochDays() - Clock.System.now()
+                                        habits[sortedHabits[y]].habitDay.size - 1 - x + (countdownDate.toEpochDays() - Clock.System.now()
                                             .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays())
                                     if (xIndex >= 0) {
                                         Box(
@@ -250,13 +252,13 @@ fun TableContent(
                                                 .height(nextCellSizeY * 7 / 16),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            if (xIndex < habits[y].habitDay.size) {
+                                            if (xIndex < habits[sortedHabits[y]].habitDay.size) {
                                                 var inputText by remember { mutableStateOf("") }
                                                 var showDialog by remember { mutableStateOf(false) }
 
                                                 Text(
-                                                    text = habits[y].habitDay[xIndex].today.toBestString(),
-                                                    color = if (habits[y].habitDay[xIndex].correctly
+                                                    text = habits[sortedHabits[y]].habitDay[xIndex].today.toBestString(),
+                                                    color = if (habits[sortedHabits[y]].habitDay[xIndex].correctly
                                                     ) seeColor else noSeeColor,
                                                     fontWeight = FontWeight.Normal,
                                                     fontSize = firstSellFontSize,
@@ -270,11 +272,11 @@ fun TableContent(
                                                         containerColor = UIC,
                                                         onDismissRequest = { showDialog = false },
                                                         title = {
-                                                            val dateToSet = habits[y].startDate.plus(
+                                                            val dateToSet = habits[sortedHabits[y]].startDate.plus(
                                                                 xIndex, DateTimeUnit.DAY
                                                             )
                                                             Text(
-                                                                text = "$ts_Do_you_want_to_set_a_value_for ${dateToSet.month} ${dateToSet.dayOfMonth}, ${dateToSet.year} $ts_for_habit ${habits[y].nameOfHabit}?",
+                                                                text = "$ts_Do_you_want_to_set_a_value_for ${dateToSet.month} ${dateToSet.dayOfMonth}, ${dateToSet.year} $ts_for_habit ${habits[sortedHabits[y]].nameOfHabit}?",
                                                                 fontWeight = FontWeight.Normal,
                                                                 fontSize = 16.sp,
                                                                 color = UICT_see
@@ -286,7 +288,7 @@ fun TableContent(
                                                                 onValueChange = { inputText = it },
                                                                 label = {
                                                                     Text(
-                                                                        "$ts_Old: ${habits[y].habitDay[xIndex].today.toBestString()}",
+                                                                        "$ts_Old: ${habits[sortedHabits[y]].habitDay[xIndex].today.toBestString()}",
                                                                         fontSize = 12.sp,
                                                                         fontWeight = FontWeight.Normal,
                                                                         color = UICT_no_see
@@ -335,9 +337,9 @@ fun TableContent(
                                                                 modifier = Modifier.clickable {
                                                                     val value = inputText.toDoubleOrNull()
                                                                     if (value != null) {
-                                                                        habits[y].habitDay[xIndex].today =
+                                                                        habits[sortedHabits[y]].habitDay[xIndex].today =
                                                                             inputText.toBigDecimal()
-                                                                        habits[y].update()
+                                                                        habits[sortedHabits[y]].update(sortedHabits)
                                                                     }
                                                                     showDialog = false
                                                                     viewModel.setStatus(AppStatus.TABLE_UPDATER)
@@ -355,7 +357,7 @@ fun TableContent(
                                 modifier = Modifier.padding(spacedCell * 2)
                             ) {
                                 Text(
-                                    text = habits[y].nameOfUnitsOfDimension,
+                                    text = habits[sortedHabits[y]].nameOfUnitsOfDimension,
                                     color = noSeeColor,
                                     fontWeight = FontWeight.Normal,
                                     fontSize = firstSellSmallFontSize

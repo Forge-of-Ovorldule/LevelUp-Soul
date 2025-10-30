@@ -1596,30 +1596,32 @@ fun StreaksContent() {
         verticalArrangement = Arrangement.spacedBy(11.2.dp)
     ) {
         val streaks = habitStreaks(habit_statistics_and_edit_x)
-        val maxStreak = streaks.max()
+        if (streaks.isNotEmpty()) {
+            val maxStreak = streaks.max()
 
-        for (streak in streaks) {
-            val k = streak.toFloat() / maxStreak.toFloat()
-            Box(
-                modifier = Modifier.fillMaxWidth(k)
-                    .height(24.4.dp)
-                    .background(
-                        seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
-                        RoundedCornerShape(8.8.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "$streak $ts_days",
-                    color = checkBackgroundBright(
-                        seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
-                        UICT_see
-                    ),
-                    fontSize = 12.8.sp,
-                    fontFamily = JetBrainsFont(),
-                    fontWeight = FontWeight.Thin,
-                    maxLines = 1
-                )
+            for (streak in streaks) {
+                val k = streak.toFloat() / maxStreak.toFloat()
+                Box(
+                    modifier = Modifier.fillMaxWidth(k)
+                        .height(24.4.dp)
+                        .background(
+                            seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
+                            RoundedCornerShape(8.8.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "$streak $ts_days",
+                        color = checkBackgroundBright(
+                            seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
+                            UICT_see
+                        ),
+                        fontSize = 12.8.sp,
+                        fontFamily = JetBrainsFont(),
+                        fontWeight = FontWeight.Thin,
+                        maxLines = 1
+                    )
+                }
             }
         }
     }

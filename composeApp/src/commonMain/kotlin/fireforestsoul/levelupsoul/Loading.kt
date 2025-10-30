@@ -50,9 +50,9 @@ fun loading(viewModel: AppViewModel) {
     if (countFilesLoad == 1) {
         loadAllValues()
     } else if (indexToDateUpdate >= 0 && indexToDateUpdate < habits.size - 1) {
-        habits[indexToDateUpdate].updateDate(false)
+        habits[indexToDateUpdate].updateDate()
     } else if (indexToDateUpdate == habits.size - 1) {
-        habits[indexToDateUpdate].updateDate(true)
+        habits[indexToDateUpdate].updateDate()
     } else if (countFilesLoad != 0) {
         changeLanguage()
         viewModel.setStatus(backStatus)
