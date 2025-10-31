@@ -67,7 +67,6 @@ fun TableContent(
 ) {
     val sortedHabits = MutableList(habits.size) { it }
     sortedHabits.sortSystem()
-    println(habits + "\n" + sortedHabits)
 
     val firstCellSizeX = 200.dp
     val firstCellSizeY = 40.dp
@@ -340,6 +339,9 @@ fun TableContent(
                                                                         habits[sortedHabits[y]].habitDay[xIndex].today =
                                                                             inputText.toBigDecimal()
                                                                         habits[sortedHabits[y]].update(sortedHabits)
+                                                                        habits[sortedHabits[y]].saveHabitDays(
+                                                                            sortedHabits[y]
+                                                                        )
                                                                     }
                                                                     showDialog = false
                                                                     viewModel.setStatus(AppStatus.TABLE_UPDATER)

@@ -56,7 +56,6 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
     backStatus = AppStatus.HABITS_LIST_UPDATER
     val sortedHabits = MutableList(habits.size) { it }
     sortedHabits.sortSystem()
-    println(habits + "\n" + sortedHabits)
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -251,6 +250,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                                     habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today =
                                                         inputText.toBigDecimal()
                                                     habits[sortedHabits[x]].update(sortedHabits)
+                                                    habits[sortedHabits[x]].saveHabitDays(sortedHabits[x])
                                                 }
                                                 showDialog = false
                                                 viewModel.setStatus(AppStatus.HABITS_LIST_UPDATER)

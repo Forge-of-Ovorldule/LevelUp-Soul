@@ -486,6 +486,8 @@ fun SettingsDialog() {
 
     var typeOfColor by remember { mutableStateOf(soul_color_type) }
     var exponent by remember { mutableStateOf(withExponent) }
+    var soulName by remember { mutableStateOf(soul_name) }
+    var soulColor by remember { mutableStateOf(soul_color) }
 
     if (showDialog) {
         AlertDialog(
@@ -505,8 +507,6 @@ fun SettingsDialog() {
                         horizontalArrangement = Arrangement.spacedBy(20.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        var soulName by remember { mutableStateOf(soul_name) }
-
                         Text(
                             text = "$ts_Soul:",
                             fontSize = 16.sp,
@@ -516,7 +516,6 @@ fun SettingsDialog() {
                             value = soulName,
                             onValueChange = {
                                 soulName = it
-                                soul_name = soulName
                             },
                             label = {
                                 Text(
@@ -553,8 +552,8 @@ fun SettingsDialog() {
                     ) {
                         var expanded by remember { mutableStateOf(false) }
 
-                        ColorPickerBox(Color.White) {
-                            soul_color = it
+                        ColorPickerBox(soulColor) {
+                            soulColor = it
                         }
                         Column {
                             Button(
@@ -581,7 +580,6 @@ fun SettingsDialog() {
                                     DropdownMenuItem(
                                         onClick = {
                                             typeOfColor = mode
-                                            soul_color_type = mode
                                             expanded = false
                                         },
                                         text = {
@@ -618,6 +616,10 @@ fun SettingsDialog() {
                 Button(
                     onClick = {
                         withExponent = exponent
+                        soul_name = soulName
+                        soul_color = soulColor
+                        soul_color_type = typeOfColor
+                        saveSettings()
                         showDialog = false
                     },
                     colors = ButtonColors(

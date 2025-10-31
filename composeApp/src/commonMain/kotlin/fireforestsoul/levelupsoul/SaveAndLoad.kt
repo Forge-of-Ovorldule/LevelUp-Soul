@@ -24,35 +24,55 @@ fun Any.savedElementToString(): String {
 
 fun saveAllValues() {
     saveValue(app_version, "app_version")
-    saveValue(habits.size, "habits-size")
-    for (x in 0 until habits.size) {
-        saveValue(habits[x].nameOfHabit, "habits-$x-nameOfHabit")
-        saveValue(habits[x].nameOfUnitsOfDimension, "habits-$x-nameOfUnitsOfDimension")
-        saveValue(habits[x].typeOfGoalHabits, "habits-$x-typeOfGoalHabits")
-        saveValue(habits[x].needGoal, "habits-$x-needGoal")
-        saveValue(habits[x].needDays, "habits-$x-needDays")
-        saveValue(habits[x].typeOfColorHabits, "habits-$x-typeOfColorHabits")
-        saveValue(habits[x].colorGood, "habits-$x-colorGood")
-        saveValue(habits[x].changeLevel, "habits-$x-changeLevel")
-        saveValue(habits[x].changeNeedGoalWithLevel, "habits-$x-changeNeedGoalWithLevel")
-        saveValue(habits[x].changeNeedDaysWithLevel, "habits-$x-changeNeedDaysWithLevel")
-        saveValue(habits[x].startDate, "habits-$x-startDate")
-        saveValue(habits[x].lastLevelChangeDate, "habits-$x-lastLevelChangeDate")
-        saveValue(habits[x].level, "habits-$x-level")
-        saveValue(habits[x].iconChar, "habits-$x-iconChar")
-        saveValue(habits[x].habitDay.size, "habits-$x-habitDay-size")
-        for (y in 0 until habits[x].habitDay.size) {
-            saveValue(habits[x].habitDay[y].today, "habits-$x-habitDay-$y-today")
-            saveValue(habits[x].habitDay[y].totalOfAPeriod, "habits-$x-habitDay-$y-totalOfAPeriod")
-            saveValue(habits[x].habitDay[y].correctly, "habits-$x-habitDay-$y-correctly")
-        }
+    habits.save()
+    saveSettings()
+    saveValue(soul_level, "soul_level")
+    saveValue(soul_last_level_change_date, "soul_last_level_change_date")
+    language.saveLanguage()
+}
+
+fun Habit.saveHabitDays(habitIndex: Int) {
+    saveValue(this.habitDay.size, "habits-$habitIndex-habitDay-size")
+    for (y in 0 until this.habitDay.size) {
+        saveValue(this.habitDay[y].today, "habits-$habitIndex-habitDay-$y-today")
+        saveValue(this.habitDay[y].totalOfAPeriod, "habits-$habitIndex-habitDay-$y-totalOfAPeriod")
+        saveValue(this.habitDay[y].correctly, "habits-$habitIndex-habitDay-$y-correctly")
     }
+}
+
+fun Habit.save(index: Int) {
+    saveValue(this.nameOfHabit, "habits-$index-nameOfHabit")
+    saveValue(this.nameOfUnitsOfDimension, "habits-$index-nameOfUnitsOfDimension")
+    saveValue(this.typeOfGoalHabits, "habits-$index-typeOfGoalHabits")
+    saveValue(this.needGoal, "habits-$index-needGoal")
+    saveValue(this.needDays, "habits-$index-needDays")
+    saveValue(this.typeOfColorHabits, "habits-$index-typeOfColorHabits")
+    saveValue(this.colorGood, "habits-$index-colorGood")
+    saveValue(this.changeLevel, "habits-$index-changeLevel")
+    saveValue(this.changeNeedGoalWithLevel, "habits-$index-changeNeedGoalWithLevel")
+    saveValue(this.changeNeedDaysWithLevel, "habits-$index-changeNeedDaysWithLevel")
+    saveValue(this.startDate, "habits-$index-startDate")
+    saveValue(this.lastLevelChangeDate, "habits-$index-lastLevelChangeDate")
+    saveValue(this.level, "habits-$index-level")
+    saveValue(this.iconChar, "habits-$index-iconChar")
+    this.saveHabitDays(index)
+}
+
+fun MutableList<Habit>.save() {
+    saveValue(this.size, "habits-size")
+    for (x in 0 until this.size) {
+        this[x].save(x)
+    }
+}
+
+fun Languages.saveLanguage() {
+    saveValue(language, "language")
+}
+
+fun saveSettings() {
     saveValue(soul_color_type, "soul_color_type")
     saveValue(soul_color, "soul_color")
     saveValue(soul_name, "soul_name")
-    saveValue(soul_level, "soul_level")
-    saveValue(soul_last_level_change_date, "soul_last_level_change_date")
-    saveValue(language, "language")
     saveValue(withExponent, "withExponent")
 }
 

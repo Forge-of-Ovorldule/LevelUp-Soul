@@ -184,6 +184,7 @@ fun MainMenuContent(
                                     DropdownMenuItem(
                                         onClick = {
                                             language = mode
+                                            language.saveLanguage()
                                             expanded0 = false
                                             countFilesLoad = 0
                                             saveAllValues()
