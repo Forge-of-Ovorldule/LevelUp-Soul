@@ -94,3 +94,7 @@ actual fun old1001000000LoadAllValues() {
         }
     }
 }
+
+actual fun deleteValue(name: String) {
+    localStorage.removeItem(name)
+}
