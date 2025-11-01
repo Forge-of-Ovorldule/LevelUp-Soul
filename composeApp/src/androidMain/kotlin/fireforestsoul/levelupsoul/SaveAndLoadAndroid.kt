@@ -167,3 +167,7 @@ actual fun old1001000000LoadAllValues() {
         }
     }
 }
+
+actual fun deleteValue(name: String) {
+    prefs.edit { remove(name) }
+}
