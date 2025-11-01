@@ -115,7 +115,7 @@ fun EditHabit(viewModel: AppViewModel) {
                         fontSize = 16.sp,
                         color = Color(200, 150, 150),
                         modifier = Modifier.clickable {
-                            viewModel.setStatus(backStatus)
+                            viewModel.setStatus(backAppStatus)
                         }
                     )
                     Text(
@@ -138,7 +138,7 @@ fun EditHabit(viewModel: AppViewModel) {
                             habits[habit_statistics_and_edit_x].iconChar = icon
                             habits[habit_statistics_and_edit_x].update()
                             habits[habit_statistics_and_edit_x].save(habit_statistics_and_edit_x)
-                            viewModel.setStatus(backStatus)
+                            viewModel.setStatus(backAppStatus)
                         }
                     )
                 }

@@ -122,7 +122,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                     val maxWidthBox = maxWidth
 
                     IconButton(
-                        { viewModel.setStatus(backStatus) },
+                        { viewModel.setStatus(backAppStatus) },
                         modifier = Modifier.padding(14.dp, 12.dp)
                     ) {
                         Image(

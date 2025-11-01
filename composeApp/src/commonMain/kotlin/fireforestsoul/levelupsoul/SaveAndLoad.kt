@@ -29,6 +29,7 @@ fun saveAllValues() {
     saveValue(soul_level, "soul_level")
     saveValue(soul_last_level_change_date, "soul_last_level_change_date")
     language.saveLanguage()
+    saveValue(backAppStatus, "backAppStatus")
 }
 
 fun Habit.saveHabitDays(habitIndex: Int) {
@@ -55,6 +56,7 @@ fun Habit.save(index: Int) {
     saveValue(this.lastLevelChangeDate, "habits-$index-lastLevelChangeDate")
     saveValue(this.level, "habits-$index-level")
     saveValue(this.iconChar, "habits-$index-iconChar")
+    saveValue(this.phantomNeedDays, "habits-$index-phantomNeedDays")
     this.saveHabitDays(index)
 }
 
@@ -92,6 +94,7 @@ fun <T> String.loadedElementToVal(value: T): T {
         is Boolean -> element.toBoolean()
         is LocalDate -> element.let { LocalDate.parse(it) }
         is Languages -> enumValueOf<Languages>(element)
+        is AppStatus -> enumValueOf<AppStatus>(element)
         else -> value
     } as T
 }
@@ -119,6 +122,7 @@ fun loadAllValues() {
         habits[x].lastLevelChangeDate = loadValue(habits[x].lastLevelChangeDate, "habits-$x-lastLevelChangeDate")
         habits[x].level = loadValue(habits[x].level, "habits-$x-level")
         habits[x].iconChar = loadValue(habits[x].iconChar, "habits-$x-iconChar")
+        habits[x].phantomNeedDays = loadValue(habits[x].phantomNeedDays, "habits-$x-phantomNeedDays")
         val habitDaySize = loadValue(habits[x].habitDay.size, "habits-$x-habitDay-size")
         habits[x].habitDay = mutableListOf(HabitDay())
         for (y in 0 until habitDaySize) {
@@ -138,6 +142,7 @@ fun loadAllValues() {
     soul_last_level_change_date = loadValue(soul_last_level_change_date, "soul_last_level_change_date")
     language = loadValue(language, "language")
     withExponent = loadValue(withExponent, "withExponent")
+    backAppStatus = loadValue(backAppStatus, "backAppStatus")
 }
 
 //delete

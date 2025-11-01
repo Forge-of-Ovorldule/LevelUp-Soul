@@ -57,5 +57,5 @@ private fun loading(viewModel: AppViewModel) {
     }
     saveAllValues()
     loadIsGood = true
-    viewModel.setStatus(backStatus)
+    viewModel.setStatus(backAppStatus)
 }

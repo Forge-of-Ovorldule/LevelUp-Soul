@@ -43,4 +43,4 @@ var soul_last_level_change_date = Clock.System.now().toLocalDateTime(TimeZone.cu
 
 var language: Languages = Languages.EN
 
-var backStatus = AppStatus.HABITS_LIST
+var backAppStatus = AppStatus.HABITS_LIST

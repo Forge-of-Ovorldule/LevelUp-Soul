@@ -53,7 +53,7 @@ import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 
 @Composable
 fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel) {
-    backStatus = AppStatus.HABITS_LIST_UPDATER
+    backAppStatus = AppStatus.HABITS_LIST_UPDATER
     val sortedHabits = MutableList(habits.size) { it }
     sortedHabits.sortSystem()
 

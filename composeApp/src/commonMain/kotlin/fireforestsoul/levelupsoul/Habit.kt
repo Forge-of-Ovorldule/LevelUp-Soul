@@ -193,11 +193,12 @@ class Habit(
 
     fun getNeedDaysWhenNewLevel(pps: Int = habitDay.size - 1): Int {
         if (changeNeedDaysWithLevel) {
-            return if (getPhantomNeedDaysWhenNewLevel(pps) % 1 != BigDecimal.ZERO) getPhantomNeedDaysWhenNewLevel(pps).intValue(
-                false
-            ) + 1 else getPhantomNeedDaysWhenNewLevel(pps).intValue(
-                false
+            return if (getPhantomNeedDaysWhenNewLevel(pps) == getPhantomNeedDaysWhenNewLevel(pps).intValue(false)
+                    .toBigDecimal()
             )
+                getPhantomNeedDaysWhenNewLevel(pps).intValue(false) + 1
+            else
+                getPhantomNeedDaysWhenNewLevel(pps).intValue(false)
         }
         return needDays
     }

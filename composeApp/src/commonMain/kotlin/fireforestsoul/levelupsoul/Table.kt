@@ -68,6 +68,8 @@ fun TableContent(
     val sortedHabits = MutableList(habits.size) { it }
     sortedHabits.sortSystem()
 
+    backAppStatus = AppStatus.TABLE_UPDATER
+
     val firstCellSizeX = 200.dp
     val firstCellSizeY = 40.dp
     val nextCellSizeX = 45.dp
