@@ -68,12 +68,12 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.with
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.graphics.painter.Painter
 
 @Composable
 fun MainMenuContent(
-    viewModel: AppViewModel, verticalScrollForTableContent: ScrollState, horizontalScrollForTableContent: ScrollState
+    viewModel: AppViewModel, verticalScrollForTableContent: ScrollState, horizontalScrollForTableContent: ScrollState,
+    verticalScrollForHabitsListContent: ScrollState
 ) {
     val appStatus by viewModel.appStatus.collectAsState()
     var countdownDate by remember {
@@ -265,8 +265,6 @@ fun MainMenuContent(
             }
         }
     ) { paddingValues ->
-        val verticalScrollForHabitsListContent = rememberScrollState()
-
         Box(modifier = Modifier.padding(paddingValues)) {
             if (appStatus == AppStatus.TABLE || appStatus == AppStatus.TABLE_UPDATER)
                 TableContent(viewModel, verticalScrollForTableContent, horizontalScrollForTableContent, countdownDate)

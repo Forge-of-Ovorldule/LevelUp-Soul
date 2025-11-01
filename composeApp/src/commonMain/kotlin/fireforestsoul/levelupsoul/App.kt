@@ -23,6 +23,8 @@ fun App(viewModel: AppViewModel) {
     val verticalScrollForTableContent = rememberScrollState()
     val horizontalScrollForTableContent = rememberScrollState()
 
+    val verticalScrollForHabitsListContent = rememberScrollState()
+
     val showMainMenu = when (appStatus) {
         AppStatus.TABLE,
         AppStatus.TABLE_UPDATER,
@@ -56,7 +58,8 @@ fun App(viewModel: AppViewModel) {
             MainMenuContent(
                 viewModel,
                 verticalScrollForTableContent,
-                horizontalScrollForTableContent
+                horizontalScrollForTableContent,
+                verticalScrollForHabitsListContent
             )
         }
     }
