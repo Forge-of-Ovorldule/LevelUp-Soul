@@ -123,19 +123,19 @@ fun HabitStatistics(viewModel: AppViewModel) {
 
                     IconButton(
                         { viewModel.setStatus(backAppStatus) },
-                        modifier = Modifier.padding(14.dp, 12.dp)
+                        modifier = Modifier.padding(14.dp / 1.15f, 12.dp / 1.15f)
                     ) {
                         Image(
                             painter = painterResource(Res.drawable.back),
                             contentDescription = ts_Go_back,
                             colorFilter = ColorFilter.tint(UIC, BlendMode.Modulate),
-                            modifier = Modifier.size(30.8.dp)
-                                .clip(RoundedCornerShape(15.4.dp))
+                            modifier = Modifier.size(30.8.dp / 1.15f)
+                                .clip(RoundedCornerShape(15.4.dp / 1.15f))
                         )
                     }
                     Column(
                         modifier = Modifier.fillMaxWidth()
-                            .padding(top = 52.dp, bottom = 10.8.dp),
+                            .padding(top = 52.dp / 1.15f, bottom = 10.8.dp / 1.15f),
                         verticalArrangement = Arrangement.SpaceAround,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -146,7 +146,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             overflow = TextOverflow.Ellipsis,
                             fontWeight = FontWeight.ExtraBold,
                             fontFamily = JetBrainsFont(),
-                            fontSize = 34.sp
+                            fontSize = 34.sp / 1.15f
                         )
                         Text(
                             text = ts_statistic,
@@ -154,24 +154,24 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             fontFamily = JetBrainsFont(),
-                            fontSize = 14.4.sp
+                            fontSize = 14.4.sp / 1.15f
                         )
-                        Spacer(modifier = Modifier.height(57.6.dp))
+                        Spacer(modifier = Modifier.height(57.6.dp / 1.15f))
                         Row(
                             modifier = Modifier.fillMaxWidth()
-                                .padding(horizontal = 66.4.dp),
+                                .padding(horizontal = 66.4.dp / 1.15f),
                             horizontalArrangement = Arrangement.SpaceAround
                         ) {
                             Box(
-                                modifier = Modifier.size(maxWidthBox * 0.33f, 40.dp)
+                                modifier = Modifier.size(maxWidthBox * 0.33f, 40.dp / 1.15f)
                                     .background(
                                         seeColorByIndex(habit_statistics_and_edit_x),
-                                        RoundedCornerShape(27.2.dp)
+                                        RoundedCornerShape(27.2.dp / 1.15f)
                                     )
                                     .border(
-                                        0.8.dp,
+                                        0.8.dp / 1.15f,
                                         seeColorByIndex(habit_statistics_and_edit_x),
-                                        RoundedCornerShape(27.2.dp)
+                                        RoundedCornerShape(27.2.dp / 1.15f)
                                     ),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -184,16 +184,16 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     fontFamily = JetBrainsFont(),
-                                    fontSize = 19.2.sp
+                                    fontSize = 19.2.sp / 1.15f
                                 )
                             }
                             Box(
-                                modifier = Modifier.size(maxWidthBox * 0.33f, 40.dp)
+                                modifier = Modifier.size(maxWidthBox * 0.33f, 40.dp / 1.15f)
                                     .background(Color.Transparent)
                                     .border(
-                                        0.8.dp,
+                                        0.8.dp / 1.15f,
                                         seeColorByIndex(habit_statistics_and_edit_x),
-                                        RoundedCornerShape(27.2.dp)
+                                        RoundedCornerShape(27.2.dp / 1.15f)
                                     )
                                     .clickable { viewModel.setStatus(AppStatus.EDIT_HABIT) },
                                 contentAlignment = Alignment.Center
@@ -207,7 +207,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     fontFamily = JetBrainsFont(),
-                                    fontSize = 19.2.sp
+                                    fontSize = 19.2.sp / 1.15f
                                 )
                             }
                         }
@@ -222,7 +222,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                         Text(
                             text = habits[habit_statistics_and_edit_x].iconChar,
                             color = seeColorByIndex(habit_statistics_and_edit_x),
-                            fontSize = 60.sp,
+                            fontSize = 60.sp / 1.15f,
                             fontWeight = FontWeight.Black,
                             modifier = Modifier.rotate(-28.79f),
                             fontFamily = JetBrainsFont()
@@ -237,7 +237,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                         Text(
                             text = habits[habit_statistics_and_edit_x].iconChar,
                             color = seeColorByIndex(habit_statistics_and_edit_x),
-                            fontSize = 51.2.sp,
+                            fontSize = 51.2.sp / 1.15f,
                             fontWeight = FontWeight.Black,
                             modifier = Modifier.rotate(33.94f),
                             fontFamily = JetBrainsFont()
@@ -252,7 +252,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                         Text(
                             text = habits[habit_statistics_and_edit_x].iconChar,
                             color = seeColorByIndex(habit_statistics_and_edit_x),
-                            fontSize = 34.sp,
+                            fontSize = 34.sp / 1.15f,
                             fontWeight = FontWeight.Black,
                             modifier = Modifier.rotate(-17.23f),
                             fontFamily = JetBrainsFont()
@@ -265,15 +265,15 @@ fun HabitStatistics(viewModel: AppViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(UIC_dark)
-                        .padding(horizontal = 15.56.dp)
-                        .padding(bottom = 13.78.dp),
+                        .padding(horizontal = 15.56.dp / 1.15f)
+                        .padding(bottom = 13.78.dp / 1.15f),
                     contentAlignment = Alignment.Center
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth()
-                            .background(UIC_light, RoundedCornerShape(20.89.dp))
-                            .padding(horizontal = 20.89.dp)
-                            .height(48.44.dp)
+                            .background(UIC_light, RoundedCornerShape(20.89.dp / 1.15f))
+                            .padding(horizontal = 20.89.dp / 1.15f)
+                            .height(48.44.dp / 1.15f)
                             .horizontalScroll(rememberScrollState()),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceAround
@@ -327,7 +327,10 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             statusNow = habitStatisticsStatus,
                             icon = painterResource(Res.drawable.habit_statistic__distribution_by_day_of_the_week),
                             contentDescription = ts_Distribution_by_day_of_the_week
-                        ) { habitStatisticsStatus = HabitStatisticsStatus.DISTRIBUTION_BY_DAY_OF_THE_WEEK }
+                        ) {
+                            habitStatisticsStatus =
+                                HabitStatisticsStatus.DISTRIBUTION_BY_DAY_OF_THE_WEEK
+                        }
                     }
                 }
             }
@@ -343,7 +346,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             )
                         )
                     )
-                    .height(paddingValues.calculateTopPadding() + 66.4.dp),
+                    .height(paddingValues.calculateTopPadding() + 66.4.dp / 1.15f),
             )
 
             val verticalScroll = rememberScrollState()
@@ -352,7 +355,10 @@ fun HabitStatistics(viewModel: AppViewModel) {
                 modifier = Modifier
                     .padding(paddingValues)
                     .fillMaxSize()
-                    .background(UIC_dark, RoundedCornerShape(topStart = 66.4.dp, topEnd = 66.4.dp))
+                    .background(
+                        UIC_dark,
+                        RoundedCornerShape(topStart = 66.4.dp / 1.15f, topEnd = 66.4.dp / 1.15f)
+                    )
                     .verticalScroll(verticalScroll)
             ) {
                 Column(
@@ -360,7 +366,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box(
-                        modifier = Modifier.fillMaxWidth().height(66.4.dp),
+                        modifier = Modifier.fillMaxWidth().height(66.4.dp / 1.15f),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -378,7 +384,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             fontWeight = FontWeight.Medium,
-                            fontSize = 19.2.sp,
+                            fontSize = 19.2.sp / 1.15f,
                             color = UICT_see
                         )
                     }
@@ -398,7 +404,10 @@ fun HabitStatistics(viewModel: AppViewModel) {
 
                             HabitStatisticsStatus.PROGRESS -> ProgressContent(progressPeriodSetting)
                             HabitStatisticsStatus.LEVEL -> LevelContent(progressPeriodSetting)
-                            HabitStatisticsStatus.PROGRESS_GRAPH -> ProgressGraphContent(progressPeriodSetting)
+                            HabitStatisticsStatus.PROGRESS_GRAPH -> ProgressGraphContent(
+                                progressPeriodSetting
+                            )
+
                             HabitStatisticsStatus.BAR_CHART -> BarChartContent()
                             HabitStatisticsStatus.CALENDAR -> CalendarContent()
                             HabitStatisticsStatus.STREAKS -> StreaksContent()
@@ -431,20 +440,23 @@ private fun HabitStatisticsStatusIcon(
     onClick: () -> Unit
 ) {
     Box(
-        modifier = Modifier.size(35.56.dp)
+        modifier = Modifier.size(35.56.dp / 1.15f)
             .clickable(onClick = onClick)
             .background(
                 if (habitStatisticsStatus == statusNow) seeColorByIndex(habit_statistics_and_edit_x)
                 else UIC_light_x2,
-                RoundedCornerShape(8.89.dp)
+                RoundedCornerShape(8.89.dp / 1.15f)
             ),
         contentAlignment = Alignment.Center
     ) {
         Image(
             painter = icon,
             contentDescription = contentDescription,
-            modifier = Modifier.size(26.67.dp),
-            colorFilter = if (habitStatisticsStatus != statusNow) ColorFilter.tint(UIC_light_x05, BlendMode.Modulate)
+            modifier = Modifier.size(26.67.dp / 1.15f),
+            colorFilter = if (habitStatisticsStatus != statusNow) ColorFilter.tint(
+                UIC_light_x05,
+                BlendMode.Modulate
+            )
             else ColorFilter.tint(
                 checkBackgroundBright(
                     seeColorByIndex(habit_statistics_and_edit_x),
@@ -473,13 +485,13 @@ private fun GoalContent(
                 painter = painterResource(Res.drawable.info),
                 contentDescription = ts_Info,
                 colorFilter = ColorFilter.tint(UICT_no_see, BlendMode.Modulate),
-                modifier = Modifier.size(12.8.dp)
+                modifier = Modifier.size(12.8.dp / 1.15f)
             )
             Text(
                 text = smallText,
                 fontFamily = JetBrainsFont(),
                 fontWeight = FontWeight.ExtraLight,
-                fontSize = 12.8.sp,
+                fontSize = 12.8.sp / 1.15f,
                 color = UICT_no_see,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -493,7 +505,7 @@ private fun GoalContent(
                 title = {
                     Text(
                         "$ts_PPS $ts_Info",
-                        fontSize = 16.sp,
+                        fontSize = 16.sp / 1.15f,
                         fontWeight = FontWeight.Bold,
                         color = UICT_see
                     )
@@ -501,7 +513,7 @@ private fun GoalContent(
                 text = {
                     Text(
                         ts_PPS_means_Progress_Period_Settings_By_default_progress_is_the_,
-                        fontSize = 16.sp,
+                        fontSize = 16.sp / 1.15f,
                         color = UICT_see
                     )
                 },
@@ -517,7 +529,7 @@ private fun GoalContent(
                     ) {
                         Text(
                             text = ts_Close,
-                            fontSize = 16.sp,
+                            fontSize = 16.sp / 1.15f,
                             color = Color(150, 150, 200),
                         )
                     }
@@ -535,19 +547,19 @@ private fun GoalContent(
         isPPS: Boolean = false
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(22.67.dp),
+            horizontalArrangement = Arrangement.spacedBy(22.67.dp / 1.15f),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
             Box(
-                modifier = Modifier.size(44.44.dp)
-                    .background(UIC_extra_light, RoundedCornerShape(22.22.dp)),
+                modifier = Modifier.size(44.44.dp / 1.15f)
+                    .background(UIC_extra_light, RoundedCornerShape(22.22.dp / 1.15f)),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
                     painter = res,
                     contentDescription = contentDescription,
-                    modifier = Modifier.size(35.56.dp),
+                    modifier = Modifier.size(35.56.dp / 1.15f),
                     colorFilter = ColorFilter.tint(UIC_light, BlendMode.Modulate)
                 )
             }
@@ -556,7 +568,7 @@ private fun GoalContent(
                     text = text,
                     fontFamily = JetBrainsFont(),
                     fontWeight = FontWeight.Medium,
-                    fontSize = 19.2.sp,
+                    fontSize = 19.2.sp / 1.15f,
                     color = UICT_see,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -567,7 +579,7 @@ private fun GoalContent(
                         text = smallText,
                         fontFamily = JetBrainsFont(),
                         fontWeight = FontWeight.ExtraLight,
-                        fontSize = 12.8.sp,
+                        fontSize = 12.8.sp / 1.15f,
                         color = UICT_no_see,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -577,10 +589,10 @@ private fun GoalContent(
     }
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(24.89.dp),
+        verticalArrangement = Arrangement.spacedBy(24.89.dp / 1.15f),
         modifier = Modifier.fillMaxWidth()
-            .padding(horizontal = 33.2.dp)
-            .padding(top = 27.2.dp)
+            .padding(horizontal = 33.2.dp / 1.15f)
+            .padding(top = 27.2.dp / 1.15f)
     ) {
         GoalParamItem(
             painterResource(Res.drawable.habit_statistic__goal__type_of_goal),
@@ -614,7 +626,8 @@ private fun GoalContent(
             "$ts_PPS (0 $ts_for_full_time):",
             ts_days
         ) {
-            pps_for_habit_statistic = it.toIntOrNull() ?: habits[habit_statistics_and_edit_x].habitDay.size
+            pps_for_habit_statistic =
+                it.toIntOrNull() ?: habits[habit_statistics_and_edit_x].habitDay.size
             if (pps_for_habit_statistic <= 0) pps_for_habit_statistic =
                 habits[habit_statistics_and_edit_x].habitDay.size
         }
@@ -629,7 +642,7 @@ private fun ProgressContent(
     fun DonutChart(
         progress: Float,
         modifier: Modifier = Modifier,
-        strokeWidth: Dp = 20.dp,
+        strokeWidth: Dp = 20.dp / 1.15f,
         trackColor: Color = noSeeColorByIndex(habit_statistics_and_edit_x),
         progressColor: Color = seeColorByIndex(habit_statistics_and_edit_x),
         label: String = ts_all,
@@ -641,12 +654,12 @@ private fun ProgressContent(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.8.dp / 1.15f)
         ) {
             if (withBottomLabel && !isBottonLabel) {
                 Text(
                     text = bottomLabel,
-                    fontSize = 12.8.sp,
+                    fontSize = 12.8.sp / 1.15f,
                     color = UICT_no_see,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -683,7 +696,7 @@ private fun ProgressContent(
                     if (withLabel) {
                         Text(
                             text = label,
-                            fontSize = 12.8.sp,
+                            fontSize = 12.8.sp / 1.15f,
                             color = UICT_no_see,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -693,7 +706,7 @@ private fun ProgressContent(
                     if (isPlusProgress) {
                         Text(
                             text = (if (progress >= 0) "+" else "") + "${(progress * 100).toInt()}%",
-                            fontSize = 14.4.sp,
+                            fontSize = 14.4.sp / 1.15f,
                             fontWeight = FontWeight.ExtraBold,
                             fontFamily = JetBrainsFont(),
                             maxLines = 1,
@@ -703,7 +716,7 @@ private fun ProgressContent(
                     } else {
                         Text(
                             text = "${(progress * 100).toInt()}%",
-                            fontSize = 25.6.sp,
+                            fontSize = 25.6.sp / 1.15f,
                             fontWeight = FontWeight.ExtraBold,
                             fontFamily = JetBrainsFont(),
                             maxLines = 1,
@@ -714,7 +727,7 @@ private fun ProgressContent(
                     if (withLabel) {
                         Text(
                             text = label,
-                            fontSize = 12.8.sp,
+                            fontSize = 12.8.sp / 1.15f,
                             color = Color.Transparent,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -726,7 +739,7 @@ private fun ProgressContent(
             if (withBottomLabel && isBottonLabel) {
                 Text(
                     text = bottomLabel,
-                    fontSize = 12.8.sp,
+                    fontSize = 12.8.sp / 1.15f,
                     color = UICT_no_see,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -738,17 +751,18 @@ private fun ProgressContent(
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize().padding(horizontal = 37.6.dp).padding(top = 8.8.dp)
+        modifier = Modifier.fillMaxSize().padding(horizontal = 37.6.dp / 1.15f)
+            .padding(top = 8.8.dp / 1.15f)
     ) {
         DonutChart(
             progress(habit_statistics_and_edit_x, pps),
-            Modifier.size(180.dp),
-            20.dp,
+            Modifier.size(180.dp / 1.15f),
+            20.dp / 1.15f,
             withLabel = true
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(66.dp)
+            verticalArrangement = Arrangement.spacedBy(66.dp / 1.15f)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -758,7 +772,7 @@ private fun ProgressContent(
                 var progress = plusProgress(habit_statistics_and_edit_x, 1, pps)
                 DonutChart(
                     progress = progress,
-                    strokeWidth = 10.dp,
+                    strokeWidth = 10.dp / 1.15f,
                     isBottonLabel = true,
                     trackColor = if (progress >= 0f) noSeeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
                         noSeeColorByIndex(habit_statistics_and_edit_x)
@@ -766,13 +780,13 @@ private fun ProgressContent(
                     progressColor = if (progress >= 0f) seeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
                         seeColorByIndex(habit_statistics_and_edit_x)
                     ),
-                    modifier = Modifier.size(90.dp),
+                    modifier = Modifier.size(90.dp / 1.15f),
                     bottomLabel = ts_day
                 )
                 progress = plusProgress(habit_statistics_and_edit_x, 7, pps)
                 DonutChart(
                     progress = progress,
-                    strokeWidth = 10.dp,
+                    strokeWidth = 10.dp / 1.15f,
                     isBottonLabel = true,
                     trackColor = if (progress >= 0f) noSeeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
                         noSeeColorByIndex(habit_statistics_and_edit_x)
@@ -780,7 +794,7 @@ private fun ProgressContent(
                     progressColor = if (progress >= 0f) seeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
                         seeColorByIndex(habit_statistics_and_edit_x)
                     ),
-                    modifier = Modifier.size(90.dp),
+                    modifier = Modifier.size(90.dp / 1.15f),
                     bottomLabel = ts_week
                 )
             }
@@ -792,7 +806,7 @@ private fun ProgressContent(
                 var progress = plusProgress(habit_statistics_and_edit_x, 30, pps)
                 DonutChart(
                     progress = progress,
-                    strokeWidth = 10.dp,
+                    strokeWidth = 10.dp / 1.15f,
                     isBottonLabel = false,
                     trackColor = if (progress >= 0f) noSeeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
                         noSeeColorByIndex(habit_statistics_and_edit_x)
@@ -800,13 +814,13 @@ private fun ProgressContent(
                     progressColor = if (progress >= 0f) seeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
                         seeColorByIndex(habit_statistics_and_edit_x)
                     ),
-                    modifier = Modifier.size(90.dp),
+                    modifier = Modifier.size(90.dp / 1.15f),
                     bottomLabel = ts_month
                 )
                 progress = plusProgress(habit_statistics_and_edit_x, 365, pps)
                 DonutChart(
                     progress = progress,
-                    strokeWidth = 10.dp,
+                    strokeWidth = 10.dp / 1.15f,
                     isBottonLabel = false,
                     trackColor = if (progress >= 0f) noSeeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
                         noSeeColorByIndex(habit_statistics_and_edit_x)
@@ -814,7 +828,7 @@ private fun ProgressContent(
                     progressColor = if (progress >= 0f) seeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
                         seeColorByIndex(habit_statistics_and_edit_x)
                     ),
-                    modifier = Modifier.size(90.dp),
+                    modifier = Modifier.size(90.dp / 1.15f),
                     bottomLabel = ts_year
                 )
             }
@@ -865,11 +879,11 @@ private fun LevelContent(
     @Composable
     fun DonutChart(isGood: Boolean) {
         Box(
-            modifier = Modifier.size(180.dp),
+            modifier = Modifier.size(180.dp / 1.15f),
             contentAlignment = Alignment.Center
         ) {
             Canvas(modifier = Modifier.fillMaxSize()) {
-                val stroke = Stroke(width = 20.dp.toPx(), cap = StrokeCap.Round)
+                val stroke = Stroke(width = (20.dp / 1.15f).toPx(), cap = StrokeCap.Round)
 
                 drawArc(
                     color = if (isGood) noSeeColorByIndex(habit_statistics_and_edit_x)
@@ -893,7 +907,7 @@ private fun LevelContent(
             }
             Text(
                 text = habits[habit_statistics_and_edit_x].level.toString(),
-                fontSize = 25.6.sp,
+                fontSize = 25.6.sp / 1.15f,
                 color = UICT_see,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -914,14 +928,14 @@ private fun LevelContent(
             else UIC_dark.multiply(r = 2f)
         Column(
             modifier = Modifier.fillMaxWidth()
-                .height(45.2.dp)
-                .background(background, RoundedCornerShape(22.6.dp)),
+                .height(45.2.dp / 1.15f)
+                .background(background, RoundedCornerShape(22.6.dp / 1.15f)),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceAround
         ) {
             Text(
                 text = subtitle,
-                fontSize = 12.8.sp,
+                fontSize = 12.8.sp / 1.15f,
                 color = UICT_no_see,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -933,21 +947,21 @@ private fun LevelContent(
     }
 
     Column(
-        modifier = Modifier.padding(top = 22.dp)
+        modifier = Modifier.padding(top = 22.dp / 1.15f)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(42.8.dp)
+        verticalArrangement = Arrangement.spacedBy(42.8.dp / 1.15f)
     ) {
         val isGood = if (progress(habit_statistics_and_edit_x, pps) <= 0.2f) false else true
         Box(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            CircleImage(isGood, 0.1666f, 20.dp, 49.2.dp)
-            CircleImage(isGood, 0.237f, 89.6.dp, 16.4.dp)
-            CircleImage(isGood, 0.1296f, 147.2.dp, 33.2.dp)
-            CircleImage(isGood, 0.8055f, 29.2.dp, 25.2.dp)
-            CircleImage(isGood, 0.9462f, 44.dp, 14.8.dp)
-            CircleImage(isGood, 0.8981f, 114.4.dp, 41.6.dp)
+            CircleImage(isGood, 0.1666f, 20.dp / 1.15f, 49.2.dp / 1.15f)
+            CircleImage(isGood, 0.237f, 89.6.dp / 1.15f, 16.4.dp / 1.15f)
+            CircleImage(isGood, 0.1296f, 147.2.dp / 1.15f, 33.2.dp / 1.15f)
+            CircleImage(isGood, 0.8055f, 29.2.dp / 1.15f, 25.2.dp / 1.15f)
+            CircleImage(isGood, 0.9462f, 44.dp / 1.15f, 14.8.dp / 1.15f)
+            CircleImage(isGood, 0.8981f, 114.4.dp / 1.15f, 41.6.dp / 1.15f)
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
@@ -957,15 +971,15 @@ private fun LevelContent(
         }
         Column(
             modifier = Modifier.fillMaxWidth()
-                .padding(horizontal = 29.2.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(horizontal = 29.2.dp / 1.15f),
+            verticalArrangement = Arrangement.spacedBy(12.dp / 1.15f)
         ) {
             paramElement(ts_Goal, isGood) {
                 if (habits[habit_statistics_and_edit_x].changeNeedGoalWithLevel) {
                     Row {
                         Text(
                             text = habits[habit_statistics_and_edit_x].needGoal.toBestString() + " " + habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension + " ",
-                            fontSize = 16.sp,
+                            fontSize = 16.sp / 1.15f,
                             color = UICT_see,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -973,9 +987,11 @@ private fun LevelContent(
                             fontWeight = FontWeight.Normal
                         )
                         Text(
-                            text = "-> " + habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(pps)
+                            text = "-> " + habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(
+                                pps
+                            )
                                 .toBestString() + " " + habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension,
-                            fontSize = 16.sp,
+                            fontSize = 16.sp / 1.15f,
                             color = if (isGood) UIC_green else UIC_red,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -986,7 +1002,7 @@ private fun LevelContent(
                 } else {
                     Text(
                         text = habits[habit_statistics_and_edit_x].needGoal.toBestString() + " " + habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension,
-                        fontSize = 16.sp,
+                        fontSize = 16.sp / 1.15f,
                         color = UICT_see,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -1000,7 +1016,7 @@ private fun LevelContent(
                     Row {
                         Text(
                             text = habits[habit_statistics_and_edit_x].needDays.toString(),
-                            fontSize = 16.sp,
+                            fontSize = 16.sp / 1.15f,
                             color = UICT_see,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -1014,7 +1030,7 @@ private fun LevelContent(
                         if (textToSubString.length >= 3)
                             Text(
                                 text = " (${habits[habit_statistics_and_edit_x].phantomNeedDays.toBestString()})",
-                                fontSize = 16.sp,
+                                fontSize = 16.sp / 1.15f,
                                 color = UICT_no_see,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -1023,7 +1039,7 @@ private fun LevelContent(
                             )
                         Text(
                             text = " $ts_days ",
-                            fontSize = 16.sp,
+                            fontSize = 16.sp / 1.15f,
                             color = UICT_see,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -1031,8 +1047,10 @@ private fun LevelContent(
                             fontWeight = FontWeight.Normal
                         )
                         Text(
-                            text = "-> " + habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(pps).toString(),
-                            fontSize = 16.sp,
+                            text = "-> " + habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(
+                                pps
+                            ).toString(),
+                            fontSize = 16.sp / 1.15f,
                             color = if (isGood) UIC_green else UIC_red,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -1046,10 +1064,12 @@ private fun LevelContent(
                         if (textToSubString.length >= 3)
                             Text(
                                 text = " (${
-                                    habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(pps)
+                                    habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(
+                                        pps
+                                    )
                                         .toBestString()
                                 })",
-                                fontSize = 16.sp,
+                                fontSize = 16.sp / 1.15f,
                                 color = UICT_no_see,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -1058,7 +1078,7 @@ private fun LevelContent(
                             )
                         Text(
                             text = " $ts_days",
-                            fontSize = 16.sp,
+                            fontSize = 16.sp / 1.15f,
                             color = if (isGood) UIC_green else UIC_red,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -1069,7 +1089,7 @@ private fun LevelContent(
                 } else {
                     Text(
                         text = habits[habit_statistics_and_edit_x].needDays.toString() + " " + ts_days,
-                        fontSize = 16.sp,
+                        fontSize = 16.sp / 1.15f,
                         color = UICT_see,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -1094,22 +1114,30 @@ private fun ProgressGraphContent(
         fun SelectedElement(smooth: Boolean = isSmooth, isSecond: Boolean = false) {
             Box(
                 modifier = Modifier.fillMaxWidth(if (isSecond) 1f else 0.5f)
-                    .height(35.6.dp)
+                    .height(35.6.dp / 1.15f)
                     .background(
                         Brush.linearGradient(
                             listOf(
                                 noSeeColorByIndex(habit_statistics_and_edit_x),
-                                noSeeColorByIndex(habit_statistics_and_edit_x).multiply(0.2f, 0.2f, 0.2f)
+                                noSeeColorByIndex(habit_statistics_and_edit_x).multiply(
+                                    0.2f,
+                                    0.2f,
+                                    0.2f
+                                )
                             ), Offset(0f, 0f), Offset.Infinite
                         ),
-                        RoundedCornerShape(17.8.dp)
+                        RoundedCornerShape(17.8.dp / 1.15f)
                     )
-                    .border(0.4.dp, seeColorByIndex(habit_statistics_and_edit_x), RoundedCornerShape(17.8.dp)),
+                    .border(
+                        0.4.dp / 1.15f,
+                        seeColorByIndex(habit_statistics_and_edit_x),
+                        RoundedCornerShape(17.8.dp / 1.15f)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = if (smooth) ts_Smooth else ts_Linear,
-                    fontSize = 16.sp,
+                    fontSize = 16.sp / 1.15f,
                     color = UICT_see,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -1123,14 +1151,14 @@ private fun ProgressGraphContent(
         fun UnselectedElement(smooth: Boolean = isSmooth, isSecond: Boolean = false) {
             Box(
                 modifier = Modifier.fillMaxWidth(if (isSecond) 1f else 0.5f)
-                    .height(35.6.dp)
-                    .clip(RoundedCornerShape(17.8.dp))
+                    .height(35.6.dp / 1.15f)
+                    .clip(RoundedCornerShape(17.8.dp / 1.15f))
                     .clickable { isSmooth = !smooth },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = if (isSmooth) ts_Linear else ts_Smooth,
-                    fontSize = 16.sp,
+                    fontSize = 16.sp / 1.15f,
                     color = UICT_no_see,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -1142,12 +1170,12 @@ private fun ProgressGraphContent(
 
         Row(
             modifier = Modifier.fillMaxWidth()
-                .height(45.2.dp)
+                .height(45.2.dp / 1.15f)
                 .background(
                     noSeeColorByIndex(habit_statistics_and_edit_x).multiply(0.4f, 0.4f, 0.4f, 0.4f),
-                    RoundedCornerShape(22.7.dp)
+                    RoundedCornerShape(22.7.dp / 1.15f)
                 )
-                .padding(horizontal = 6.4.dp),
+                .padding(horizontal = 6.4.dp / 1.15f),
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (isSmooth) {
@@ -1163,12 +1191,12 @@ private fun ProgressGraphContent(
     @Composable
     fun SmoothLineChart(
         data: List<Float>,
-        modifier: Modifier = Modifier.fillMaxWidth().height(180.8.dp),
+        modifier: Modifier = Modifier.fillMaxWidth().height(180.8.dp / 1.15f),
         lineColor: Color = seeColorByIndex(habit_statistics_and_edit_x),
         gradientStart: Color = noSeeColorByIndex(habit_statistics_and_edit_x),
         gradientEnd: Color = UIC_dark,
         gridColor: Color = UIC_light,
-        strokeWidth: Dp = 2.dp,
+        strokeWidth: Dp = 2.dp / 1.15f,
         gridLines: Int = 6
     ) {
         if (data.isEmpty()) return
@@ -1233,7 +1261,11 @@ private fun ProgressGraphContent(
             drawPath(
                 path = path,
                 color = lineColor,
-                style = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+                style = Stroke(
+                    width = strokeWidth.toPx(),
+                    cap = StrokeCap.Round,
+                    join = StrokeJoin.Round
+                )
             )
         }
     }
@@ -1243,14 +1275,14 @@ private fun ProgressGraphContent(
 
     Column(
         modifier = Modifier.fillMaxWidth()
-            .padding(horizontal = 29.2.dp)
-            .padding(top = 36.8.dp),
-        verticalArrangement = Arrangement.spacedBy(36.dp)
+            .padding(horizontal = 29.2.dp / 1.15f)
+            .padding(top = 36.8.dp / 1.15f),
+        verticalArrangement = Arrangement.spacedBy(36.dp / 1.15f)
     ) {
         SmoothLineChart(listProgress(habit_statistics_and_edit_x, period, step, pps))
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp / 1.15f)
         ) {
             SelectSmooth()
             ValueSetVector(
@@ -1287,12 +1319,18 @@ private fun BarChartContent() {
         ),
         negativeGradient: List<Color> = listOf(
             reversNoBiggerColor(seeColorByIndex(habit_statistics_and_edit_x)),
-            reversNoBiggerColor(seeColorByIndex(habit_statistics_and_edit_x).multiply(0.59f, 0.59f, 0.59f))
+            reversNoBiggerColor(
+                seeColorByIndex(habit_statistics_and_edit_x).multiply(
+                    0.59f,
+                    0.59f,
+                    0.59f
+                )
+            )
         ),
-        modifier: Modifier = Modifier.height(200.dp).fillMaxWidth(),
-        barWidth: Dp = 18.dp,
-        barSpacing: Dp = 10.dp,
-        cornerRadius: Dp = 6.8.dp,
+        modifier: Modifier = Modifier.height(200.dp / 1.15f).fillMaxWidth(),
+        barWidth: Dp = 18.dp / 1.15f,
+        barSpacing: Dp = 10.dp / 1.15f,
+        cornerRadius: Dp = 6.8.dp / 1.15f,
         axisColor: Color = UIC_light,
     ) {
         if (values.isEmpty()) return
@@ -1304,7 +1342,7 @@ private fun BarChartContent() {
         val barWidthPx = with(density) { barWidth.toPx() }
         val spacingPx = with(density) { barSpacing.toPx() }
         val cornerRadiusPx = with(density) { cornerRadius.toPx() }
-        val labelOffsetPx = with(density) { 0.8.dp.toPx() }
+        val labelOffsetPx = with(density) { (0.8.dp / 1.15f).toPx() }
 
         LaunchedEffect(values) {
             snapshotFlow { scrollState.maxValue }.collect { max ->
@@ -1390,7 +1428,7 @@ private fun BarChartContent() {
                     val textLayout = textMeasurer.measure(
                         text = AnnotatedString(label),
                         style = TextStyle(
-                            fontSize = 11.2.sp,
+                            fontSize = 11.2.sp / 1.15f,
                             fontFamily = JetBrainsFont(),
                             fontWeight = FontWeight.Thin,
                             color = Color.Unspecified,
@@ -1414,7 +1452,7 @@ private fun BarChartContent() {
                             text = label,
                             textAlign = TextAlign.Center,
                             color = UICT_see,
-                            fontSize = 11.2.sp,
+                            fontSize = 11.2.sp / 1.15f,
                             fontFamily = JetBrainsFont(),
                             fontWeight = FontWeight.Thin,
                             maxLines = 1
@@ -1426,7 +1464,7 @@ private fun BarChartContent() {
                         val dateLayout = textMeasurer.measure(
                             text = AnnotatedString(dateLabel),
                             style = TextStyle(
-                                fontSize = 11.2.sp,
+                                fontSize = 11.2.sp / 1.15f,
                                 fontFamily = JetBrainsFont(),
                                 fontWeight = FontWeight.Light,
                                 color = UICT_see
@@ -1436,7 +1474,8 @@ private fun BarChartContent() {
                         val dateWidth = dateLayout.size.width.toFloat()
 
                         val dateX = (xCenter - dateWidth / 2f).roundToInt()
-                        val dateY = (zeroY + labelOffsetPx + with(density) { 2.dp.toPx() }).roundToInt()
+                        val dateY =
+                            (zeroY + labelOffsetPx + with(density) { (2.dp / 1.15f).toPx() }).roundToInt()
 
                         Box(
                             modifier = Modifier.offset { IntOffset(dateX, dateY) }
@@ -1445,7 +1484,7 @@ private fun BarChartContent() {
                                 text = dateLabel,
                                 textAlign = TextAlign.Center,
                                 color = UICT_see,
-                                fontSize = 10.sp,
+                                fontSize = 10.sp / 1.15f,
                                 fontFamily = JetBrainsFont(),
                                 fontWeight = FontWeight.Light,
                                 maxLines = 1
@@ -1462,9 +1501,9 @@ private fun BarChartContent() {
 
     Column(
         modifier = Modifier.fillMaxWidth()
-            .padding(horizontal = 29.2.dp)
-            .padding(top = 36.8.dp),
-        verticalArrangement = Arrangement.spacedBy(36.dp)
+            .padding(horizontal = 29.2.dp / 1.15f)
+            .padding(top = 36.8.dp / 1.15f),
+        verticalArrangement = Arrangement.spacedBy(36.dp / 1.15f)
     ) {
         Box(contentAlignment = Alignment.Center) {
             BarChart(
@@ -1516,23 +1555,23 @@ fun CalendarContent() {
 
         Box(modifier = modifier.horizontalScroll(scrollState)) {
             var index = 0
-            Row(horizontalArrangement = Arrangement.spacedBy(9.2.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(9.2.dp / 1.15f)) {
                 while (index < goods.size + startDay) {
-                    Column(verticalArrangement = Arrangement.spacedBy(9.2.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(9.2.dp / 1.15f)) {
                         if (index < startDay) {
-                            Box(modifier = Modifier.size(18.dp))
+                            Box(modifier = Modifier.size(18.dp / 1.15f))
                         } else {
                             Box(
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(18.dp / 1.15f)
                                     .background(
                                         if (goods[index - startDay]) goodColor else badColor,
-                                        RoundedCornerShape(3.dp)
+                                        RoundedCornerShape(3.dp / 1.15f)
                                     ),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = labels[index - startDay].toString(),
-                                    fontSize = 10.8.sp,
+                                    fontSize = 10.8.sp / 1.15f,
                                     color = checkBackgroundBright(
                                         if (goods[index - startDay]) goodColor else badColor,
                                         UICT_see
@@ -1546,19 +1585,19 @@ fun CalendarContent() {
                         index++
                         while ((index) % 7 != 0 && index < goods.size + startDay) {
                             if (index < startDay) {
-                                Box(modifier = Modifier.size(18.dp))
+                                Box(modifier = Modifier.size(18.dp / 1.15f))
                             } else {
                                 Box(
-                                    modifier = Modifier.size(18.dp)
+                                    modifier = Modifier.size(18.dp / 1.15f)
                                         .background(
                                             if (goods[index - startDay]) goodColor else badColor,
-                                            RoundedCornerShape(3.dp)
+                                            RoundedCornerShape(3.dp / 1.15f)
                                         ),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
                                         text = labels[index - startDay].toString(),
-                                        fontSize = 10.8.sp,
+                                        fontSize = 10.8.sp / 1.15f,
                                         color = checkBackgroundBright(
                                             if (goods[index - startDay]) goodColor else badColor,
                                             UICT_see
@@ -1578,8 +1617,8 @@ fun CalendarContent() {
     }
     Box(
         modifier = Modifier.fillMaxWidth()
-            .padding(horizontal = 29.2.dp)
-            .padding(top = 32.8.dp),
+            .padding(horizontal = 29.2.dp / 1.15f)
+            .padding(top = 32.8.dp / 1.15f),
         contentAlignment = Alignment.Center
     ) {
         HabitGrid()
@@ -1590,10 +1629,10 @@ fun CalendarContent() {
 fun StreaksContent() {
     Column(
         modifier = Modifier.fillMaxWidth()
-            .padding(horizontal = 29.2.dp)
-            .padding(top = 32.8.dp),
+            .padding(horizontal = 29.2.dp / 1.15f)
+            .padding(top = 32.8.dp / 1.15f),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(11.2.dp)
+        verticalArrangement = Arrangement.spacedBy(11.2.dp / 1.15f)
     ) {
         val streaks = habitStreaks(habit_statistics_and_edit_x)
         if (streaks.isNotEmpty()) {
@@ -1603,10 +1642,10 @@ fun StreaksContent() {
                 val k = streak.toFloat() / maxStreak.toFloat()
                 Box(
                     modifier = Modifier.fillMaxWidth(k)
-                        .height(24.4.dp)
+                        .height(24.4.dp / 1.15f)
                         .background(
                             seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
-                            RoundedCornerShape(8.8.dp)
+                            RoundedCornerShape(8.8.dp / 1.15f)
                         ),
                     contentAlignment = Alignment.Center
                 ) {
@@ -1616,7 +1655,7 @@ fun StreaksContent() {
                             seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
                             UICT_see
                         ),
-                        fontSize = 12.8.sp,
+                        fontSize = 12.8.sp / 1.15f,
                         fontFamily = JetBrainsFont(),
                         fontWeight = FontWeight.Thin,
                         maxLines = 1
@@ -1637,7 +1676,7 @@ fun DistributionByDayOfTheWeekContent() {
     fun calculateProportionalAreaChart(
         modifier: DataBox,
         values: List<BigDecimal>,
-        spacing: Float = 14.4f,
+        spacing: Float = 14.4f / 1.15f,
         horizontal: Boolean = true,
         first: Boolean = false
     ): MutableList<DataBox> {
@@ -1656,7 +1695,9 @@ fun DistributionByDayOfTheWeekContent() {
         if (horizontal) {
             val needHeight =
                 if (values.size == 1) height * (values[0].saveDiv(sumValues)).floatValue(false)
-                else (height - spacing) * ((values[0] + values[1]).saveDiv(sumValues)).floatValue(false)
+                else (height - spacing) * ((values[0] + values[1]).saveDiv(sumValues)).floatValue(
+                    false
+                )
 
             val db1Width =
                 if (values.size == 1) width
@@ -1706,11 +1747,15 @@ fun DistributionByDayOfTheWeekContent() {
         } else {
             val needWidth =
                 if (values.size == 1) width * (values[0].saveDiv(sumValues)).floatValue(false)
-                else (width - spacing) * ((values[0] + values[1]).saveDiv(sumValues)).floatValue(false)
+                else (width - spacing) * ((values[0] + values[1]).saveDiv(sumValues)).floatValue(
+                    false
+                )
 
             val db1Height =
                 if (values.size == 1) height
-                else (height - spacing) * (values[0].saveDiv(values[0] + values[1])).floatValue(false)
+                else (height - spacing) * (values[0].saveDiv(values[0] + values[1])).floatValue(
+                    false
+                )
             if (first) dataBoxes = mutableListOf(
                 DataBox(
                     x,
@@ -1763,7 +1808,7 @@ fun DistributionByDayOfTheWeekContent() {
         labels: List<String>,
         values: List<BigDecimal>,
         realValues: List<BigDecimal>,
-        spacing: Dp = 7.6.dp,
+        spacing: Dp = 7.6.dp / 1.15f,
         horizontal: Boolean = true
     ) {
         @Composable
@@ -1782,7 +1827,7 @@ fun DistributionByDayOfTheWeekContent() {
                         seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
                         UICT_see
                     ),
-                    fontSize = 12.8.sp,
+                    fontSize = 12.8.sp / 1.15f,
                     fontFamily = JetBrainsFont(),
                     fontWeight = FontWeight.Normal,
                     textAlign = TextAlign.Center
@@ -1793,7 +1838,7 @@ fun DistributionByDayOfTheWeekContent() {
                         seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
                         UICT_see
                     ),
-                    fontSize = 16.sp,
+                    fontSize = 16.sp / 1.15f,
                     fontFamily = JetBrainsFont(),
                     fontWeight = FontWeight.ExtraBold,
                     textAlign = TextAlign.Center
@@ -1804,7 +1849,7 @@ fun DistributionByDayOfTheWeekContent() {
                         seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
                         UICT_see
                     ),
-                    fontSize = 12.8.sp,
+                    fontSize = 12.8.sp / 1.15f,
                     fontFamily = JetBrainsFont(),
                     fontWeight = FontWeight.Normal,
                     textAlign = TextAlign.Center
@@ -1838,7 +1883,7 @@ fun DistributionByDayOfTheWeekContent() {
                         .size(boxes[i].width.dp, boxes[i].height.dp)
                         .background(
                             seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
-                            RoundedCornerShape(14.4.dp)
+                            RoundedCornerShape(14.4.dp / 1.15f)
                         )
                 ) {
                     labelText(i, k)
@@ -1849,8 +1894,8 @@ fun DistributionByDayOfTheWeekContent() {
 
     Box(
         modifier = Modifier.fillMaxWidth()
-            .padding(horizontal = 29.2.dp)
-            .padding(top = 32.8.dp),
+            .padding(horizontal = 29.2.dp / 1.15f)
+            .padding(top = 32.8.dp / 1.15f),
         contentAlignment = Alignment.Center
     ) {
         val labels = mutableListOf<String>()
