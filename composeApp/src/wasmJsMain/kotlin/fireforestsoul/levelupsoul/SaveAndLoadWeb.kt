@@ -1,10 +1,18 @@
+/**Copyright 2025 Forge-of-Ovorldule (https://github.com/Forge-of-Ovorldule) and Mr-Soul-Forest (https://github.com/Mr-Soul-Forest)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 package fireforestsoul.levelupsoul
 
 import androidx.compose.ui.graphics.Color
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.browser.localStorage
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.json.Json
 
 actual fun saveValue(value: Any, name: String) {
     val serialized = value.savedElementToString()
