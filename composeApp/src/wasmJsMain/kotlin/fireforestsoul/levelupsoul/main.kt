@@ -9,7 +9,8 @@ import org.w3c.dom.events.Event
 
 fun setupSaveOnClose() {
     window.addEventListener("beforeunload") { _: Event ->
-        saveAllValues()
+        if (loadIsGood)
+            saveAllValues()
     }
 }
 

@@ -40,7 +40,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         super.onStop()
-        saveAllValues()
+        if (loadIsGood)
+            saveAllValues()
     }
 }
 

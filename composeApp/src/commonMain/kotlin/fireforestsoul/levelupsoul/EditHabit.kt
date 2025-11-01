@@ -553,6 +553,7 @@ fun EditHabit(viewModel: AppViewModel) {
                     DeleteHabitConfirm(habit_statistics_and_edit_x) {
                         habits[habit_statistics_and_edit_x].delete(habit_statistics_and_edit_x)
                         habits.removeAt(habit_statistics_and_edit_x)
+                        habits.save()
                         habit_statistics_and_edit_x = 0
                         viewModel.setStatus(AppStatus.TABLE)
                     }

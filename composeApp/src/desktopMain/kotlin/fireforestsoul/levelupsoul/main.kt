@@ -9,7 +9,8 @@ import androidx.compose.ui.window.rememberWindowState
 fun main() = application {
     Window(
         onCloseRequest = {
-            saveAllValues()
+            if (loadIsGood)
+                saveAllValues()
             exitApplication()
         },
         title = "LevelUp-Soul",

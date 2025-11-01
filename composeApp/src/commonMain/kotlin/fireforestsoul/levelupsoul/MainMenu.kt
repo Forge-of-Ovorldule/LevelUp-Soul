@@ -130,7 +130,6 @@ fun MainMenuContent(
                             IconButton(onClick = {
                                 saveAllValues()
                                 import {
-                                    countFilesLoad = 0
                                     viewModel.setStatus(AppStatus.LOADING)
                                 }
                             }) {
@@ -186,7 +185,6 @@ fun MainMenuContent(
                                             language = mode
                                             language.saveLanguage()
                                             expanded0 = false
-                                            countFilesLoad = 0
                                             saveAllValues()
                                             viewModel.setStatus(AppStatus.LOADING)
                                         },

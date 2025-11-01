@@ -35,7 +35,7 @@ fun App(viewModel: AppViewModel) {
 
     Box {
         when (appStatus) {
-            AppStatus.LOADING -> LoadingContent()
+            AppStatus.LOADING -> LoadingContent(viewModel)
             AppStatus.CREATE_HABIT -> CreateHabit(viewModel)
             AppStatus.HABIT_STATISTICS -> HabitStatistics(viewModel)
             AppStatus.EDIT_HABIT -> EditHabit(viewModel)
@@ -60,14 +60,4 @@ fun App(viewModel: AppViewModel) {
             )
         }
     }
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(1)
-            if (appStatus == AppStatus.LOADING) {
-                loading(viewModel)
-            }
-        }
-    }
-
 }
