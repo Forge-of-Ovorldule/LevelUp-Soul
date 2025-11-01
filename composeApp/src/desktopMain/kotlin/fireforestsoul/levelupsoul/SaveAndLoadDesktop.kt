@@ -10,7 +10,6 @@
 package fireforestsoul.levelupsoul
 
 import androidx.compose.ui.graphics.Color
-import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import kotlinx.datetime.LocalDate
 import java.io.File
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
@@ -163,4 +162,10 @@ actual fun old1001000000LoadAllValues() {
             }
         }
     }
+}
+
+actual fun deleteValue(name: String) {
+    val settings = readSettings().toMutableMap()
+    settings.remove(name)
+    settingsFile.writeText(json.encodeToString(JsonObject(settings)))
 }

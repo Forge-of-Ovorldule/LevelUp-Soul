@@ -139,3 +139,34 @@ fun loadAllValues() {
     language = loadValue(language, "language")
     withExponent = loadValue(withExponent, "withExponent")
 }
+
+//delete
+
+expect fun deleteValue(name: String)
+
+private fun Habit.deleteHabitDays(habitIndex: Int) {
+    deleteValue("habits-$habitIndex-habitDay-size")
+    for (y in 0 until this.habitDay.size) {
+        deleteValue("habits-$habitIndex-habitDay-$y-today")
+        deleteValue("habits-$habitIndex-habitDay-$y-totalOfAPeriod")
+        deleteValue("habits-$habitIndex-habitDay-$y-correctly")
+    }
+}
+
+fun Habit.delete(index: Int) {
+    deleteValue("habits-$index-nameOfHabit")
+    deleteValue("habits-$index-nameOfUnitsOfDimension")
+    deleteValue("habits-$index-typeOfGoalHabits")
+    deleteValue("habits-$index-needGoal")
+    deleteValue("habits-$index-needDays")
+    deleteValue("habits-$index-typeOfColorHabits")
+    deleteValue("habits-$index-colorGood")
+    deleteValue("habits-$index-changeLevel")
+    deleteValue("habits-$index-changeNeedGoalWithLevel")
+    deleteValue("habits-$index-changeNeedDaysWithLevel")
+    deleteValue("habits-$index-startDate")
+    deleteValue("habits-$index-lastLevelChangeDate")
+    deleteValue("habits-$index-level")
+    deleteValue("habits-$index-iconChar")
+    this.deleteHabitDays(index)
+}
