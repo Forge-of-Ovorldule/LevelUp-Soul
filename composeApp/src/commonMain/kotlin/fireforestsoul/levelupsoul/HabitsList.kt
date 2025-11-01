@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 
 @Composable
@@ -153,9 +154,9 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                                 RoundedCornerShape(2.88.dp)
                                             )
                                             .width(
-                                                if (habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod <= habits[sortedHabits[x]].needGoal)
+                                                if (habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod < habits[sortedHabits[x]].needGoal)
                                                     maxWidth * (1.toBigDecimal()
-                                                        .saveDiv(if (needToday != "0".toBigDecimal()) needToday else 1.toBigDecimal()) * habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today).toString()
+                                                        .saveDiv(if (needToday != BigDecimal.ZERO) needToday else BigDecimal.ONE) * habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today).toString()
                                                         .toFloat()
                                                 else
                                                     maxWidth
