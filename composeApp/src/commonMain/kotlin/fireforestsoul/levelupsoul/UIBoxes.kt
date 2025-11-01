@@ -448,7 +448,10 @@ fun DatePickerDialog(
                     TextButton(
                         onClick = {
                             showDialog = false
-                            onConfirm(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date)
+                            onConfirm(
+                                Clock.System.now()
+                                    .toLocalDateTime(TimeZone.currentSystemDefault()).date
+                            )
                         },
                         colors = ButtonColors(
                             containerColor = UIC,
@@ -486,6 +489,8 @@ fun SettingsDialog() {
 
     var typeOfColor by remember { mutableStateOf(soul_color_type) }
     var exponent by remember { mutableStateOf(withExponent) }
+    var soulName by remember { mutableStateOf(soul_name) }
+    var soulColor by remember { mutableStateOf(soul_color) }
 
     if (showDialog) {
         AlertDialog(
@@ -505,8 +510,6 @@ fun SettingsDialog() {
                         horizontalArrangement = Arrangement.spacedBy(20.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        var soulName by remember { mutableStateOf(soul_name) }
-
                         Text(
                             text = "$ts_Soul:",
                             fontSize = 16.sp,
@@ -516,7 +519,6 @@ fun SettingsDialog() {
                             value = soulName,
                             onValueChange = {
                                 soulName = it
-                                soul_name = soulName
                             },
                             label = {
                                 Text(
@@ -553,8 +555,8 @@ fun SettingsDialog() {
                     ) {
                         var expanded by remember { mutableStateOf(false) }
 
-                        ColorPickerBox(Color.White) {
-                            soul_color = it
+                        ColorPickerBox(soulColor) {
+                            soulColor = it
                         }
                         Column {
                             Button(
@@ -581,7 +583,6 @@ fun SettingsDialog() {
                                     DropdownMenuItem(
                                         onClick = {
                                             typeOfColor = mode
-                                            soul_color_type = mode
                                             expanded = false
                                         },
                                         text = {
@@ -618,6 +619,10 @@ fun SettingsDialog() {
                 Button(
                     onClick = {
                         withExponent = exponent
+                        soul_name = soulName
+                        soul_color = soulColor
+                        soul_color_type = typeOfColor
+                        saveSettings()
                         showDialog = false
                     },
                     colors = ButtonColors(
@@ -966,16 +971,16 @@ fun ValueSetVector(
     var stringValue by remember { mutableStateOf(value.toString()) }
 
     Box(
-        modifier = Modifier.fillMaxWidth().height(50.22.dp)
-            .background(UIC_x2green, RoundedCornerShape(88.89.dp))
-            .clip(RoundedCornerShape(88.89.dp))
+        modifier = Modifier.fillMaxWidth().height(50.22.dp / 1.15f)
+            .background(UIC_x2green, RoundedCornerShape(88.89.dp / 1.15f))
+            .clip(RoundedCornerShape(88.89.dp / 1.15f))
     ) {
         Box(
             modifier = Modifier.fillMaxWidth(value.toFloat() / maxValue.toFloat())
-                .height(50.22.dp)
+                .height(50.22.dp / 1.15f)
                 .background(
                     Brush.horizontalGradient(listOf(UIC_x2green, UIC_x2green_x1o5white)),
-                    RoundedCornerShape(88.89.dp)
+                    RoundedCornerShape(88.89.dp / 1.15f)
                 )
         )
         Column(
@@ -987,12 +992,12 @@ fun ValueSetVector(
                 text = subtitle,
                 fontFamily = JetBrainsFont(),
                 fontWeight = FontWeight.Thin,
-                fontSize = 12.8.sp,
+                fontSize = 12.8.sp / 1.15f,
                 color = UICT_no_see,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.size(4.dp))
+            Spacer(modifier = Modifier.size(4.dp / 1.15f))
             BasicTextField(
                 value = stringValue,
                 onValueChange = {
@@ -1003,7 +1008,7 @@ fun ValueSetVector(
                 textStyle = TextStyle(
                     fontFamily = JetBrainsFont(),
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    fontSize = 16.sp / 1.15f,
                     color = if (isGreen) UIC_green else UICT_see,
                     textAlign = TextAlign.End
                 ),
@@ -1021,7 +1026,7 @@ fun ValueSetVector(
                                 text = "/$maxValue",
                                 fontFamily = JetBrainsFont(),
                                 fontWeight = FontWeight.Thin,
-                                fontSize = 9.4.sp,
+                                fontSize = 9.4.sp / 1.15f,
                                 color = UICT_no_see,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -1030,7 +1035,7 @@ fun ValueSetVector(
                                 text = " $label" + " ".repeat(if (10 - stringValue.length > 0) 10 - stringValue.length else 0),
                                 fontFamily = JetBrainsFont(),
                                 fontWeight = if (labelIsBold) FontWeight.Bold else FontWeight.Normal,
-                                fontSize = 16.sp,
+                                fontSize = 16.sp / 1.15f,
                                 color = if (isGreen) UIC_green else UICT_see,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis

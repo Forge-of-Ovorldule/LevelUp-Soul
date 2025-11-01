@@ -139,6 +139,7 @@ fun CreateHabit(viewModel: AppViewModel) {
                             habit.iconChar = icon
                             habit.update()
                             habits.add(habit)
+                            habits.save()
                             viewModel.setStatus(AppStatus.TABLE)
                         }
                     )

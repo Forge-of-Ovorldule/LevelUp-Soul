@@ -28,7 +28,8 @@ enum class AppStatus {
 
 const val app_version: Long = 1001001000 //version(001).001.001.000
 
-const val save_file_name = "LevelUp-Soul.FireForestSouls-saving"
+const val old1001000000_save_file_name = "LevelUp-Soul.FireForestSouls-saving"
+const val save_file_name = "levelup-soul-saving-by-forge-of-ovorldule"
 
 var habits: MutableList<Habit> = mutableListOf(
     Habit()
@@ -42,4 +43,4 @@ var soul_last_level_change_date = Clock.System.now().toLocalDateTime(TimeZone.cu
 
 var language: Languages = Languages.EN
 
-var backStatus = AppStatus.HABITS_LIST
+var backAppStatus = AppStatus.HABITS_LIST
