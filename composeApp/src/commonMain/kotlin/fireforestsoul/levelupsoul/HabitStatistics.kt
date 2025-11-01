@@ -169,7 +169,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                         RoundedCornerShape(27.2.dp / 1.15f)
                                     )
                                     .border(
-                                        0.8.dp / 1.15f,
+                                        0.7.dp,
                                         seeColorByIndex(habit_statistics_and_edit_x),
                                         RoundedCornerShape(27.2.dp / 1.15f)
                                     ),
@@ -191,7 +191,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                 modifier = Modifier.size(maxWidthBox * 0.33f, 40.dp / 1.15f)
                                     .background(Color.Transparent)
                                     .border(
-                                        0.8.dp / 1.15f,
+                                        0.7.dp,
                                         seeColorByIndex(habit_statistics_and_edit_x),
                                         RoundedCornerShape(27.2.dp / 1.15f)
                                     )
@@ -772,7 +772,7 @@ private fun ProgressContent(
                 var progress = plusProgress(habit_statistics_and_edit_x, 1, pps)
                 DonutChart(
                     progress = progress,
-                    strokeWidth = 10.dp / 1.15f,
+                    strokeWidth = 8.7.dp,
                     isBottonLabel = true,
                     trackColor = if (progress >= 0f) noSeeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
                         noSeeColorByIndex(habit_statistics_and_edit_x)
@@ -786,7 +786,7 @@ private fun ProgressContent(
                 progress = plusProgress(habit_statistics_and_edit_x, 7, pps)
                 DonutChart(
                     progress = progress,
-                    strokeWidth = 10.dp / 1.15f,
+                    strokeWidth = 8.7.dp,
                     isBottonLabel = true,
                     trackColor = if (progress >= 0f) noSeeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
                         noSeeColorByIndex(habit_statistics_and_edit_x)
@@ -806,7 +806,7 @@ private fun ProgressContent(
                 var progress = plusProgress(habit_statistics_and_edit_x, 30, pps)
                 DonutChart(
                     progress = progress,
-                    strokeWidth = 10.dp / 1.15f,
+                    strokeWidth = 8.7.dp,
                     isBottonLabel = false,
                     trackColor = if (progress >= 0f) noSeeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
                         noSeeColorByIndex(habit_statistics_and_edit_x)
@@ -820,7 +820,7 @@ private fun ProgressContent(
                 progress = plusProgress(habit_statistics_and_edit_x, 365, pps)
                 DonutChart(
                     progress = progress,
-                    strokeWidth = 10.dp / 1.15f,
+                    strokeWidth = 8.7.dp,
                     isBottonLabel = false,
                     trackColor = if (progress >= 0f) noSeeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
                         noSeeColorByIndex(habit_statistics_and_edit_x)
@@ -1327,10 +1327,10 @@ private fun BarChartContent() {
                 )
             )
         ),
-        modifier: Modifier = Modifier.height(200.dp / 1.15f).fillMaxWidth(),
-        barWidth: Dp = 18.dp / 1.15f,
-        barSpacing: Dp = 10.dp / 1.15f,
-        cornerRadius: Dp = 6.8.dp / 1.15f,
+        modifier: Modifier = Modifier.height(173.91.dp).fillMaxWidth(),
+        barWidth: Dp = 15.65.dp,
+        barSpacing: Dp = 8.7.dp,
+        cornerRadius: Dp = 5.91.dp,
         axisColor: Color = UIC_light,
     ) {
         if (values.isEmpty()) return
@@ -1342,7 +1342,7 @@ private fun BarChartContent() {
         val barWidthPx = with(density) { barWidth.toPx() }
         val spacingPx = with(density) { barSpacing.toPx() }
         val cornerRadiusPx = with(density) { cornerRadius.toPx() }
-        val labelOffsetPx = with(density) { (0.8.dp / 1.15f).toPx() }
+        val labelOffsetPx = with(density) { (0.7.dp).toPx() }
 
         LaunchedEffect(values) {
             snapshotFlow { scrollState.maxValue }.collect { max ->
@@ -1350,145 +1350,152 @@ private fun BarChartContent() {
             }
         }
 
-        val totalWidthDp = (values.size * (barWidth + barSpacing)).coerceAtLeast(1.dp)
+        val totalWidthDp = (values.size * (barWidth + barSpacing))
 
-        Box(
-            modifier = modifier.horizontalScroll(scrollState),
-            contentAlignment = Alignment.Center
-        ) {
-            Canvas(
-                modifier = Modifier
-                    .width(totalWidthDp)
-                    .fillMaxHeight()
+        if (values.isNotEmpty()) {
+            Box(
+                modifier = modifier.horizontalScroll(scrollState),
+                contentAlignment = Alignment.Center
             ) {
-                val minValue = values.minOf { it.doubleValue(false) }
-                val maxValue = values.maxOf { it.doubleValue(false) }
-                val range = maxValue - minValue
-                val chartHeight = size.height
-                val chartWidth = size.width
+                Canvas(
+                    modifier = Modifier
+                        .width(totalWidthDp)
+                        .fillMaxHeight()
+                ) {
+                    var minValue = values.minOf { it.doubleValue(false) }
+                    if (minValue > 0.0) minValue = 0.0
+                    var maxValue = values.maxOf { it.doubleValue(false) }
+                    if (maxValue < 0.0) maxValue = 0.0
+                    val range = maxValue - minValue
+                    val chartHeight = size.height
+                    val chartWidth = size.width
 
-                val zeroY = if (range == 0.0) chartHeight / 2f
-                else (chartHeight * (maxValue / range)).toFloat()
+                    val zeroY =
+                        if (range == 0.0) chartHeight / 2f
+                        else (chartHeight * (maxValue / range)).toFloat()
 
-                drawLine(
-                    color = axisColor,
-                    start = Offset(0f, zeroY),
-                    end = Offset(chartWidth, zeroY),
-                    strokeWidth = 2f,
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(3f, 3f))
-                )
-
-                values.forEachIndexed { i, value ->
-                    val v = value.doubleValue(false).toFloat()
-                    val x = i * (barWidthPx + spacingPx)
-                    val barHeight = (chartHeight * abs(v / range.toFloat()))
-
-                    val top = if (v >= 0f) zeroY - barHeight else zeroY
-                    val bottom = if (v >= 0f) zeroY else zeroY + barHeight
-
-                    val brush = Brush.verticalGradient(
-                        colors = if (v >= 0f) positiveGradient else negativeGradient,
-                        startY = top,
-                        endY = bottom
+                    drawLine(
+                        color = axisColor,
+                        start = Offset(0f, zeroY),
+                        end = Offset(chartWidth, zeroY),
+                        strokeWidth = 2f,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(3f, 3f))
                     )
 
-                    drawRoundRect(
-                        brush = brush,
-                        topLeft = Offset(x, top),
-                        size = Size(barWidthPx, bottom - top),
-                        cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
-                    )
-                }
-            }
+                    values.forEachIndexed { i, value ->
+                        val v = value.doubleValue(false).toFloat()
+                        val x = i * (barWidthPx + spacingPx)
+                        val barHeight = (chartHeight * abs(v / (if (range != 0.0) range.toFloat() else 1f)))
 
-            BoxWithConstraints(
-                modifier = Modifier
-                    .width(totalWidthDp)
-                    .fillMaxHeight()
-            ) {
-                val boxHeightPx = with(density) { maxHeight.toPx() }
-                val minValue = values.minOf { it.doubleValue(false) }
-                val maxValue = values.maxOf { it.doubleValue(false) }
-                val range = maxValue - minValue
-                val zeroY = if (range == 0.0) boxHeightPx / 2f
-                else (boxHeightPx * (maxValue / range)).toFloat()
+                        val top = if (v >= 0f) zeroY - barHeight else zeroY
+                        val bottom = if (v >= 0f) zeroY else zeroY + barHeight
 
-                values.forEachIndexed { i, value ->
-                    val v = value.doubleValue(false).toFloat()
-                    if (v == 0f) return@forEachIndexed
+                        val brush = Brush.verticalGradient(
+                            colors = if (v >= 0f) positiveGradient else negativeGradient,
+                            startY = top,
+                            endY = bottom
+                        )
 
-                    val xCenter = i * (barWidthPx + spacingPx) + barWidthPx / 2f
-                    val barHeight = (boxHeightPx * abs(v / range.toFloat()))
-
-                    val top = if (v >= 0f) zeroY - barHeight else zeroY
-                    val bottom = if (v >= 0f) zeroY else zeroY + barHeight
-
-                    val label = value.toBestString()
-
-                    val textLayout = textMeasurer.measure(
-                        text = AnnotatedString(label),
-                        style = TextStyle(
-                            fontSize = 11.2.sp / 1.15f,
-                            fontFamily = JetBrainsFont(),
-                            fontWeight = FontWeight.Thin,
-                            color = Color.Unspecified,
-                        ),
-                        constraints = Constraints()
-                    )
-                    val textWidth = textLayout.size.width.toFloat()
-                    val textHeight = textLayout.size.height.toFloat()
-
-                    val labelX = (xCenter - textWidth / 2f).roundToInt()
-                    val labelY = if (v >= 0f) {
-                        (top - labelOffsetPx - textHeight).roundToInt()
-                    } else {
-                        (bottom + labelOffsetPx).roundToInt()
-                    }
-
-                    Box(
-                        modifier = Modifier.offset { IntOffset(labelX, labelY) }
-                    ) {
-                        Text(
-                            text = label,
-                            textAlign = TextAlign.Center,
-                            color = UICT_see,
-                            fontSize = 11.2.sp / 1.15f,
-                            fontFamily = JetBrainsFont(),
-                            fontWeight = FontWeight.Thin,
-                            maxLines = 1
+                        drawRoundRect(
+                            brush = brush,
+                            topLeft = Offset(x, top),
+                            size = Size(barWidthPx, bottom - top),
+                            cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
                         )
                     }
+                }
 
-                    val dateLabel = if (i < dates.size) dates[i] else ""
-                    if (dateLabel.isNotEmpty()) {
-                        val dateLayout = textMeasurer.measure(
-                            text = AnnotatedString(dateLabel),
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .width(totalWidthDp)
+                        .fillMaxHeight()
+                ) {
+                    val boxHeightPx = with(density) { maxHeight.toPx() }
+                    var minValue = values.minOf { it.doubleValue(false) }
+                    if (minValue > 0.0) minValue = 0.0
+                    var maxValue = values.maxOf { it.doubleValue(false) }
+                    if (maxValue < 0.0) maxValue = 0.0
+                    val range = maxValue - minValue
+                    val zeroY = if (range == 0.0) boxHeightPx / 2f
+                    else (boxHeightPx * (maxValue / range)).toFloat()
+
+                    values.forEachIndexed { i, value ->
+                        val v = value.doubleValue(false).toFloat()
+                        if (v == 0f) return@forEachIndexed
+
+                        val xCenter = i * (barWidthPx + spacingPx) + barWidthPx / 2f
+                        val barHeight = (boxHeightPx * abs(v / range.toFloat()))
+
+                        val top = if (v >= 0f) zeroY - barHeight else zeroY
+                        val bottom = if (v >= 0f) zeroY else zeroY + barHeight
+
+                        val label = value.toBestString()
+
+                        val textLayout = textMeasurer.measure(
+                            text = AnnotatedString(label),
                             style = TextStyle(
-                                fontSize = 11.2.sp / 1.15f,
+                                fontSize = 9.74.sp,
                                 fontFamily = JetBrainsFont(),
-                                fontWeight = FontWeight.Light,
-                                color = UICT_see
+                                fontWeight = FontWeight.Thin,
+                                color = Color.Unspecified,
                             ),
                             constraints = Constraints()
                         )
-                        val dateWidth = dateLayout.size.width.toFloat()
+                        val textWidth = textLayout.size.width.toFloat()
+                        val textHeight = textLayout.size.height.toFloat()
 
-                        val dateX = (xCenter - dateWidth / 2f).roundToInt()
-                        val dateY =
-                            (zeroY + labelOffsetPx + with(density) { (2.dp / 1.15f).toPx() }).roundToInt()
+                        val labelX = (xCenter - textWidth / 2f).roundToInt()
+                        val labelY = if (v >= 0f) {
+                            (top - labelOffsetPx - textHeight).roundToInt()
+                        } else {
+                            (bottom + labelOffsetPx).roundToInt()
+                        }
 
                         Box(
-                            modifier = Modifier.offset { IntOffset(dateX, dateY) }
+                            modifier = Modifier.offset { IntOffset(labelX, labelY) }
                         ) {
                             Text(
-                                text = dateLabel,
+                                text = label,
                                 textAlign = TextAlign.Center,
                                 color = UICT_see,
-                                fontSize = 10.sp / 1.15f,
+                                fontSize = 9.74.sp,
                                 fontFamily = JetBrainsFont(),
-                                fontWeight = FontWeight.Light,
+                                fontWeight = FontWeight.Thin,
                                 maxLines = 1
                             )
+                        }
+
+                        val dateLabel = if (i < dates.size) dates[i] else ""
+                        if (dateLabel.isNotEmpty()) {
+                            val dateLayout = textMeasurer.measure(
+                                text = AnnotatedString(dateLabel),
+                                style = TextStyle(
+                                    fontSize = 9.74.sp,
+                                    fontFamily = JetBrainsFont(),
+                                    fontWeight = FontWeight.Light,
+                                    color = UICT_see
+                                ),
+                                constraints = Constraints()
+                            )
+                            val dateWidth = dateLayout.size.width.toFloat()
+
+                            val dateX = (xCenter - dateWidth / 2f).roundToInt()
+                            val dateY =
+                                (zeroY + labelOffsetPx + with(density) { (2.dp / 1.15f).toPx() }).roundToInt()
+
+                            Box(
+                                modifier = Modifier.offset { IntOffset(dateX, dateY) }
+                            ) {
+                                Text(
+                                    text = dateLabel,
+                                    textAlign = TextAlign.Center,
+                                    color = UICT_see,
+                                    fontSize = 10.sp / 1.15f,
+                                    fontFamily = JetBrainsFont(),
+                                    fontWeight = FontWeight.Light,
+                                    maxLines = 1
+                                )
+                            }
                         }
                     }
                 }
@@ -1513,14 +1520,14 @@ private fun BarChartContent() {
         }
         ValueSetVector(
             step,
-            habits[habit_statistics_and_edit_x].habitDay.size - 1,
+            habits[habit_statistics_and_edit_x].habitDay.size,
             ts_Step,
             ts_days
         ) {
             step = it.toIntOrNull() ?: 1
             if (step < 1) step = 1
-            if (step > habits[habit_statistics_and_edit_x].habitDay.size - 1) step =
-                habits[habit_statistics_and_edit_x].habitDay.size - 1
+            if (step > habits[habit_statistics_and_edit_x].habitDay.size) step =
+                habits[habit_statistics_and_edit_x].habitDay.size
         }
     }
 }
@@ -1559,10 +1566,10 @@ fun CalendarContent() {
                 while (index < goods.size + startDay) {
                     Column(verticalArrangement = Arrangement.spacedBy(9.2.dp / 1.15f)) {
                         if (index < startDay) {
-                            Box(modifier = Modifier.size(18.dp / 1.15f))
+                            Box(modifier = Modifier.size(15.65.dp))
                         } else {
                             Box(
-                                modifier = Modifier.size(18.dp / 1.15f)
+                                modifier = Modifier.size(15.65.dp)
                                     .background(
                                         if (goods[index - startDay]) goodColor else badColor,
                                         RoundedCornerShape(3.dp / 1.15f)
@@ -1585,10 +1592,10 @@ fun CalendarContent() {
                         index++
                         while ((index) % 7 != 0 && index < goods.size + startDay) {
                             if (index < startDay) {
-                                Box(modifier = Modifier.size(18.dp / 1.15f))
+                                Box(modifier = Modifier.size(15.65.dp))
                             } else {
                                 Box(
-                                    modifier = Modifier.size(18.dp / 1.15f)
+                                    modifier = Modifier.size(15.65.dp)
                                         .background(
                                             if (goods[index - startDay]) goodColor else badColor,
                                             RoundedCornerShape(3.dp / 1.15f)
@@ -1901,11 +1908,15 @@ fun DistributionByDayOfTheWeekContent() {
         val labels = mutableListOf<String>()
         val realValues = mutableListOf<BigDecimal>()
         var minValue: BigDecimal = Double.MAX_VALUE.toBigDecimal()
+
         for (i in habitDistributionByDayOfTheWeekContent(habit_statistics_and_edit_x)) {
-            labels.add(i.dayOfWeek)
-            realValues.add(i.value)
-            minValue = minOf(minValue, i.value)
+            if (i.value != BigDecimal.ZERO) {
+                labels.add(i.dayOfWeek)
+                realValues.add(i.value)
+                minValue = minOf(minValue, i.value)
+            }
         }
+
         var values = mutableListOf<BigDecimal>()
         if (minValue < BigDecimal.ZERO) {
             for (i in realValues) {
