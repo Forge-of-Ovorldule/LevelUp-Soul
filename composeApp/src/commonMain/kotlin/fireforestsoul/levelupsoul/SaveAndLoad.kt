@@ -68,7 +68,7 @@ fun MutableList<Habit>.save() {
 }
 
 fun Languages.saveLanguage() {
-    saveValue(language, "language")
+    saveValue(this, "language")
 }
 
 fun saveSettings() {
@@ -100,49 +100,52 @@ fun <T> String.loadedElementToVal(value: T): T {
 }
 
 fun loadAllValues() {
-    old1001000000LoadAllValues()
-    val oldAppVersion = loadValue(app_version, "app_version")
-    val habitsSize = loadValue(habits.size, "habits-size")
-    habits = mutableListOf(Habit())
-    for (x in 0 until habitsSize) {
-        habits[x].nameOfHabit = loadValue(habits[x].nameOfHabit, "habits-$x-nameOfHabit")
-        habits[x].nameOfUnitsOfDimension =
-            loadValue(habits[x].nameOfUnitsOfDimension, "habits[x]s-$x-nameOfUnitsOfDimension")
-        habits[x].typeOfGoalHabits = loadValue(habits[x].typeOfGoalHabits, "habits-$x-typeOfGoalHabits")
-        habits[x].needGoal = loadValue(habits[x].needGoal, "habits-$x-needGoal")
-        habits[x].loadNeedDays(loadValue(habits[x].needDays, "habits-$x-needDays"))
-        habits[x].typeOfColorHabits = loadValue(habits[x].typeOfColorHabits, "habits-$x-typeOfColorHabits")
-        habits[x].colorGood = loadValue(habits[x].colorGood, "habits-$x-colorGood")
-        habits[x].changeLevel = loadValue(habits[x].changeLevel, "habits-$x-changeLevel")
-        habits[x].changeNeedGoalWithLevel =
-            loadValue(habits[x].changeNeedGoalWithLevel, "habits-$x-changeNeedGoalWithLevel")
-        habits[x].changeNeedDaysWithLevel =
-            loadValue(habits[x].changeNeedDaysWithLevel, "habits-$x-changeNeedDaysWithLevel")
-        habits[x].startDate = loadValue(habits[x].startDate, "habits-$x-startDate")
-        habits[x].lastLevelChangeDate = loadValue(habits[x].lastLevelChangeDate, "habits-$x-lastLevelChangeDate")
-        habits[x].level = loadValue(habits[x].level, "habits-$x-level")
-        habits[x].iconChar = loadValue(habits[x].iconChar, "habits-$x-iconChar")
-        habits[x].phantomNeedDays = loadValue(habits[x].phantomNeedDays, "habits-$x-phantomNeedDays")
-        val habitDaySize = loadValue(habits[x].habitDay.size, "habits-$x-habitDay-size")
-        habits[x].habitDay = mutableListOf(HabitDay())
-        for (y in 0 until habitDaySize) {
-            habits[x].habitDay[y].today = loadValue(habits[x].habitDay[y].today, "habits-$x-habitDay-$y-today")
-            habits[x].habitDay[y].totalOfAPeriod =
-                loadValue(habits[x].habitDay[y].totalOfAPeriod, "habits-$x-habitDay-$y-totalOfAPeriod")
-            habits[x].habitDay[y].correctly =
-                loadValue(habits[x].habitDay[y].correctly, "habits-$x-habitDay-$y-correctly")
-            if (y != habitDaySize - 1) habits[x].habitDay.add(HabitDay())
+    val oldAppVersion = loadValue(app_version * (-1), "app_version")
+    if (oldAppVersion <= 1001000000) {
+        old1001000000LoadAllValues()
+    } else {
+        val habitsSize = loadValue(habits.size, "habits-size")
+        habits = mutableListOf(Habit())
+        for (x in 0 until habitsSize) {
+            habits[x].nameOfHabit = loadValue(habits[x].nameOfHabit, "habits-$x-nameOfHabit")
+            habits[x].nameOfUnitsOfDimension =
+                loadValue(habits[x].nameOfUnitsOfDimension, "habits[x]s-$x-nameOfUnitsOfDimension")
+            habits[x].typeOfGoalHabits = loadValue(habits[x].typeOfGoalHabits, "habits-$x-typeOfGoalHabits")
+            habits[x].needGoal = loadValue(habits[x].needGoal, "habits-$x-needGoal")
+            habits[x].loadNeedDays(loadValue(habits[x].needDays, "habits-$x-needDays"))
+            habits[x].typeOfColorHabits = loadValue(habits[x].typeOfColorHabits, "habits-$x-typeOfColorHabits")
+            habits[x].colorGood = loadValue(habits[x].colorGood, "habits-$x-colorGood")
+            habits[x].changeLevel = loadValue(habits[x].changeLevel, "habits-$x-changeLevel")
+            habits[x].changeNeedGoalWithLevel =
+                loadValue(habits[x].changeNeedGoalWithLevel, "habits-$x-changeNeedGoalWithLevel")
+            habits[x].changeNeedDaysWithLevel =
+                loadValue(habits[x].changeNeedDaysWithLevel, "habits-$x-changeNeedDaysWithLevel")
+            habits[x].startDate = loadValue(habits[x].startDate, "habits-$x-startDate")
+            habits[x].lastLevelChangeDate = loadValue(habits[x].lastLevelChangeDate, "habits-$x-lastLevelChangeDate")
+            habits[x].level = loadValue(habits[x].level, "habits-$x-level")
+            habits[x].iconChar = loadValue(habits[x].iconChar, "habits-$x-iconChar")
+            habits[x].phantomNeedDays = loadValue(habits[x].phantomNeedDays, "habits-$x-phantomNeedDays")
+            val habitDaySize = loadValue(habits[x].habitDay.size, "habits-$x-habitDay-size")
+            habits[x].habitDay = mutableListOf(HabitDay())
+            for (y in 0 until habitDaySize) {
+                habits[x].habitDay[y].today = loadValue(habits[x].habitDay[y].today, "habits-$x-habitDay-$y-today")
+                habits[x].habitDay[y].totalOfAPeriod =
+                    loadValue(habits[x].habitDay[y].totalOfAPeriod, "habits-$x-habitDay-$y-totalOfAPeriod")
+                habits[x].habitDay[y].correctly =
+                    loadValue(habits[x].habitDay[y].correctly, "habits-$x-habitDay-$y-correctly")
+                if (y != habitDaySize - 1) habits[x].habitDay.add(HabitDay())
+            }
+            if (x != habitsSize - 1) habits.add(Habit())
         }
-        if (x != habitsSize - 1) habits.add(Habit())
+        soul_color_type = loadValue(soul_color_type, "soul_color_type")
+        soul_color = loadValue(soul_color, "soul_color")
+        soul_name = loadValue(soul_name, "soul_name")
+        soul_level = loadValue(soul_level, "soul_level")
+        soul_last_level_change_date = loadValue(soul_last_level_change_date, "soul_last_level_change_date")
+        language = loadValue(language, "language")
+        withExponent = loadValue(withExponent, "withExponent")
+        backAppStatus = loadValue(backAppStatus, "backAppStatus")
     }
-    soul_color_type = loadValue(soul_color_type, "soul_color_type")
-    soul_color = loadValue(soul_color, "soul_color")
-    soul_name = loadValue(soul_name, "soul_name")
-    soul_level = loadValue(soul_level, "soul_level")
-    soul_last_level_change_date = loadValue(soul_last_level_change_date, "soul_last_level_change_date")
-    language = loadValue(language, "language")
-    withExponent = loadValue(withExponent, "withExponent")
-    backAppStatus = loadValue(backAppStatus, "backAppStatus")
 }
 
 //delete

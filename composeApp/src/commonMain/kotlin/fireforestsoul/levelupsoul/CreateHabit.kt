@@ -62,13 +62,13 @@ fun CreateHabit(viewModel: AppViewModel) {
 
     val habit = Habit()
     var nameOfHabit by remember { mutableStateOf("") }
-    var icon by remember { mutableStateOf("🆕") }
-    var typeOfColorHabits by remember { mutableStateOf(TypeOfColorHabits.ADAPTIVE) }
+    var icon by remember { mutableStateOf(habit.iconChar) }
+    var typeOfColorHabits by remember { mutableStateOf(habit.typeOfColorHabits) }
     var colorGood by remember { mutableStateOf(habit.colorGood) }
     var typeOfGoalHabits by remember { mutableStateOf(habit.typeOfGoalHabits) }
-    var needGoal by remember { mutableStateOf("") }
+    var needGoal by remember { mutableStateOf(habit.needGoal.toBestString()) }
     var nameOfUnitsOfDimension by remember { mutableStateOf("") }
-    var needDays by remember { mutableStateOf("") }
+    var needDays by remember { mutableStateOf(habit.needDays.toString()) }
     var changeLevel by remember { mutableStateOf(habit.changeLevel) }
     var changeNeedGoalWithLevel by remember { mutableStateOf(habit.changeNeedGoalWithLevel) }
     var changeNeedDaysWithLevel by remember { mutableStateOf(habit.changeNeedDaysWithLevel) }
