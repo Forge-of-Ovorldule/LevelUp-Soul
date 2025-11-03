@@ -136,6 +136,8 @@ fun EditHabit(viewModel: AppViewModel) {
                             habits[habit_statistics_and_edit_x].changeNeedGoalWithLevel = changeNeedGoalWithLevel
                             habits[habit_statistics_and_edit_x].changeNeedDaysWithLevel = changeNeedDaysWithLevel
                             habits[habit_statistics_and_edit_x].iconChar = icon
+                            habits[habit_statistics_and_edit_x].phantomNeedDays =
+                                habits[habit_statistics_and_edit_x].needDays.toBigDecimal()
                             habits[habit_statistics_and_edit_x].update()
                             habits[habit_statistics_and_edit_x].save(habit_statistics_and_edit_x)
                             viewModel.setStatus(AppStatus.HABIT_STATISTICS)

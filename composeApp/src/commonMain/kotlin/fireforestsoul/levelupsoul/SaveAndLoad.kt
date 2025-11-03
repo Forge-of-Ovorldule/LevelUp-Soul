@@ -100,16 +100,17 @@ fun <T> String.loadedElementToVal(value: T): T {
 }
 
 fun loadAllValues() {
-    val oldAppVersion = loadValue(app_version * (-1), "app_version")
+    var oldAppVersion = loadValue(app_version * (-1), "app_version")
     if (oldAppVersion <= 1001000000) {
         old1001000000LoadAllValues()
     } else {
+        oldAppVersion = loadValue(app_version * (-1), "app_version")
         val habitsSize = loadValue(habits.size, "habits-size")
         habits = mutableListOf(Habit())
         for (x in 0 until habitsSize) {
             habits[x].nameOfHabit = loadValue(habits[x].nameOfHabit, "habits-$x-nameOfHabit")
             habits[x].nameOfUnitsOfDimension =
-                loadValue(habits[x].nameOfUnitsOfDimension, "habits[x]s-$x-nameOfUnitsOfDimension")
+                loadValue(habits[x].nameOfUnitsOfDimension, "habits-$x-nameOfUnitsOfDimension")
             habits[x].typeOfGoalHabits = loadValue(habits[x].typeOfGoalHabits, "habits-$x-typeOfGoalHabits")
             habits[x].needGoal = loadValue(habits[x].needGoal, "habits-$x-needGoal")
             habits[x].loadNeedDays(loadValue(habits[x].needDays, "habits-$x-needDays"))
@@ -124,7 +125,9 @@ fun loadAllValues() {
             habits[x].lastLevelChangeDate = loadValue(habits[x].lastLevelChangeDate, "habits-$x-lastLevelChangeDate")
             habits[x].level = loadValue(habits[x].level, "habits-$x-level")
             habits[x].iconChar = loadValue(habits[x].iconChar, "habits-$x-iconChar")
-            habits[x].phantomNeedDays = loadValue(habits[x].phantomNeedDays, "habits-$x-phantomNeedDays")
+            if (oldAppVersion > 1001001000) {
+                habits[x].phantomNeedDays = loadValue(habits[x].phantomNeedDays, "habits-$x-phantomNeedDays")
+            }
             val habitDaySize = loadValue(habits[x].habitDay.size, "habits-$x-habitDay-size")
             habits[x].habitDay = mutableListOf(HabitDay())
             for (y in 0 until habitDaySize) {
