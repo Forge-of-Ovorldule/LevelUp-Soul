@@ -23,7 +23,7 @@ fun seeColorByIndex(index: Int): Color {
             maxProgress = max(progress(habit), maxProgress)
             minProgress = min(progress(habit), maxProgress)
         }
-        return (progress(index) - minProgress) / (if (maxProgress - minProgress == 0f) 1f else (maxProgress - minProgress))
+        return if (maxProgress == minProgress) 1f else (progress(index) - minProgress) / (if (maxProgress - minProgress == 0f) 1f else (maxProgress - minProgress))
     }
 
     fun getDaysK(): Float {
@@ -33,7 +33,7 @@ fun seeColorByIndex(index: Int): Color {
             maxDays = max(habit.habitDay.size, maxDays)
             minDays = min(habit.habitDay.size, maxDays)
         }
-        return (habits[index].habitDay.size - minDays).toFloat() / (if (maxDays - minDays == 0) 1f else (maxDays - minDays).toFloat())
+        return if (maxDays == minDays) 1f else (habits[index].habitDay.size - minDays).toFloat() / (if (maxDays - minDays == 0) 1f else (maxDays - minDays).toFloat())
     }
 
     fun getStreakK(): Float {
@@ -43,7 +43,7 @@ fun seeColorByIndex(index: Int): Color {
             for (habit in habits) {
                 maxStreak = max(if (habitStreaks(habit).isNotEmpty()) habitStreaks(habit)[0] else 0, maxStreak)
             }
-            return (habitStreaks(index)[0] - minStreak).toFloat() / (if (maxStreak - minStreak == 0) 1f else (maxStreak - minStreak).toFloat())
+            return if (maxStreak == minStreak) 1f else (habitStreaks(index)[0] - minStreak).toFloat() / (if (maxStreak - minStreak == 0) 1f else (maxStreak - minStreak).toFloat())
         }
         return 0f
     }
@@ -55,7 +55,7 @@ fun seeColorByIndex(index: Int): Color {
             maxLevel = max(habit.level, maxLevel)
             minLevel = min(habit.level, maxLevel)
         }
-        return (habits[index].level - minLevel).toFloat() / (if (maxLevel - minLevel == 0) 1f else (maxLevel - minLevel).toFloat())
+        return if (maxLevel == minLevel) 1f else (habits[index].level - minLevel).toFloat() / (if (maxLevel - minLevel == 0) 1f else (maxLevel - minLevel).toFloat())
     }
 
     fun getNeedGoalK(): Float {
@@ -65,7 +65,7 @@ fun seeColorByIndex(index: Int): Color {
             maxNeedGoal = maxOf(habit.needGoal, maxNeedGoal)
             minNeedGoal = minOf(habit.needGoal, maxNeedGoal)
         }
-        return (habits[index].needGoal - minNeedGoal).floatValue(false) / (if (maxNeedGoal - minNeedGoal == BigDecimal.ZERO) 1f else (maxNeedGoal - minNeedGoal).floatValue(
+        return if (maxNeedGoal == minNeedGoal) 1f else (habits[index].needGoal - minNeedGoal).floatValue(false) / (if (maxNeedGoal - minNeedGoal == BigDecimal.ZERO) 1f else (maxNeedGoal - minNeedGoal).floatValue(
             false
         ))
     }
@@ -84,7 +84,7 @@ fun seeColorByIndex(index: Int): Color {
             maxNeedDays = maxOf(habit.needDays, maxNeedDays)
             minNeedDays = minOf(habit.needDays, maxNeedDays)
         }
-        return (habits[index].needDays - minNeedDays).toFloat() / (if (maxNeedDays - minNeedDays == 0) 1f else (maxNeedDays - minNeedDays).toFloat())
+        return if (maxNeedDays == minNeedDays) 1f else (habits[index].needDays - minNeedDays).toFloat() / (if (maxNeedDays - minNeedDays == 0) 1f else (maxNeedDays - minNeedDays).toFloat())
     }
 
     fun getLevelChangeK(): Float {

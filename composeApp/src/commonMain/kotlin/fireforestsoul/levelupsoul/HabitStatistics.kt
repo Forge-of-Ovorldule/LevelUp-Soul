@@ -1023,11 +1023,11 @@ private fun LevelContent(
                             fontFamily = JetBrainsFont(),
                             fontWeight = FontWeight.Normal
                         )
-                        var textToSubString =
+                        var phantomDays =
                             (habits[habit_statistics_and_edit_x].phantomNeedDays - habits[habit_statistics_and_edit_x].phantomNeedDays.intValue(
                                 false
-                            )).toBestString()
-                        if (textToSubString.length >= 3)
+                            ))
+                        if (phantomDays != BigDecimal.ZERO)
                             Text(
                                 text = " (${habits[habit_statistics_and_edit_x].phantomNeedDays.toBestString()})",
                                 fontSize = 16.sp / 1.15f,
@@ -1047,9 +1047,7 @@ private fun LevelContent(
                             fontWeight = FontWeight.Normal
                         )
                         Text(
-                            text = "-> " + habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(
-                                pps
-                            ).toString(),
+                            text = "-> " + habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(pps).toString(),
                             fontSize = 16.sp / 1.15f,
                             color = if (isGood) UIC_green else UIC_red,
                             maxLines = 1,
@@ -1057,16 +1055,14 @@ private fun LevelContent(
                             fontFamily = JetBrainsFont(),
                             fontWeight = FontWeight.Bold
                         )
-                        textToSubString =
+                        phantomDays =
                             (habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(pps) - habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(
                                 pps
-                            ).intValue(false)).toBestString()
-                        if (textToSubString.length >= 3)
+                            ).intValue(false))
+                        if (phantomDays != BigDecimal.ZERO)
                             Text(
                                 text = " (${
-                                    habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(
-                                        pps
-                                    )
+                                    habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(pps)
                                         .toBestString()
                                 })",
                                 fontSize = 16.sp / 1.15f,

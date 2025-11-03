@@ -23,7 +23,7 @@ class Habit(
     var typeOfGoalHabits: TypeOfGoalHabits = TypeOfGoalHabits.AT_LEAST,
     var needGoal: BigDecimal = 1.toBigDecimal(),
     var needDays: Int = 1,
-    var typeOfColorHabits: TypeOfColorHabits = TypeOfColorHabits.ADAPTIVE,
+    var typeOfColorHabits: TypeOfColorHabits = TypeOfColorHabits.SELECTED,
     var colorGood: Color = UICT_see,
     var changeLevel: Boolean = true,
     var changeNeedGoalWithLevel: Boolean = false,
@@ -193,9 +193,7 @@ class Habit(
 
     fun getNeedDaysWhenNewLevel(pps: Int = habitDay.size - 1): Int {
         if (changeNeedDaysWithLevel) {
-            return if (getPhantomNeedDaysWhenNewLevel(pps) == getPhantomNeedDaysWhenNewLevel(pps).intValue(false)
-                    .toBigDecimal()
-            )
+            return if (getPhantomNeedDaysWhenNewLevel(pps) - getPhantomNeedDaysWhenNewLevel(pps).intValue(false) != BigDecimal.ZERO)
                 getPhantomNeedDaysWhenNewLevel(pps).intValue(false) + 1
             else
                 getPhantomNeedDaysWhenNewLevel(pps).intValue(false)
