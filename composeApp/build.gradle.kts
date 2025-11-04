@@ -108,8 +108,8 @@ android {
         applicationId = "fireforestsoul.levelupsoul"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 4
-        versionName = "1.1.1"
+        versionCode = 5
+        versionName = "1.1.2"
         setProperty("archivesBaseName", "LevelUpSoul-v$versionName")
     }
     packaging {
@@ -166,7 +166,7 @@ compose.desktop {
             )
 
             packageName = "LevelUpSoul"
-            packageVersion = "1.1.1"
+            packageVersion = "1.1.2"
 
             linux {
                 iconFile.set(project.file("src/desktopMain/resources/app_icon.png"))

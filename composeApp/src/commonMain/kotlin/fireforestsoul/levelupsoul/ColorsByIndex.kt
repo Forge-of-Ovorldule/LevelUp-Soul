@@ -90,7 +90,7 @@ fun seeColorByIndex(index: Int): Color {
     fun getLevelChangeK(): Float {
         return ((if (habits[index].changeLevel) 1f else 0f)
                 + (if (habits[index].changeNeedGoalWithLevel) 1f else 0f)
-                + (if (habits[index].changeNeedDaysWithLevel) 1f else 0f)) / 3
+                + (if (habits[index].changeNeedDaysWithLevel) 1f else 0f)) / 3f
     }
 
     return if (habits[index].typeOfColorHabits == TypeOfColorHabits.SELECTED)

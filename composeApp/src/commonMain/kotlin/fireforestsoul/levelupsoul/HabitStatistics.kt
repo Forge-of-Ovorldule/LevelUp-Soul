@@ -1901,24 +1901,32 @@ fun DistributionByDayOfTheWeekContent() {
             .padding(top = 32.8.dp / 1.15f),
         contentAlignment = Alignment.Center
     ) {
-        val labels = mutableListOf<String>()
-        val realValues = mutableListOf<BigDecimal>()
+        val uncheckLabels = mutableListOf<String>()
+        val uncheckRealValues = mutableListOf<BigDecimal>()
+        val uncheckValues = mutableListOf<BigDecimal>()
         var minValue: BigDecimal = Double.MAX_VALUE.toBigDecimal()
 
         for (i in habitDistributionByDayOfTheWeekContent(habit_statistics_and_edit_x)) {
-            if (i.value != BigDecimal.ZERO) {
-                labels.add(i.dayOfWeek)
-                realValues.add(i.value)
-                minValue = minOf(minValue, i.value)
-            }
+            uncheckLabels.add(i.dayOfWeek)
+            uncheckRealValues.add(i.value)
+            minValue = minOf(minValue, i.value)
         }
 
-        var values = mutableListOf<BigDecimal>()
-        if (minValue < BigDecimal.ZERO) {
-            for (i in realValues) {
-                values.add(i - minValue)
+        for (i in uncheckRealValues) {
+            uncheckValues.add(i - minValue)
+        }
+
+        val labels = mutableListOf<String>()
+        val realValues = mutableListOf<BigDecimal>()
+        val values = mutableListOf<BigDecimal>()
+
+        for (i in 0 until uncheckValues.size) {
+            if (uncheckValues[i] != BigDecimal.ZERO) {
+                labels.add(uncheckLabels[i])
+                realValues.add(uncheckRealValues[i])
+                values.add(uncheckValues[i])
             }
-        } else values = realValues
+        }
 
         ProportionalAreaChart(
             labels = labels,

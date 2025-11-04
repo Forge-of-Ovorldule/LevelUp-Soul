@@ -137,6 +137,7 @@ fun CreateHabit(viewModel: AppViewModel) {
                             habit.changeNeedGoalWithLevel = changeNeedGoalWithLevel
                             habit.changeNeedDaysWithLevel = changeNeedDaysWithLevel
                             habit.iconChar = icon
+                            habit.phantomNeedDays = habit.needDays.toBigDecimal()
                             habit.update()
                             habits.add(habit)
                             habits.save()
