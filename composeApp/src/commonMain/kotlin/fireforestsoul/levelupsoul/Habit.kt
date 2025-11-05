@@ -21,14 +21,14 @@ class Habit(
     var nameOfHabit: String = ts_New_habit,
     var nameOfUnitsOfDimension: String = ts_km,
     var typeOfGoalHabits: TypeOfGoalHabits = TypeOfGoalHabits.AT_LEAST,
-    var needGoal: BigDecimal = 1.toBigDecimal(),
+    var needGoal: BigDecimal = BigDecimal.ONE,
     var needDays: Int = 1,
     var typeOfColorHabits: TypeOfColorHabits = TypeOfColorHabits.SELECTED,
     var colorGood: Color = UICT_see,
     var changeLevel: Boolean = true,
     var changeNeedGoalWithLevel: Boolean = false,
     var changeNeedDaysWithLevel: Boolean = false,
-    var iconChar: String = "🆕"
+    var iconChar: String = ""
 ) {
 
     var startDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
