@@ -1903,7 +1903,7 @@ fun DistributionByDayOfTheWeekContent() {
     ) {
         val uncheckLabels = mutableListOf<String>()
         val uncheckRealValues = mutableListOf<BigDecimal>()
-        val uncheckValues = mutableListOf<BigDecimal>()
+        var uncheckValues = mutableListOf<BigDecimal>()
         var minValue: BigDecimal = Double.MAX_VALUE.toBigDecimal()
 
         for (i in habitDistributionByDayOfTheWeekContent(habit_statistics_and_edit_x)) {
@@ -1912,9 +1912,11 @@ fun DistributionByDayOfTheWeekContent() {
             minValue = minOf(minValue, i.value)
         }
 
-        for (i in uncheckRealValues) {
-            uncheckValues.add(i - minValue)
-        }
+        if (minValue < 0) {
+            for (i in uncheckRealValues) {
+                uncheckValues.add(i - minValue)
+            }
+        } else uncheckValues = uncheckRealValues
 
         val labels = mutableListOf<String>()
         val realValues = mutableListOf<BigDecimal>()
