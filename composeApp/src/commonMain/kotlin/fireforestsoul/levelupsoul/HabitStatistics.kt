@@ -1697,7 +1697,7 @@ fun DistributionByDayOfTheWeekContent() {
 
         if (horizontal) {
             val needHeight =
-                if (values.size == 1) height * (values[0].saveDiv(sumValues)).floatValue(false)
+                if (values.size <= 2) height
                 else (height - spacing) * ((values[0] + values[1]).saveDiv(sumValues)).floatValue(
                     false
                 )
@@ -1749,7 +1749,7 @@ fun DistributionByDayOfTheWeekContent() {
             }
         } else {
             val needWidth =
-                if (values.size == 1) width * (values[0].saveDiv(sumValues)).floatValue(false)
+                if (values.size <= 2) width
                 else (width - spacing) * ((values[0] + values[1]).saveDiv(sumValues)).floatValue(
                     false
                 )
