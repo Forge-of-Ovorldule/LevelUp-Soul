@@ -43,9 +43,15 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onStop() {
-        super.onStop()
         if (loadIsGood)
             saveAllValues()
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        if (loadIsGood)
+            saveAllValues()
+        super.onDestroy()
     }
 }
 
