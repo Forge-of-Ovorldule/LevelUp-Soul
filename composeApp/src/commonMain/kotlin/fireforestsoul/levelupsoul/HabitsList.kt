@@ -250,8 +250,8 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                                 if (value != null) {
                                                     habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today =
                                                         inputText.toBigDecimal()
-                                                    habits[sortedHabits[x]].update(sortedHabits)
                                                     habits[sortedHabits[x]].saveHabitDays(sortedHabits[x])
+                                                    habits[sortedHabits[x]].update(sortedHabits)
                                                 }
                                                 showDialog = false
                                                 viewModel.setStatus(AppStatus.HABITS_LIST_UPDATER)

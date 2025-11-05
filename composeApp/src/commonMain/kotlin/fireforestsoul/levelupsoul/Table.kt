@@ -340,10 +340,10 @@ fun TableContent(
                                                                     if (value != null) {
                                                                         habits[sortedHabits[y]].habitDay[xIndex].today =
                                                                             inputText.toBigDecimal()
-                                                                        habits[sortedHabits[y]].update(sortedHabits)
                                                                         habits[sortedHabits[y]].saveHabitDays(
                                                                             sortedHabits[y]
                                                                         )
+                                                                        habits[sortedHabits[y]].update(sortedHabits)
                                                                     }
                                                                     showDialog = false
                                                                     viewModel.setStatus(AppStatus.TABLE_UPDATER)
