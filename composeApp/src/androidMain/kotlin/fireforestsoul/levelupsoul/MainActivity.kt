@@ -53,6 +53,12 @@ class MainActivity : ComponentActivity() {
             saveAllValues()
         super.onDestroy()
     }
+
+    override fun onPause() {
+        if (loadIsGood)
+            saveAllValues()
+        super.onPause()
+    }
 }
 
 @Preview
