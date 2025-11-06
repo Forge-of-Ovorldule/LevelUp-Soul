@@ -22,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun LoadingContent(viewModel: AppViewModel) {
@@ -49,7 +51,7 @@ fun LoadingContent(viewModel: AppViewModel) {
 
 var loadIsGood = false
 
-private fun loading(viewModel: AppViewModel) {
+private suspend fun loading(viewModel: AppViewModel) = withContext(Dispatchers.Default) {
     loadAllValues()
     changeLanguage()
     for (i in 0 until habits.size) {

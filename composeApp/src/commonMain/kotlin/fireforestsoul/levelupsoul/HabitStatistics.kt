@@ -842,7 +842,7 @@ private fun LevelContent(
 ) {
     @Composable
     fun CircleImage(
-        isGood: Boolean,
+        isNotBad: Boolean,
         kX: Float,
         paddingY: Dp,
         size: Dp
@@ -855,7 +855,7 @@ private fun LevelContent(
             Box(
                 modifier = Modifier.size(size)
                     .background(
-                        if (isGood) seeColorByIndex(habit_statistics_and_edit_x)
+                        if (isNotBad) seeColorByIndex(habit_statistics_and_edit_x)
                         else reversNoBiggerColor(seeColorByIndex(habit_statistics_and_edit_x)),
                         RoundedCornerShape(size / 2)
                     )
@@ -863,10 +863,10 @@ private fun LevelContent(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(if (isGood) Res.drawable.habit_statistic__level__up else Res.drawable.habit_statistic__level__down),
+                    painter = painterResource(if (isNotBad) Res.drawable.habit_statistic__level__up else Res.drawable.habit_statistic__level__down),
                     contentDescription = ts_Level,
                     colorFilter = ColorFilter.tint(
-                        if (isGood) noSeeColorByIndex(habit_statistics_and_edit_x)
+                        if (isNotBad) noSeeColorByIndex(habit_statistics_and_edit_x)
                         else reversNoBiggerColor(noSeeColorByIndex(habit_statistics_and_edit_x)),
                         BlendMode.Modulate
                     ),
@@ -920,11 +920,11 @@ private fun LevelContent(
     @Composable
     fun paramElement(
         subtitle: String,
-        isGood: Boolean,
+        isNotBad: Boolean,
         bottomFun: @Composable () -> Unit
     ) {
         val background =
-            if (!habits[habit_statistics_and_edit_x].changeLevel || isGood) UIC_dark.multiply(g = 2f)
+            if (!habits[habit_statistics_and_edit_x].changeLevel || isNotBad) UIC_dark.multiply(g = 2f)
             else UIC_dark.multiply(r = 2f)
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -952,21 +952,22 @@ private fun LevelContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(42.8.dp / 1.15f)
     ) {
-        val isGood = if (progress(habit_statistics_and_edit_x, pps) <= 0.2f) false else true
+        val isNotBad = if (progress(habit_statistics_and_edit_x, pps) <= 0.2f) false else true
+        val isNotGood = if (progress(habit_statistics_and_edit_x, pps) >= 0.8f) false else true
         Box(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            CircleImage(isGood, 0.1666f, 20.dp / 1.15f, 49.2.dp / 1.15f)
-            CircleImage(isGood, 0.237f, 89.6.dp / 1.15f, 16.4.dp / 1.15f)
-            CircleImage(isGood, 0.1296f, 147.2.dp / 1.15f, 33.2.dp / 1.15f)
-            CircleImage(isGood, 0.8055f, 29.2.dp / 1.15f, 25.2.dp / 1.15f)
-            CircleImage(isGood, 0.9462f, 44.dp / 1.15f, 14.8.dp / 1.15f)
-            CircleImage(isGood, 0.8981f, 114.4.dp / 1.15f, 41.6.dp / 1.15f)
+            CircleImage(isNotBad, 0.1666f, 20.dp / 1.15f, 49.2.dp / 1.15f)
+            CircleImage(isNotBad, 0.237f, 89.6.dp / 1.15f, 16.4.dp / 1.15f)
+            CircleImage(isNotBad, 0.1296f, 147.2.dp / 1.15f, 33.2.dp / 1.15f)
+            CircleImage(isNotBad, 0.8055f, 29.2.dp / 1.15f, 25.2.dp / 1.15f)
+            CircleImage(isNotBad, 0.9462f, 44.dp / 1.15f, 14.8.dp / 1.15f)
+            CircleImage(isNotBad, 0.8981f, 114.4.dp / 1.15f, 41.6.dp / 1.15f)
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                DonutChart(isGood)
+                DonutChart(isNotBad)
             }
         }
         Column(
@@ -974,8 +975,8 @@ private fun LevelContent(
                 .padding(horizontal = 29.2.dp / 1.15f),
             verticalArrangement = Arrangement.spacedBy(12.dp / 1.15f)
         ) {
-            paramElement(ts_Goal, isGood) {
-                if (habits[habit_statistics_and_edit_x].changeNeedGoalWithLevel) {
+            paramElement(ts_Goal, isNotBad) {
+                if (habits[habit_statistics_and_edit_x].changeNeedGoalWithLevel && !(isNotBad && isNotGood)) {
                     Row {
                         Text(
                             text = habits[habit_statistics_and_edit_x].needGoal.toBestString() + " " + habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension + " ",
@@ -992,7 +993,7 @@ private fun LevelContent(
                             )
                                 .toBestString() + " " + habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension,
                             fontSize = 16.sp / 1.15f,
-                            color = if (isGood) UIC_green else UIC_red,
+                            color = if (isNotBad) UIC_green else UIC_red,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             fontFamily = JetBrainsFont(),
@@ -1011,8 +1012,8 @@ private fun LevelContent(
                     )
                 }
             }
-            paramElement(ts_Period, isGood) {
-                if (habits[habit_statistics_and_edit_x].changeNeedDaysWithLevel) {
+            paramElement(ts_Period, isNotBad) {
+                if (habits[habit_statistics_and_edit_x].changeNeedDaysWithLevel && !(isNotBad && isNotGood)) {
                     Row {
                         Text(
                             text = habits[habit_statistics_and_edit_x].needDays.toString(),
@@ -1049,7 +1050,7 @@ private fun LevelContent(
                         Text(
                             text = "-> " + habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(pps).toString(),
                             fontSize = 16.sp / 1.15f,
-                            color = if (isGood) UIC_green else UIC_red,
+                            color = if (isNotBad) UIC_green else UIC_red,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             fontFamily = JetBrainsFont(),
@@ -1075,7 +1076,7 @@ private fun LevelContent(
                         Text(
                             text = " $ts_days",
                             fontSize = 16.sp / 1.15f,
-                            color = if (isGood) UIC_green else UIC_red,
+                            color = if (isNotBad) UIC_green else UIC_red,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             fontFamily = JetBrainsFont(),
@@ -1697,7 +1698,7 @@ fun DistributionByDayOfTheWeekContent() {
 
         if (horizontal) {
             val needHeight =
-                if (values.size == 1) height * (values[0].saveDiv(sumValues)).floatValue(false)
+                if (values.size <= 2) height
                 else (height - spacing) * ((values[0] + values[1]).saveDiv(sumValues)).floatValue(
                     false
                 )
@@ -1749,7 +1750,7 @@ fun DistributionByDayOfTheWeekContent() {
             }
         } else {
             val needWidth =
-                if (values.size == 1) width * (values[0].saveDiv(sumValues)).floatValue(false)
+                if (values.size <= 2) width
                 else (width - spacing) * ((values[0] + values[1]).saveDiv(sumValues)).floatValue(
                     false
                 )
@@ -1903,7 +1904,7 @@ fun DistributionByDayOfTheWeekContent() {
     ) {
         val uncheckLabels = mutableListOf<String>()
         val uncheckRealValues = mutableListOf<BigDecimal>()
-        val uncheckValues = mutableListOf<BigDecimal>()
+        var uncheckValues = mutableListOf<BigDecimal>()
         var minValue: BigDecimal = Double.MAX_VALUE.toBigDecimal()
 
         for (i in habitDistributionByDayOfTheWeekContent(habit_statistics_and_edit_x)) {
@@ -1912,9 +1913,11 @@ fun DistributionByDayOfTheWeekContent() {
             minValue = minOf(minValue, i.value)
         }
 
-        for (i in uncheckRealValues) {
-            uncheckValues.add(i - minValue)
-        }
+        if (minValue < 0) {
+            for (i in uncheckRealValues) {
+                uncheckValues.add(i - minValue)
+            }
+        } else uncheckValues = uncheckRealValues
 
         val labels = mutableListOf<String>()
         val realValues = mutableListOf<BigDecimal>()
