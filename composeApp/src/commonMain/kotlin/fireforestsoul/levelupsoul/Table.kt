@@ -44,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -161,14 +162,16 @@ fun TableContent(
                                 )
                                 val needOrCanMore =
                                     habits[sortedHabits[y]].needGoal - habits[sortedHabits[y]].habitDay[habits[sortedHabits[y]].habitDay.size - 1].totalOfAPeriod
-                                Text(
-                                    text = if (habits[sortedHabits[y]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST)
-                                        "$ts_Need ${needOrCanMore.toBestString()} $ts_more"
-                                    else "$ts_You_can_have ${needOrCanMore.toBestString()} $ts_more",
-                                    color = noSeeColor,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = firstSellSmallFontSize,
-                                )
+                                if (needOrCanMore > BigDecimal.ZERO) {
+                                    Text(
+                                        text = if (habits[sortedHabits[y]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST)
+                                            "$ts_Need ${needOrCanMore.toBestString()} $ts_more"
+                                        else "$ts_You_can_have ${needOrCanMore.toBestString()} $ts_more",
+                                        color = noSeeColor,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = firstSellSmallFontSize,
+                                    )
+                                }
                             }
                         }
                     }
