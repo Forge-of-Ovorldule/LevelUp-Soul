@@ -1347,7 +1347,7 @@ private fun BarChartContent() {
             }
         }
 
-        val totalWidthDp = (values.size * (barWidth + barSpacing))
+        val totalWidthDp = ((values.size + (values.last().toBestString().length - 3) / 3) * (barWidth + barSpacing))
 
         if (values.isNotEmpty()) {
             Box(
@@ -1434,7 +1434,7 @@ private fun BarChartContent() {
                                 fontSize = 9.74.sp,
                                 fontFamily = JetBrainsFont(),
                                 fontWeight = FontWeight.Thin,
-                                color = Color.Unspecified,
+                                color = Color.Unspecified
                             ),
                             constraints = Constraints()
                         )
