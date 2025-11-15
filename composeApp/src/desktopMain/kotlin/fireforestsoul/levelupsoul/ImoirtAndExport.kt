@@ -27,6 +27,7 @@ actual fun import(onImported: () -> Unit) {
     val result = chooser.showOpenDialog(null)
     if (result == JFileChooser.APPROVE_OPTION) {
         val selectedFile: File = chooser.selectedFile
+        File("$old1001000000_save_file_name.json").writeText(selectedFile.readText())
         File("$save_file_name.json").writeText(selectedFile.readText())
     }
     onImported()
