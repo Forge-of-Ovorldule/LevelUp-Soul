@@ -88,8 +88,6 @@ fun MainMenuContent(
             .fillMaxSize()
     )
     Scaffold(
-        modifier = Modifier
-            .padding(WindowInsets.systemBars.asPaddingValues()),
         topBar = {
             Box(
                 modifier = Modifier

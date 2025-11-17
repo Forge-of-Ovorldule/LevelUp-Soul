@@ -10,9 +10,15 @@
 package fireforestsoul.levelupsoul
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.*
-import kotlinx.coroutines.delay
+import androidx.compose.ui.Modifier
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -35,7 +41,13 @@ fun App(viewModel: AppViewModel) {
         else -> false
     }
 
-    Box {
+    val hazeState = rememberHazeState()
+
+    Box(
+        modifier = Modifier
+            .padding(WindowInsets.systemBars.asPaddingValues())
+            .hazeSource(hazeState)
+    ) {
         when (appStatus) {
             AppStatus.LOADING -> LoadingContent(viewModel)
             AppStatus.CREATE_HABIT -> CreateHabit(viewModel)
@@ -62,5 +74,12 @@ fun App(viewModel: AppViewModel) {
                 verticalScrollForHabitsListContent
             )
         }
+    }
+
+    Box(
+        modifier = Modifier
+            .padding(WindowInsets.systemBars.asPaddingValues())
+    ) {
+        StatusBar(hazeState)
     }
 }

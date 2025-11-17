@@ -76,6 +76,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
             implementation("com.ionspin.kotlin:bignum:0.3.10")
+            implementation("dev.chrisbanes.haze:haze:1.6.0")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

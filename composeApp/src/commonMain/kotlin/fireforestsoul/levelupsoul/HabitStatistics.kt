@@ -104,7 +104,6 @@ fun HabitStatistics(viewModel: AppViewModel) {
 
         Scaffold(
             modifier = Modifier
-                .padding(WindowInsets.systemBars.asPaddingValues())
                 .background(Brush.verticalGradient(listOf(UIC_dark, UIC_black))),
             topBar = {
                 var maxHeightBox by remember { mutableStateOf(0.dp) }
@@ -146,7 +145,11 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             overflow = TextOverflow.Ellipsis,
                             fontWeight = FontWeight.ExtraBold,
                             fontFamily = JetBrainsFont(),
-                            fontSize = 34.sp / 1.15f
+                            fontSize = 34.sp / 1.15f,
+                            modifier = Modifier.clickable {
+                                statusBarInfo.text = "«${habits[habit_statistics_and_edit_x].nameOfHabit}»"
+                                statusBarInfo.isProcessed = true
+                            }
                         )
                         Text(
                             text = ts_statistic,
