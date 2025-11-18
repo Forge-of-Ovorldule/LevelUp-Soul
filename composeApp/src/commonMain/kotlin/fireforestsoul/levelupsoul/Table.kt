@@ -46,6 +46,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
+import dev.chrisbanes.haze.HazeState
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -64,7 +65,8 @@ fun TableContent(
     viewModel: AppViewModel,
     verticalScroll: ScrollState,
     horizontalScroll: ScrollState,
-    countdownDate: LocalDate
+    countdownDate: LocalDate,
+    hazeState: HazeState
 ) {
     val sortedHabits = MutableList(habits.size) { it }
     sortedHabits.sortSystem()
@@ -154,10 +156,18 @@ fun TableContent(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text(
+                                TextWithDeployableEllipsis(
+                                    backgroundColor = UIC_black,
+                                    newStatusBarInfo = StatusBarInfo(
+                                        backgroundColor = UIC_dark,
+                                        downPanelSize = 48.dp,
+                                        isProcessed = false
+                                    ),
+                                    hazeState = hazeState,
                                     text = habits[sortedHabits[y]].nameOfHabit,
                                     color = seeColor,
                                     fontWeight = FontWeight.Normal,
+                                    fontFamily = JetBrainsFont(),
                                     fontSize = firstSellFontSize
                                 )
                                 val needOrCanMore =

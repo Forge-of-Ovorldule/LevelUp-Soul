@@ -47,7 +47,7 @@ fun StatusBar(hazeState: HazeState) {
     var displayBackgroundColor by mutableStateOf(statusBarInfo.backgroundColor)
     var displayDownPanelSize by mutableStateOf(statusBarInfo.downPanelSize)
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(Unit, statusBarInfo.text) {
         makeTextForStatusBar()
     }
 
@@ -104,16 +104,20 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
             if (statusBarTextNow.length - addedEllipsis < statusBarInfo.text.length) {
                 statusBarTextNow = statusBarInfo.text.take(statusBarTextNow.length + 1)
                 delay(75)
-            } else {
+            } else if (statusBarTextNow.length - addedEllipsis == statusBarInfo.text.length) {
                 full = true
+                statusBarTextNow = statusBarInfo.text
                 if (statusBarInfo.isProcessed) {
                     scope.launch {
                         addEllipsis()
                     }
                 }
-                delay(10000)
+                delay(5000)
                 statusBarInfo.text = ""
                 full = false
+            } else {
+                statusBarTextNow = statusBarTextNow.take(statusBarTextNow.length - 1)
+                delay(75)
             }
         } else if (statusBarTextNow.isNotEmpty()) {
             statusBarTextNow = statusBarTextNow.take(statusBarTextNow.length - 1)

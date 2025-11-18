@@ -78,8 +78,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.times
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import dev.chrisbanes.haze.hazeSource
-import dev.chrisbanes.haze.rememberHazeState
+import dev.chrisbanes.haze.HazeState
 import kotlinx.coroutines.delay
 import kotlinx.datetime.DayOfWeek
 import org.jetbrains.compose.resources.painterResource
@@ -90,14 +89,11 @@ var habit_statistics_and_edit_x = 0
 private var pps_for_habit_statistic = 0
 
 @Composable
-fun HabitStatistics(viewModel: AppViewModel) {
-    val hazeStateToNameOfHabit = rememberHazeState()
-
+fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Brush.verticalGradient(listOf(UIC_dark, UIC_black)))
-            .hazeSource(hazeStateToNameOfHabit)
     ) {
 
         var habitStatisticsStatus by remember { mutableStateOf(HabitStatisticsStatus.GOAL) }
@@ -144,15 +140,33 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             backgroundColor = UIC_black,
                             newStatusBarInfo = StatusBarInfo(
                                 backgroundColor = Color.Black,
-                                downPanelSize = 45.22.dp,
+                                downPanelSize = 48.67.dp,
                                 isProcessed = false
                             ),
-                            hazeState = hazeStateToNameOfHabit,
-                            text = "«${habits[habit_statistics_and_edit_x].nameOfHabit}»",
+                            hazeState = hazeState,
+                            contentBefore = {
+                                Text(
+                                    text = "«",
+                                    color = UICT_see,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontFamily = JetBrainsFont(),
+                                    fontSize = 29.57.sp
+                                )
+                            },
+                            text = habits[habit_statistics_and_edit_x].nameOfHabit,
+                            contentAfter = {
+                                Text(
+                                    text = "»",
+                                    color = UICT_see,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontFamily = JetBrainsFont(),
+                                    fontSize = 29.57.sp
+                                )
+                            },
                             color = UICT_see,
                             fontWeight = FontWeight.ExtraBold,
                             fontFamily = JetBrainsFont(),
-                            fontSize = 34.sp / 1.15f
+                            fontSize = 29.57.sp
                         )
                         Text(
                             text = ts_statistic,
@@ -190,7 +204,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     fontFamily = JetBrainsFont(),
-                                    fontSize = 19.2.sp / 1.15f
+                                    fontSize = 16.7.sp
                                 )
                             }
                             Box(
@@ -213,7 +227,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     fontFamily = JetBrainsFont(),
-                                    fontSize = 19.2.sp / 1.15f
+                                    fontSize = 16.7.sp
                                 )
                             }
                         }
@@ -390,7 +404,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             fontWeight = FontWeight.Medium,
-                            fontSize = 19.2.sp / 1.15f,
+                            fontSize = 16.7.sp,
                             color = UICT_see
                         )
                     }
@@ -399,7 +413,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                     ) {
                         when (habitStatisticsStatus) {
                             HabitStatisticsStatus.GOAL -> {
-                                GoalContent(progressPeriodSetting)
+                                GoalContent(progressPeriodSetting, hazeState)
                                 LaunchedEffect(Unit) {
                                     while (true) {
                                         progressPeriodSetting = pps_for_habit_statistic
@@ -409,7 +423,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             }
 
                             HabitStatisticsStatus.PROGRESS -> ProgressContent(progressPeriodSetting)
-                            HabitStatisticsStatus.LEVEL -> LevelContent(progressPeriodSetting)
+                            HabitStatisticsStatus.LEVEL -> LevelContent(progressPeriodSetting, hazeState)
                             HabitStatisticsStatus.PROGRESS_GRAPH -> ProgressGraphContent(
                                 progressPeriodSetting
                             )
@@ -476,7 +490,8 @@ private fun HabitStatisticsStatusIcon(
 
 @Composable
 private fun GoalContent(
-    pps: Int
+    pps: Int,
+    hazeState: HazeState
 ) {
     @Composable
     fun PPSInfoDialog(smallText: String) {
@@ -550,7 +565,7 @@ private fun GoalContent(
         contentDescription: String,
         text: String,
         smallText: String,
-        isPPS: Boolean = false
+        isPPS: Boolean = false,
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(22.67.dp / 1.15f),
@@ -570,14 +585,19 @@ private fun GoalContent(
                 )
             }
             Column {
-                Text(
+                TextWithDeployableEllipsis(
+                    backgroundColor = UIC_dark,
+                    newStatusBarInfo = StatusBarInfo(
+                        backgroundColor = UIC_dark,
+                        downPanelSize = 48.67.dp,
+                        isProcessed = false
+                    ),
+                    hazeState = hazeState,
                     text = text,
                     fontFamily = JetBrainsFont(),
                     fontWeight = FontWeight.Medium,
-                    fontSize = 19.2.sp / 1.15f,
-                    color = UICT_see,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    fontSize = 16.7.sp,
+                    color = UICT_see
                 )
                 if (isPPS) PPSInfoDialog(smallText)
                 else
@@ -844,7 +864,8 @@ private fun ProgressContent(
 
 @Composable
 private fun LevelContent(
-    pps: Int
+    pps: Int,
+    hazeState: HazeState
 ) {
     @Composable
     fun CircleImage(
@@ -927,15 +948,15 @@ private fun LevelContent(
     fun paramElement(
         subtitle: String,
         isNotBad: Boolean,
-        bottomFun: @Composable () -> Unit
+        bottomFun: @Composable (backgroundColor: Color) -> Unit
     ) {
-        val background =
+        val backgroundColor =
             if (!habits[habit_statistics_and_edit_x].changeLevel || isNotBad) UIC_dark.multiply(g = 2f)
             else UIC_dark.multiply(r = 2f)
         Column(
             modifier = Modifier.fillMaxWidth()
                 .height(45.2.dp / 1.15f)
-                .background(background, RoundedCornerShape(22.6.dp / 1.15f)),
+                .background(backgroundColor, RoundedCornerShape(22.6.dp / 1.15f)),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceAround
         ) {
@@ -948,7 +969,7 @@ private fun LevelContent(
                 fontFamily = JetBrainsFont(),
                 fontWeight = FontWeight.Thin
             )
-            bottomFun()
+            bottomFun(backgroundColor)
         }
     }
 
@@ -981,38 +1002,91 @@ private fun LevelContent(
                 .padding(horizontal = 29.2.dp / 1.15f),
             verticalArrangement = Arrangement.spacedBy(12.dp / 1.15f)
         ) {
-            paramElement(ts_Goal, isNotBad) {
+            paramElement(ts_Goal, isNotBad) { backgroundColor ->
                 if (habits[habit_statistics_and_edit_x].changeNeedGoalWithLevel && !(isNotBad && isNotGood)) {
                     Row {
-                        Text(
-                            text = habits[habit_statistics_and_edit_x].needGoal.toBestString() + " " + habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension + " ",
-                            fontSize = 16.sp / 1.15f,
-                            color = UICT_see,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontFamily = JetBrainsFont(),
-                            fontWeight = FontWeight.Normal
-                        )
-                        Text(
-                            text = "-> " + habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(
-                                pps
+                        Box(modifier = Modifier.weight(0.5f)) {
+                            TextWithDeployableEllipsis(
+                                backgroundColor = backgroundColor,
+                                newStatusBarInfo = StatusBarInfo(
+                                    backgroundColor = UIC_dark,
+                                    downPanelSize = 48.67.dp,
+                                    isProcessed = false
+                                ),
+                                hazeState = hazeState,
+                                contentBefore = {
+                                    Text(
+                                        text = habits[habit_statistics_and_edit_x].needGoal.toBestString() + " ",
+                                        fontSize = 16.sp / 1.15f,
+                                        color = UICT_see,
+                                        fontFamily = JetBrainsFont(),
+                                        fontWeight = FontWeight.Normal
+                                    )
+                                },
+                                text = habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension,
+                                contentAfter = {
+                                    Text(
+                                        text = " ",
+                                        fontSize = 16.sp / 1.15f,
+                                        color = UICT_see,
+                                        fontFamily = JetBrainsFont(),
+                                        fontWeight = FontWeight.Normal
+                                    )
+                                },
+                                fontSize = 16.sp / 1.15f,
+                                color = UICT_see,
+                                fontFamily = JetBrainsFont(),
+                                fontWeight = FontWeight.Normal
                             )
-                                .toBestString() + " " + habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension,
-                            fontSize = 16.sp / 1.15f,
-                            color = if (isNotBad) UIC_green else UIC_red,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontFamily = JetBrainsFont(),
-                            fontWeight = FontWeight.Bold
-                        )
+                        }
+                        Box(modifier = Modifier.weight(0.5f)) {
+                            TextWithDeployableEllipsis(
+                                backgroundColor = backgroundColor,
+                                newStatusBarInfo = StatusBarInfo(
+                                    backgroundColor = UIC_dark,
+                                    downPanelSize = 48.67.dp,
+                                    isProcessed = false
+                                ),
+                                hazeState = hazeState,
+                                contentBefore = {
+                                    Text(
+                                        text = "-> " + habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(pps)
+                                            .toBestString() + " ",
+                                        fontSize = 16.sp / 1.15f,
+                                        color = if (isNotBad) UIC_green else UIC_red,
+                                        fontFamily = JetBrainsFont(),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                },
+                                text = habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension,
+                                fontSize = 16.sp / 1.15f,
+                                color = if (isNotBad) UIC_green else UIC_red,
+                                fontFamily = JetBrainsFont(),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 } else {
-                    Text(
-                        text = habits[habit_statistics_and_edit_x].needGoal.toBestString() + " " + habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension,
+                    TextWithDeployableEllipsis(
+                        backgroundColor = backgroundColor,
+                        newStatusBarInfo = StatusBarInfo(
+                            backgroundColor = UIC_dark,
+                            downPanelSize = 48.67.dp,
+                            isProcessed = false
+                        ),
+                        hazeState = hazeState,
+                        contentBefore = {
+                            Text(
+                                text = habits[habit_statistics_and_edit_x].needGoal.toBestString() + " ",
+                                fontSize = 16.sp / 1.15f,
+                                color = UICT_see,
+                                fontFamily = JetBrainsFont(),
+                                fontWeight = FontWeight.Normal
+                            )
+                        },
+                        text = habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension,
                         fontSize = 16.sp / 1.15f,
                         color = UICT_see,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
                         fontFamily = JetBrainsFont(),
                         fontWeight = FontWeight.Normal
                     )
