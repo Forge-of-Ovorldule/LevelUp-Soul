@@ -118,9 +118,8 @@ fun listProgress(
     for (i in (habits[habitIndex].habitDay.size - 1) downTo (habits[habitIndex].habitDay.size - period)) {
         sum += progress(habitIndex, pps, i)
         n++
-        if (((i + 1) % step == 0 && step != habits[habitIndex].habitDay.size) || i == (habits[habitIndex].habitDay.size - period)) {
+        if ((i + 1) % step == 0 || i == (habits[habitIndex].habitDay.size - period)) {
             list.add(sum / n)
-            if (step > habits[habitIndex].habitDay.size - 1) list.add(sum / n)
             sum = 0f
             n = 0
         }
