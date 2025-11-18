@@ -83,7 +83,6 @@ fun CreateHabit(viewModel: AppViewModel) {
             .background(UIC_dark)
     ) {
         Scaffold(
-            modifier = Modifier.padding(WindowInsets.systemBars.asPaddingValues()),
             topBar = {
                 Box(
                     modifier = Modifier

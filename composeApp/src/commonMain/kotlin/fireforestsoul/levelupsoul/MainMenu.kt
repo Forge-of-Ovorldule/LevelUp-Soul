@@ -69,11 +69,13 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.with
 import androidx.compose.ui.graphics.painter.Painter
+import dev.chrisbanes.haze.HazeState
 
 @Composable
 fun MainMenuContent(
     viewModel: AppViewModel, verticalScrollForTableContent: ScrollState, horizontalScrollForTableContent: ScrollState,
-    verticalScrollForHabitsListContent: ScrollState
+    verticalScrollForHabitsListContent: ScrollState,
+    hazeState: HazeState
 ) {
     val appStatus by viewModel.appStatus.collectAsState()
     var countdownDate by remember {
@@ -88,8 +90,6 @@ fun MainMenuContent(
             .fillMaxSize()
     )
     Scaffold(
-        modifier = Modifier
-            .padding(WindowInsets.systemBars.asPaddingValues()),
         topBar = {
             Box(
                 modifier = Modifier
@@ -267,7 +267,7 @@ fun MainMenuContent(
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             if (appStatus == AppStatus.TABLE || appStatus == AppStatus.TABLE_UPDATER)
-                TableContent(viewModel, verticalScrollForTableContent, horizontalScrollForTableContent, countdownDate)
+                TableContent(viewModel, verticalScrollForTableContent, horizontalScrollForTableContent, countdownDate, hazeState)
             if (appStatus == AppStatus.SOUL_STATISTICS)
                 SoulStatisticsContent()
             if (appStatus == AppStatus.HABITS_LIST || appStatus == AppStatus.HABITS_LIST_UPDATER)
