@@ -129,14 +129,16 @@ fun EditHabit(viewModel: AppViewModel) {
                             habits[habit_statistics_and_edit_x].needGoal =
                                 if (needGoal.toDoubleOrNull() != null) needGoal.toBigDecimal() else habits[habit_statistics_and_edit_x].needGoal
                             habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension = nameOfUnitsOfDimension
-                            habits[habit_statistics_and_edit_x].needDays =
-                                (if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else habits[habit_statistics_and_edit_x].needDays)!!
+                            if (habits[habit_statistics_and_edit_x].needDays != (if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else habits[habit_statistics_and_edit_x].needDays)!!) {
+                                habits[habit_statistics_and_edit_x].needDays =
+                                    (if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else habits[habit_statistics_and_edit_x].needDays)!!
+                                habits[habit_statistics_and_edit_x].phantomNeedDays =
+                                    habits[habit_statistics_and_edit_x].needDays.toBigDecimal()
+                            }
                             habits[habit_statistics_and_edit_x].changeLevel = changeLevel
                             habits[habit_statistics_and_edit_x].changeNeedGoalWithLevel = changeNeedGoalWithLevel
                             habits[habit_statistics_and_edit_x].changeNeedDaysWithLevel = changeNeedDaysWithLevel
                             habits[habit_statistics_and_edit_x].iconChar = icon
-                            habits[habit_statistics_and_edit_x].phantomNeedDays =
-                                habits[habit_statistics_and_edit_x].needDays.toBigDecimal()
                             habits[habit_statistics_and_edit_x].update()
                             habits[habit_statistics_and_edit_x].save(habit_statistics_and_edit_x)
                             viewModel.setStatus(AppStatus.HABIT_STATISTICS)
