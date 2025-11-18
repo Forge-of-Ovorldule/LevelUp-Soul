@@ -37,11 +37,8 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -81,6 +78,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.times
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.delay
 import kotlinx.datetime.DayOfWeek
 import org.jetbrains.compose.resources.painterResource
@@ -92,10 +91,13 @@ private var pps_for_habit_statistic = 0
 
 @Composable
 fun HabitStatistics(viewModel: AppViewModel) {
+    val hazeStateToNameOfHabit = rememberHazeState()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Brush.verticalGradient(listOf(UIC_dark, UIC_black)))
+            .hazeSource(hazeStateToNameOfHabit)
     ) {
 
         var habitStatisticsStatus by remember { mutableStateOf(HabitStatisticsStatus.GOAL) }
@@ -138,18 +140,19 @@ fun HabitStatistics(viewModel: AppViewModel) {
                         verticalArrangement = Arrangement.SpaceAround,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(
+                        TextWithDeployableEllipsis(
+                            backgroundColor = UIC_black,
+                            newStatusBarInfo = StatusBarInfo(
+                                backgroundColor = Color.Black,
+                                downPanelSize = 45.22.dp,
+                                isProcessed = false
+                            ),
+                            hazeState = hazeStateToNameOfHabit,
                             text = "«${habits[habit_statistics_and_edit_x].nameOfHabit}»",
                             color = UICT_see,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
                             fontWeight = FontWeight.ExtraBold,
                             fontFamily = JetBrainsFont(),
-                            fontSize = 34.sp / 1.15f,
-                            modifier = Modifier.clickable {
-                                statusBarInfo.text = "«${habits[habit_statistics_and_edit_x].nameOfHabit}»"
-                                statusBarInfo.isProcessed = true
-                            }
+                            fontSize = 34.sp / 1.15f
                         )
                         Text(
                             text = ts_statistic,

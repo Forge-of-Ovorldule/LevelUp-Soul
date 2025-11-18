@@ -30,9 +30,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-var statusBarInfo = StatusBarInfo()
+var statusBarInfo by mutableStateOf(StatusBarInfo())
 
-class StatusBarInfo(
+data class StatusBarInfo(
     var text: String = "",
     var textColor: Color = UICT_see,
     var backgroundColor: Color = UIC_dark,
@@ -43,6 +43,10 @@ class StatusBarInfo(
 @Composable
 fun StatusBar(hazeState: HazeState) {
 
+    var displayTextColor by mutableStateOf(statusBarInfo.textColor)
+    var displayBackgroundColor by mutableStateOf(statusBarInfo.backgroundColor)
+    var displayDownPanelSize by mutableStateOf(statusBarInfo.downPanelSize)
+
     LaunchedEffect(Unit) {
         makeTextForStatusBar()
     }
@@ -50,7 +54,7 @@ fun StatusBar(hazeState: HazeState) {
     if (statusBarTextNow != "") {
         Box(
             modifier = Modifier.fillMaxSize()
-                .padding(bottom = statusBarInfo.downPanelSize),
+                .padding(bottom = displayDownPanelSize),
             contentAlignment = Alignment.BottomCenter
         ) {
             Box(
@@ -58,7 +62,7 @@ fun StatusBar(hazeState: HazeState) {
                     .padding(bottom = 8.35.dp)
                     .border(
                         0.34.dp,
-                        statusBarInfo.textColor.copy(0.5f),
+                        displayTextColor.copy(0.5f),
                         RoundedCornerShape(4.87.dp)
                     )
                     .clip(RoundedCornerShape(4.87.dp))
@@ -67,9 +71,9 @@ fun StatusBar(hazeState: HazeState) {
                         HazeStyle(
                             tint = null,
                             backgroundColor = checkBackgroundBright(
-                                statusBarInfo.backgroundColor,
-                                statusBarInfo.backgroundColor.multiply(2f, 2f, 2f, 0.25f),
-                                statusBarInfo.backgroundColor.multiply(0.5f, 0.5f, 0.5f, 0.25f)
+                                displayBackgroundColor,
+                                displayBackgroundColor.multiply(2f, 2f, 2f, 0.25f),
+                                displayBackgroundColor.multiply(0.5f, 0.5f, 0.5f, 0.25f)
                             ),
                             blurRadius = 8.7.dp,
                             noiseFactor = 0f
@@ -79,7 +83,7 @@ fun StatusBar(hazeState: HazeState) {
             ) {
                 Text(
                     text = statusBarTextNow,
-                    color = statusBarInfo.textColor,
+                    color = displayTextColor,
                     fontWeight = FontWeight.ExtraLight,
                     fontSize = 12.52.sp,
                     fontFamily = JetBrainsFont(),
@@ -97,13 +101,15 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
 
     while (true) {
         if (statusBarInfo.text != "") {
-            if (statusBarTextNow.take(statusBarTextNow.length - addedEllipsis) != statusBarInfo.text) {
+            if (statusBarTextNow.length - addedEllipsis < statusBarInfo.text.length) {
                 statusBarTextNow = statusBarInfo.text.take(statusBarTextNow.length + 1)
-                delay(125)
-            } else if (statusBarInfo.isProcessed) {
+                delay(75)
+            } else {
                 full = true
-                scope.launch {
-                    addEllipsis()
+                if (statusBarInfo.isProcessed) {
+                    scope.launch {
+                        addEllipsis()
+                    }
                 }
                 delay(10000)
                 statusBarInfo.text = ""
@@ -111,7 +117,7 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
             }
         } else if (statusBarTextNow.isNotEmpty()) {
             statusBarTextNow = statusBarTextNow.take(statusBarTextNow.length - 1)
-            delay(125)
+            delay(75)
         }
     }
 }
@@ -124,7 +130,7 @@ private suspend fun addEllipsis() = withContext(Dispatchers.Default) {
         statusBarTextNow = statusBarInfo.text + '.' * addedEllipsis
         addedEllipsis++
         if (addedEllipsis == 4) addedEllipsis = 0
-        delay(500)
+        delay(400)
     }
     addedEllipsis = 0
 }
