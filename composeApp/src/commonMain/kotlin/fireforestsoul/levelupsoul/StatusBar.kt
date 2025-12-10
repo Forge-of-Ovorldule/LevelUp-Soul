@@ -40,6 +40,8 @@ data class StatusBarInfo(
     var isProcessed: Boolean = false
 )
 
+var listProgressedStatusBar = mutableListOf<String>()
+
 @Composable
 fun StatusBar(hazeState: HazeState) {
 
@@ -47,9 +49,12 @@ fun StatusBar(hazeState: HazeState) {
     var displayBackgroundColor by mutableStateOf(statusBarInfo.backgroundColor)
     var displayDownPanelSize by mutableStateOf(statusBarInfo.downPanelSize)
 
-    LaunchedEffect(Unit, statusBarInfo.text) {
-        makeTextForStatusBar()
-    }
+    if (!statusBarInfo.isProcessed)
+        LaunchedEffect(Unit, statusBarInfo.text) {
+            makeTextForStatusBar()
+        }
+    else
+        listProgressedStatusBar.add(statusBarInfo.text)
 
     if (statusBarTextNow != "") {
         Box(
@@ -105,16 +110,18 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
                 statusBarTextNow = statusBarInfo.text.take(statusBarTextNow.length + 1)
                 delay(75)
             } else if (statusBarTextNow.length - addedEllipsis == statusBarInfo.text.length) {
-                full = true
-                statusBarTextNow = statusBarInfo.text
                 if (statusBarInfo.isProcessed) {
                     scope.launch {
                         addEllipsis()
                     }
+                    while (listProgressedStatusBar.isNotEmpty()) {
+                        delay(75)
+                    }
+                } else {
+                    statusBarTextNow = statusBarInfo.text
+                    delay(5000)
+                    statusBarInfo.text = ""
                 }
-                delay(5000)
-                statusBarInfo.text = ""
-                full = false
             } else {
                 statusBarTextNow = statusBarTextNow.take(statusBarTextNow.length - 1)
                 delay(75)
@@ -126,11 +133,10 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
     }
 }
 
-private var full = false
 private var addedEllipsis = 0
 
 private suspend fun addEllipsis() = withContext(Dispatchers.Default) {
-    while (full) {
+    while (listProgressedStatusBar.isNotEmpty()) {
         statusBarTextNow = statusBarInfo.text + '.' * addedEllipsis
         addedEllipsis++
         if (addedEllipsis == 4) addedEllipsis = 0
