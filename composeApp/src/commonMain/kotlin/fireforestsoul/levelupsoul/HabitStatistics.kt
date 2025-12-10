@@ -1603,8 +1603,6 @@ private fun BarChartContent() {
         ) {
             step = it.toIntOrNull() ?: 1
             if (step < 1) step = 1
-            if (step > habits[habit_statistics_and_edit_x].habitDay.size) step =
-                habits[habit_statistics_and_edit_x].habitDay.size
         }
     }
 }
