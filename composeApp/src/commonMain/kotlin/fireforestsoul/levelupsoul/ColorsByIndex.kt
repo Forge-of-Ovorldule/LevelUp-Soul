@@ -16,6 +16,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 fun seeColorByIndex(index: Int): Color {
+    if (habits[index].typeOfColorHabits == TypeOfColorHabits.SELECTED)
+        return habits[index].colorGood
+
     fun getProgressK(): Float {
         var maxProgress = Float.MIN_VALUE
         var minProgress = Float.MAX_VALUE
@@ -93,17 +96,11 @@ fun seeColorByIndex(index: Int): Color {
                 + (if (habits[index].changeNeedDaysWithLevel) 1f else 0f)) / 3f
     }
 
-    return if (habits[index].typeOfColorHabits == TypeOfColorHabits.SELECTED)
-        habits[index].colorGood
-    else Color(
+    return Color(
         ((getProgressK() + getLevelK() + getNeedDaysK()) / 3 * 255).toInt(),
         ((getDaysK() + getNeedGoalK() + getLevelChangeK()) / 3 * 255).toInt(),
         ((getStreakK() + getTypeOfGoalK()) / 2 * 255).toInt(),
     )
-}
-
-fun noSeeColorByIndex(index: Int): Color {
-    return seeColorByIndex(index).multiply(0.5f, 0.5f, 0.5f)
 }
 
 fun getSeeSoulColor(): Color {

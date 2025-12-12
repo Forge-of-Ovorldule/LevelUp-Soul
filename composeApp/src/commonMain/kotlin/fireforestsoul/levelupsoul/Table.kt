@@ -76,7 +76,6 @@ fun TableContent(
     val firstCellSizeX = 200.dp
     val firstCellSizeY = 40.dp
     val nextCellSizeX = 45.dp
-    val nextCellSizeY = firstCellSizeY
     val spacedCell = 3.dp
     val sizeOfBorder = 1.dp
     val roundedBorder = 7.5.dp
@@ -113,7 +112,7 @@ fun TableContent(
                 ) {}
                 for (y in 0 until habits.size) {
                     val seeColor = seeColorByIndex(sortedHabits[y])
-                    val noSeeColor = noSeeColorByIndex(sortedHabits[y])
+                    val noSeeColor = seeColor.multiply(0.5f, 0.5f, 0.5f)
 
                     Box(
                         modifier = Modifier
@@ -202,13 +201,13 @@ fun TableContent(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(spacedCell),
-                        modifier = Modifier.height(nextCellSizeY)
+                        modifier = Modifier.height(firstCellSizeY)
                     ) {
                         for (x in 0 until max(maxCellX, 10)) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Center,
-                                modifier = Modifier.size(nextCellSizeX, nextCellSizeY)
+                                modifier = Modifier.size(nextCellSizeX, firstCellSizeY)
                             ) {
                                 Text(
                                     text = (countdownDate.minus(
@@ -234,13 +233,13 @@ fun TableContent(
                     //results
                     for (y in 0 until habits.size) {
                         val seeColor = seeColorByIndex(sortedHabits[y])
-                        val noSeeColor = noSeeColorByIndex(sortedHabits[y])
+                        val noSeeColor = seeColor.multiply(0.5f, 0.5f, 0.5f)
 
                         Column(
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.Start,
                             modifier = Modifier
-                                .height(nextCellSizeY)
+                                .height(firstCellSizeY)
                                 .border(
                                     sizeOfBorder,
                                     color = noSeeColor,
@@ -263,7 +262,7 @@ fun TableContent(
                                         Box(
                                             modifier = Modifier
                                                 .width(nextCellSizeX)
-                                                .height(nextCellSizeY * 7 / 16),
+                                                .height(firstCellSizeY * 7 / 16),
                                             contentAlignment = Alignment.Center
                                         ) {
                                             if (xIndex < habits[sortedHabits[y]].habitDay.size) {

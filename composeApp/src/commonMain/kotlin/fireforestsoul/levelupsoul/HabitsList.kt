@@ -85,10 +85,12 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                         verticalAlignment = Alignment.Top,
                         horizontalArrangement = Arrangement.spacedBy(12.26.dp)
                     ) {
+                        val seeColorByX = seeColorByIndex(sortedHabits[x])
+
                         Text(
                             text = habits[sortedHabits[x]].iconChar,
                             textAlign = TextAlign.Center,
-                            color = seeColorByIndex(sortedHabits[x]),
+                            color = seeColorByX,
                             modifier = Modifier.size(57.47.dp),
                             maxLines = 1,
                             fontSize = 45.sp,
@@ -137,7 +139,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                         .height(5.75.dp)
                                         .background(
                                             if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST) UIC_light
-                                            else seeColorByIndex(sortedHabits[x]),
+                                            else seeColorByX,
                                             RoundedCornerShape(2.88.dp)
                                         )
                                         .shadow(5.dp)
@@ -147,9 +149,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                     Box(
                                         modifier = Modifier.fillMaxHeight()
                                             .background(
-                                                if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST) seeColorByIndex(
-                                                    sortedHabits[x]
-                                                )
+                                                if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST) seeColorByX
                                                 else UIC_light,
                                                 RoundedCornerShape(2.88.dp)
                                             )
