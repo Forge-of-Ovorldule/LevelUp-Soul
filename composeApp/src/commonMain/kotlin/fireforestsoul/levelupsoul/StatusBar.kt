@@ -26,6 +26,8 @@ import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeEffect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlin.String
 
@@ -168,10 +170,17 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
             continue
         }
 
+        val mutex = Mutex()
+
         if (listProgressedStatusBar.isNotEmpty()) {
-            workText = listProgressedStatusBar.last()
-            startSize = listProgressedStatusBar.size
-            isProcessed = true
+            mutex.withLock {
+                if (listProgressedStatusBar.isNotEmpty()) { //second check
+                    workText = listProgressedStatusBar.last()
+                    startSize = listProgressedStatusBar.size
+                    isProcessed = true
+                }
+                return@withLock
+            }
             continue
         }
 

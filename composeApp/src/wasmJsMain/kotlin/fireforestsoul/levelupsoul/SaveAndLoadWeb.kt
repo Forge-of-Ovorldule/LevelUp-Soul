@@ -14,6 +14,9 @@ import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.browser.localStorage
 import kotlinx.datetime.LocalDate
 
+actual fun closeSaveFiles() {}
+actual fun openSaveFiles() {}
+
 actual fun saveValue(value: Any, name: String) {
     val serialized = value.savedElementToString()
     localStorage.setItem(name, serialized)

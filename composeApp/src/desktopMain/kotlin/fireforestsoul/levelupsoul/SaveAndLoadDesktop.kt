@@ -18,6 +18,16 @@ import kotlinx.serialization.json.*
 private val json = Json { prettyPrint = true }
 private val settingsFile = File("$save_file_name.json")
 
+private var savedStrings: MutableMap<String, JsonElement> = readSettings().toMutableMap()
+
+actual fun openSaveFiles() {
+    savedStrings = readSettings().toMutableMap()
+}
+
+actual fun closeSaveFiles() {
+    settingsFile.writeText(json.encodeToString(JsonObject(savedStrings)))
+}
+
 private fun readSettings(): MutableMap<String, JsonElement> {
     if (!settingsFile.exists()) return mutableMapOf()
     val text = settingsFile.readText()
@@ -25,15 +35,9 @@ private fun readSettings(): MutableMap<String, JsonElement> {
     return json.parseToJsonElement(text).jsonObject.toMutableMap()
 }
 
-private fun writeSettings(settings: Map<String, JsonElement>) {
-    settingsFile.writeText(json.encodeToString(JsonObject(settings)))
-}
-
 actual fun saveValue(value: Any, name: String) {
-    val settings = readSettings().toMutableMap()
     val element = JsonPrimitive(value.savedElementToString())
-    settings[name] = element
-    writeSettings(settings)
+    savedStrings[name] = element
 }
 
 actual fun <T> loadValue(value: T, name: String): T {
