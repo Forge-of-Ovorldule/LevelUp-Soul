@@ -24,13 +24,28 @@ import com.ionspin.kotlin.bignum.integer.util.times
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeEffect
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.String
 
 var statusBarInfo by mutableStateOf(StatusBarInfo())
+
+fun changeStatusBarInfo(
+    text: String = "",
+    textColor: Color? = null,
+    backgroundColor: Color? = null,
+    downPanelSize: Dp? = null,
+    isProcessed: Boolean? = null
+): StatusBarInfo {
+    return StatusBarInfo(
+        text = text,
+        textColor = textColor ?: statusBarInfo.textColor,
+        backgroundColor = backgroundColor ?: statusBarInfo.backgroundColor,
+        downPanelSize = downPanelSize ?: statusBarInfo.downPanelSize,
+        isProcessed = isProcessed ?: statusBarInfo.isProcessed,
+    )
+}
 
 data class StatusBarInfo(
     var text: String = "",
@@ -49,12 +64,20 @@ fun StatusBar(hazeState: HazeState) {
     var displayBackgroundColor by mutableStateOf(statusBarInfo.backgroundColor)
     var displayDownPanelSize by mutableStateOf(statusBarInfo.downPanelSize)
 
-    if (!statusBarInfo.isProcessed)
-        LaunchedEffect(Unit, statusBarInfo.text) {
-            makeTextForStatusBar()
-        }
-    else
-        listProgressedStatusBar.add(statusBarInfo.text)
+    LaunchedEffect(
+        Unit,
+        statusBarInfo,
+        statusBarInfo.text,
+        statusBarInfo.backgroundColor,
+        statusBarInfo.downPanelSize,
+        statusBarInfo.isProcessed,
+        statusBarInfo.textColor
+    ) {
+        displayTextColor = statusBarInfo.textColor
+        displayBackgroundColor = statusBarInfo.backgroundColor
+        displayDownPanelSize = statusBarInfo.downPanelSize
+        makeTextForStatusBar()
+    }
 
     if (statusBarTextNow != "") {
         Box(
@@ -100,47 +123,62 @@ fun StatusBar(hazeState: HazeState) {
 }
 
 private var statusBarTextNow by mutableStateOf("")
+private var workText = statusBarInfo.text
+private var startSize = listProgressedStatusBar.size
+private var isProcessed = statusBarInfo.isProcessed
 
 private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
-    val scope = CoroutineScope(Dispatchers.Default)
+    if (!statusBarInfo.isProcessed) {
+        workText = statusBarInfo.text
+        isProcessed = false
+    }
+    startSize = listProgressedStatusBar.size
 
     while (true) {
-        if (statusBarInfo.text != "") {
-            if (statusBarTextNow.length - addedEllipsis < statusBarInfo.text.length) {
-                statusBarTextNow = statusBarInfo.text.take(statusBarTextNow.length + 1)
-                delay(75)
-            } else if (statusBarTextNow.length - addedEllipsis == statusBarInfo.text.length) {
-                if (statusBarInfo.isProcessed) {
-                    scope.launch {
-                        addEllipsis()
-                    }
-                    while (listProgressedStatusBar.isNotEmpty()) {
-                        delay(75)
-                    }
-                } else {
-                    statusBarTextNow = statusBarInfo.text
-                    delay(5000)
-                    statusBarInfo.text = ""
-                }
-            } else {
-                statusBarTextNow = statusBarTextNow.take(statusBarTextNow.length - 1)
-                delay(75)
+        if (workText.isNotEmpty()) {
+            if (listProgressedStatusBar.size != startSize) {
+                workText = ""
+                continue
             }
-        } else if (statusBarTextNow.isNotEmpty()) {
-            statusBarTextNow = statusBarTextNow.take(statusBarTextNow.length - 1)
+            if (statusBarTextNow.length < workText.length) {
+                statusBarTextNow = workText.take(statusBarTextNow.length + 1)
+                delay(75)
+                continue
+            }
+            if (statusBarTextNow.length == workText.length) {
+                statusBarTextNow = workText
+                if (isProcessed) {
+                    while (startSize == listProgressedStatusBar.size) {
+                        statusBarTextNow = workText + '.' * addedEllipsis
+                        addedEllipsis++
+                        if (addedEllipsis == 4) addedEllipsis = 0
+                        delay(400)
+                    }
+                    addedEllipsis = 0
+                } else {
+                    delay(5000)
+                }
+                workText = ""
+                continue
+            }
+
+            if (statusBarTextNow.isNotEmpty())
+                statusBarTextNow = statusBarTextNow.take(statusBarTextNow.length - 1)
             delay(75)
+            continue
         }
+
+        if (listProgressedStatusBar.isNotEmpty()) {
+            workText = listProgressedStatusBar.last()
+            startSize = listProgressedStatusBar.size
+            isProcessed = true
+            continue
+        }
+
+        if (statusBarTextNow.isNotEmpty())
+            statusBarTextNow = statusBarTextNow.take(statusBarTextNow.length - 1)
+        delay(75)
     }
 }
 
 private var addedEllipsis = 0
-
-private suspend fun addEllipsis() = withContext(Dispatchers.Default) {
-    while (listProgressedStatusBar.isNotEmpty()) {
-        statusBarTextNow = statusBarInfo.text + '.' * addedEllipsis
-        addedEllipsis++
-        if (addedEllipsis == 4) addedEllipsis = 0
-        delay(400)
-    }
-    addedEllipsis = 0
-}

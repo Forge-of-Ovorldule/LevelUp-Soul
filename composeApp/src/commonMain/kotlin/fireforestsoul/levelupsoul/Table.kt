@@ -38,6 +38,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +48,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import dev.chrisbanes.haze.HazeState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -111,8 +114,15 @@ fun TableContent(
                     contentAlignment = Alignment.Center
                 ) {}
                 for (y in 0 until habits.size) {
-                    val seeColor = seeColorByIndex(sortedHabits[y])
-                    val noSeeColor = seeColor.multiply(0.5f, 0.5f, 0.5f)
+                    var seeColor by remember { mutableStateOf(soul_color) }
+                    var noSeeColor by remember { mutableStateOf(seeColor.multiply(0.5f, 0.5f, 0.5f)) }
+
+                    LaunchedEffect(sortedHabits[y]) {
+                        withContext(Dispatchers.Default) {
+                            seeColor = seeColorByIndex(sortedHabits[y])
+                            noSeeColor = seeColor.multiply(0.5f, 0.5f, 0.5f)
+                        }
+                    }
 
                     Box(
                         modifier = Modifier
@@ -157,7 +167,7 @@ fun TableContent(
                             ) {
                                 TextWithDeployableEllipsis(
                                     backgroundColor = UIC_black,
-                                    newStatusBarInfo = StatusBarInfo(
+                                    newStatusBarInfo = changeStatusBarInfo(
                                         backgroundColor = UIC_dark,
                                         downPanelSize = 48.dp,
                                         isProcessed = false
@@ -232,8 +242,15 @@ fun TableContent(
                     }
                     //results
                     for (y in 0 until habits.size) {
-                        val seeColor = seeColorByIndex(sortedHabits[y])
-                        val noSeeColor = seeColor.multiply(0.5f, 0.5f, 0.5f)
+                        var seeColor by remember { mutableStateOf(soul_color) }
+                        var noSeeColor by remember { mutableStateOf(seeColor.multiply(0.5f, 0.5f, 0.5f)) }
+
+                        LaunchedEffect(sortedHabits[y]) {
+                            withContext(Dispatchers.Default) {
+                                seeColor = seeColorByIndex(sortedHabits[y])
+                                noSeeColor = seeColor.multiply(0.5f, 0.5f, 0.5f)
+                            }
+                        }
 
                         Column(
                             verticalArrangement = Arrangement.Center,

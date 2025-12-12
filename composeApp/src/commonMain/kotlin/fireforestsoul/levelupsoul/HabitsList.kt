@@ -32,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +52,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel) {
@@ -85,7 +88,13 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                         verticalAlignment = Alignment.Top,
                         horizontalArrangement = Arrangement.spacedBy(12.26.dp)
                     ) {
-                        val seeColorByX = seeColorByIndex(sortedHabits[x])
+                        var seeColorByX by remember { mutableStateOf(soul_color) }
+
+                        LaunchedEffect(sortedHabits[x]) {
+                            seeColorByX = withContext(Dispatchers.Default) {
+                                seeColorByIndex(sortedHabits[x])
+                            }
+                        }
 
                         Text(
                             text = habits[sortedHabits[x]].iconChar,
@@ -182,6 +191,18 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                 )
                             }
                             if (showDialog) {
+                                val textFieldColorsByUicDark = TextFieldDefaults.colors(
+                                    focusedTextColor = UICT_see,
+                                    unfocusedTextColor = UICT_no_see,
+                                    disabledTextColor = UICT_no_see,
+                                    focusedContainerColor = UIC_dark,
+                                    unfocusedContainerColor = UIC_dark,
+                                    disabledContainerColor = UIC_dark,
+                                    cursorColor = UICT_see,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent
+                                )
                                 AlertDialog(
                                     containerColor = UIC,
                                     onDismissRequest = { showDialog = false },
@@ -213,18 +234,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                                 color = UICT_see
                                             ),
                                             shape = RoundedCornerShape(15.dp),
-                                            colors = TextFieldDefaults.colors(
-                                                focusedTextColor = UICT_see,
-                                                unfocusedTextColor = UICT_no_see,
-                                                disabledTextColor = UICT_no_see,
-                                                focusedContainerColor = UIC_dark,
-                                                unfocusedContainerColor = UIC_dark,
-                                                disabledContainerColor = UIC_dark,
-                                                cursorColor = UICT_see,
-                                                focusedIndicatorColor = Color.Transparent,
-                                                unfocusedIndicatorColor = Color.Transparent,
-                                                disabledIndicatorColor = Color.Transparent
-                                            )
+                                            colors = textFieldColorsByUicDark
                                         )
                                     },
                                     dismissButton = {

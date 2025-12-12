@@ -79,7 +79,9 @@ import androidx.compose.ui.unit.times
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import dev.chrisbanes.haze.HazeState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.DayOfWeek
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.abs
@@ -90,7 +92,13 @@ private var pps_for_habit_statistic = 0
 
 @Composable
 fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
-    val seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        withContext(Dispatchers.Default) {
+            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -140,7 +148,7 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                     ) {
                         TextWithDeployableEllipsis(
                             backgroundColor = UIC_black,
-                            newStatusBarInfo = StatusBarInfo(
+                            newStatusBarInfo = changeStatusBarInfo(
                                 backgroundColor = Color.Black,
                                 downPanelSize = 48.67.dp,
                                 isProcessed = false
@@ -461,7 +469,13 @@ private fun HabitStatisticsStatusIcon(
     contentDescription: String,
     onClick: () -> Unit
 ) {
-    val seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        withContext(Dispatchers.Default) {
+            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+        }
+    }
 
     Box(
         modifier = Modifier.size(35.56.dp / 1.15f)
@@ -591,7 +605,7 @@ private fun GoalContent(
             Column {
                 TextWithDeployableEllipsis(
                     backgroundColor = UIC_dark,
-                    newStatusBarInfo = StatusBarInfo(
+                    newStatusBarInfo = changeStatusBarInfo(
                         backgroundColor = UIC_dark,
                         downPanelSize = 48.67.dp,
                         isProcessed = false
@@ -668,7 +682,13 @@ private fun GoalContent(
 private fun ProgressContent(
     pps: Int
 ) {
-    val seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        withContext(Dispatchers.Default) {
+            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+        }
+    }
 
     @Composable
     fun DonutChart(
@@ -889,7 +909,13 @@ private fun LevelContent(
     pps: Int,
     hazeState: HazeState
 ) {
-    val seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        withContext(Dispatchers.Default) {
+            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+        }
+    }
 
     @Composable
     fun CircleImage(
@@ -1032,7 +1058,7 @@ private fun LevelContent(
                         Box(modifier = Modifier.weight(0.5f)) {
                             TextWithDeployableEllipsis(
                                 backgroundColor = backgroundColor,
-                                newStatusBarInfo = StatusBarInfo(
+                                newStatusBarInfo = changeStatusBarInfo(
                                     backgroundColor = UIC_dark,
                                     downPanelSize = 48.67.dp,
                                     isProcessed = false
@@ -1066,7 +1092,7 @@ private fun LevelContent(
                         Box(modifier = Modifier.weight(0.5f)) {
                             TextWithDeployableEllipsis(
                                 backgroundColor = backgroundColor,
-                                newStatusBarInfo = StatusBarInfo(
+                                newStatusBarInfo = changeStatusBarInfo(
                                     backgroundColor = UIC_dark,
                                     downPanelSize = 48.67.dp,
                                     isProcessed = false
@@ -1093,7 +1119,7 @@ private fun LevelContent(
                 } else {
                     TextWithDeployableEllipsis(
                         backgroundColor = backgroundColor,
-                        newStatusBarInfo = StatusBarInfo(
+                        newStatusBarInfo = changeStatusBarInfo(
                             backgroundColor = UIC_dark,
                             downPanelSize = 48.67.dp,
                             isProcessed = false
@@ -1207,7 +1233,14 @@ private fun LevelContent(
 private fun ProgressGraphContent(
     pps: Int
 ) {
-    val seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        withContext(Dispatchers.Default) {
+            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+        }
+    }
+
     var isSmooth by remember { mutableStateOf(true) }
 
     @Composable
@@ -1411,7 +1444,13 @@ private fun ProgressGraphContent(
 
 @Composable
 private fun BarChartContent() {
-    val seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        withContext(Dispatchers.Default) {
+            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+        }
+    }
 
     @Composable
     fun BarChart(
@@ -1636,7 +1675,13 @@ private fun BarChartContent() {
 
 @Composable
 fun CalendarContent() {
-    val seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        withContext(Dispatchers.Default) {
+            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+        }
+    }
 
     @Composable
     fun HabitGrid(
@@ -1719,7 +1764,13 @@ fun CalendarContent() {
 
 @Composable
 fun StreaksContent() {
-    val seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        withContext(Dispatchers.Default) {
+            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -1762,7 +1813,13 @@ fun StreaksContent() {
 
 @Composable
 fun DistributionByDayOfTheWeekContent() {
-    val seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        withContext(Dispatchers.Default) {
+            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
+        }
+    }
 
     data class DataBox(var x: Float, var y: Float, var width: Float, var height: Float)
 
