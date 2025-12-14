@@ -125,9 +125,10 @@ fun StatusBar(hazeState: HazeState) {
 }
 
 private var statusBarTextNow by mutableStateOf("")
-private var workText = statusBarInfo.text
+private var workText: String = statusBarInfo.text
 private var startSize = listProgressedStatusBar.size
 private var isProcessed = statusBarInfo.isProcessed
+private val mutex = Mutex()
 
 private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
     if (!statusBarInfo.isProcessed) {
@@ -137,21 +138,27 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
     startSize = listProgressedStatusBar.size
 
     while (true) {
-        if (workText.isNotEmpty()) {
-            if (listProgressedStatusBar.size != startSize) {
+        val currentText = workText
+
+        if (currentText.isNotEmpty()) {
+            val currentListSize = mutex.withLock { listProgressedStatusBar.size }
+
+            if (currentListSize != startSize) {
                 workText = ""
                 continue
             }
-            if (statusBarTextNow.length < workText.length) {
-                statusBarTextNow = workText.take(statusBarTextNow.length + 1)
+
+            if (statusBarTextNow.length < currentText.length) {
+                statusBarTextNow = currentText.take(statusBarTextNow.length + 1)
                 delay(75)
                 continue
             }
-            if (statusBarTextNow.length == workText.length) {
-                statusBarTextNow = workText
+
+            if (statusBarTextNow.length == currentText.length) {
+                statusBarTextNow = currentText
                 if (isProcessed) {
-                    while (startSize == listProgressedStatusBar.size) {
-                        statusBarTextNow = workText + '.' * addedEllipsis
+                    while (currentListSize == mutex.withLock { listProgressedStatusBar.size }) {
+                        statusBarTextNow = currentText + ".".repeat(addedEllipsis)
                         addedEllipsis++
                         if (addedEllipsis == 4) addedEllipsis = 0
                         delay(400)
@@ -164,28 +171,30 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
                 continue
             }
 
-            if (statusBarTextNow.isNotEmpty())
-                statusBarTextNow = statusBarTextNow.take(statusBarTextNow.length - 1)
+            if (statusBarTextNow.isNotEmpty()) {
+                statusBarTextNow = statusBarTextNow.dropLast(1)
+            }
             delay(75)
             continue
         }
 
-        val mutex = Mutex()
-
-        if (listProgressedStatusBar.isNotEmpty()) {
-            mutex.withLock {
-                if (listProgressedStatusBar.isNotEmpty()) {
-                    workText = listProgressedStatusBar.last()
-                    startSize = listProgressedStatusBar.size
-                    isProcessed = true
-                }
-                return@withLock
+        var hasNewWork = false
+        mutex.withLock {
+            if (listProgressedStatusBar.isNotEmpty()) {
+                workText = listProgressedStatusBar.last()
+                startSize = listProgressedStatusBar.size
+                isProcessed = true
+                hasNewWork = true
             }
+        }
+
+        if (hasNewWork) {
             continue
         }
 
-        if (statusBarTextNow.isNotEmpty())
-            statusBarTextNow = statusBarTextNow.take(statusBarTextNow.length - 1)
+        if (statusBarTextNow.isNotEmpty()) {
+            statusBarTextNow = statusBarTextNow.dropLast(1)
+        }
         delay(75)
     }
 }
