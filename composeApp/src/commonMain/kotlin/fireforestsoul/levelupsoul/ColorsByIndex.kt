@@ -19,7 +19,8 @@ fun seeColorByIndex(index: Int): Color {
     if (habits[index].typeOfColorHabits == TypeOfColorHabits.SELECTED)
         return habits[index].colorGood
 
-    listProgressedStatusBar.add(ts_Calculating_adaptive_color_habits)
+    val addProcess = ts_Calculating_adaptive_color_habits
+    listProgressedStatusBar.add(addProcess)
     statusBarInfo = changeStatusBarInfo(
         ts_Calculating_adaptive_color_habits,
         habits[index].colorGood,
@@ -103,7 +104,11 @@ fun seeColorByIndex(index: Int): Color {
                 + (if (habits[index].changeNeedDaysWithLevel) 1f else 0f)) / 3f
     }
 
-    listProgressedStatusBar.remove(ts_Calculating_adaptive_color_habits)
+    try {
+        listProgressedStatusBar.remove(addProcess)
+    } catch (e: Exception) {
+        listProgressedStatusBar.clear()
+    }
 
     return Color(
         ((getProgressK() + getLevelK() + getNeedDaysK()) / 3 * 255).toInt(),

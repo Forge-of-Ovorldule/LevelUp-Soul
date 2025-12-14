@@ -26,10 +26,19 @@ fun initStorage(appContext: Context) {
 
 private val prefs: SharedPreferences
     get() = context!!.getSharedPreferences(save_file_name, Context.MODE_PRIVATE)
+private lateinit var editor: SharedPreferences.Editor
+
+actual fun openSaveFiles() {
+    editor = prefs.edit()
+}
+
+actual fun closeSaveFiles() {
+    editor.apply()
+}
 
 actual fun saveValue(value: Any, name: String) {
     val serialized = value.savedElementToString()
-    prefs.edit { putString(name, serialized) }
+    editor.putString(name, serialized)
 }
 
 actual fun <T> loadValue(value: T, name: String): T {

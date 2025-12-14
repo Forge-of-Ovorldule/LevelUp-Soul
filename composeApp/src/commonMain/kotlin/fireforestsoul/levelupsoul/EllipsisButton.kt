@@ -20,8 +20,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextOverflow
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeEffect
@@ -40,98 +40,88 @@ fun TextWithDeployableEllipsis(
     fontFamily: FontFamily? = null,
     textAlign: TextAlign = TextAlign.Unspecified
 ) {
-    val displayText by mutableStateOf(text)
-    val displayColor by mutableStateOf(color)
-    val displayBackgroundColor by mutableStateOf(backgroundColor)
-    val displayFontSize by mutableStateOf(fontSize)
-    val displayHazeState by mutableStateOf(hazeState)
+    var isOverflowing by remember(text, Unit) { mutableStateOf(false) }
 
-    var rowWidth by remember { mutableStateOf<Int?>(null) }
-    var beforeWidth by remember { mutableStateOf<Int?>(null) }
-    var afterWidth by remember { mutableStateOf<Int?>(null) }
+    Row {
 
-    Row(modifier = Modifier.onSizeChanged { rowWidth = it.width }) {
-        Box(modifier = Modifier.onSizeChanged { beforeWidth = it.width }) {
-            contentBefore()
-        }
+        contentBefore()
 
-        val availableTextWidth = (rowWidth ?: 0) - (beforeWidth ?: 0) - (afterWidth ?: 0)
-        BoxWithConstraints(
-            if (displayText.length > with(LocalDensity.current) { availableTextWidth / (51f / 85 * displayFontSize.toPx()) })
-                Modifier.weight(1f) else Modifier
-        ) {
-            var width by mutableStateOf(maxWidth)
-
-            if (displayText.length > with(LocalDensity.current) { width.toPx() / (51f / 85 * displayFontSize.toPx()) }) {
-                Row {
-                    val needTake =
-                        with(LocalDensity.current) { width.toPx() / (51f / 85 * displayFontSize.toPx()) }.toInt() - 2
-                    if (needTake > 0) {
-                        Text(
-                            text = text.take(needTake),
-                            maxLines = 1,
-                            color = displayColor,
-                            fontSize = displayFontSize,
-                            fontWeight = fontWeight,
-                            fontFamily = fontFamily,
-                            textAlign = textAlign
-                        )
+        if (!isOverflowing) {
+            Text(
+                text = text,
+                maxLines = 1,
+                overflow = TextOverflow.Clip,
+                color = color,
+                fontSize = fontSize,
+                fontWeight = fontWeight,
+                fontFamily = fontFamily,
+                textAlign = textAlign,
+                onTextLayout = { result ->
+                    if (result.hasVisualOverflow) {
+                        isOverflowing = true
                     }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                newStatusBarInfo.text = displayText
-                                newStatusBarInfo.textColor = displayColor
-                                statusBarInfo = newStatusBarInfo
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .border(
-                                    0.35.dp,
-                                    displayColor.multiply(0.5f, 0.5f, 0.5f, 0.5f),
-                                    RoundedCornerShape(5.22.dp)
-                                )
-                                .padding(horizontal = with(LocalDensity.current) { (10f / 85 * displayFontSize.toPx()).toDp() })
-                                .clip(RoundedCornerShape(5.22.dp))
-                                .hazeEffect(
-                                    displayHazeState,
-                                    HazeStyle(
-                                        tint = null,
-                                        backgroundColor = displayBackgroundColor.copy(0.25f),
-                                        blurRadius = 8.7.dp,
-                                        noiseFactor = 0f
-                                    )
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "…",
-                                color = displayColor.multiply(0.5f, 0.5f, 0.5f),
-                                fontSize = displayFontSize,
-                                fontWeight = fontWeight,
-                                fontFamily = fontFamily,
-                                textAlign = textAlign
-                            )
-                        }
-                    }
-                }
-            } else {
+                },
+                softWrap = false
+            )
+        } else {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = text,
-                    color = displayColor,
-                    fontSize = displayFontSize,
+                    maxLines = 1,
+                    overflow = TextOverflow.Clip,
+                    modifier = Modifier.weight(1f),
+                    color = color,
+                    fontSize = fontSize,
                     fontWeight = fontWeight,
                     fontFamily = fontFamily,
-                    textAlign = textAlign
+                    textAlign = textAlign,
+                    softWrap = false
                 )
+
+                Box(
+                    modifier = Modifier
+                        .clickable {
+                            newStatusBarInfo.text = text
+                            newStatusBarInfo.textColor = color
+                            statusBarInfo = newStatusBarInfo
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .border(
+                                0.35.dp,
+                                color.multiply(0.5f, 0.5f, 0.5f, 0.5f),
+                                RoundedCornerShape(5.22.dp)
+                            )
+                            .clip(RoundedCornerShape(5.22.dp))
+                            .hazeEffect(
+                                hazeState,
+                                HazeStyle(
+                                    tint = null,
+                                    backgroundColor = backgroundColor.copy(0.25f),
+                                    blurRadius = 8.7.dp,
+                                    noiseFactor = 0f
+                                )
+                            )
+                            .padding(horizontal = 3.48.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "…",
+                            color = color.multiply(0.5f, 0.5f, 0.5f),
+                            fontSize = fontSize,
+                            fontWeight = fontWeight,
+                            fontFamily = fontFamily
+                        )
+                    }
+                }
             }
         }
 
-        Box(modifier = Modifier.onSizeChanged { afterWidth = it.width }) {
-            contentAfter()
-        }
+        contentAfter()
     }
 }

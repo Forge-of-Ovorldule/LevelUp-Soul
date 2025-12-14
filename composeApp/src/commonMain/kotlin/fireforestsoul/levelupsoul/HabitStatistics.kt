@@ -433,7 +433,11 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                             }
 
                             HabitStatisticsStatus.PROGRESS -> ProgressContent(progressPeriodSetting)
-                            HabitStatisticsStatus.LEVEL -> LevelContent(progressPeriodSetting, hazeState)
+                            HabitStatisticsStatus.LEVEL -> LevelContent(
+                                progressPeriodSetting,
+                                hazeState
+                            )
+
                             HabitStatisticsStatus.PROGRESS_GRAPH -> ProgressGraphContent(
                                 progressPeriodSetting
                             )
@@ -944,7 +948,13 @@ private fun LevelContent(
                     contentDescription = ts_Level,
                     colorFilter = ColorFilter.tint(
                         if (isNotBad) seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)
-                        else reversNoBiggerColor(seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)),
+                        else reversNoBiggerColor(
+                            seeColorByHabitAndStatisticsEditX.multiply(
+                                0.5f,
+                                0.5f,
+                                0.5f
+                            )
+                        ),
                         BlendMode.Modulate
                     ),
                     modifier = Modifier.size(size / 2)
@@ -964,7 +974,13 @@ private fun LevelContent(
 
                 drawArc(
                     color = if (isGood) seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)
-                    else reversNoBiggerColor(seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)),
+                    else reversNoBiggerColor(
+                        seeColorByHabitAndStatisticsEditX.multiply(
+                            0.5f,
+                            0.5f,
+                            0.5f
+                        )
+                    ),
                     startAngle = -90f,
                     sweepAngle = 360f,
                     useCenter = false,
@@ -1055,7 +1071,10 @@ private fun LevelContent(
             paramElement(ts_Goal, isNotBad) { backgroundColor ->
                 if (habits[habit_statistics_and_edit_x].changeNeedGoalWithLevel && !(isNotBad && isNotGood)) {
                     Row {
-                        Box(modifier = Modifier.weight(0.5f)) {
+                        Box(
+                            modifier = Modifier.weight(0.5f),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
                             TextWithDeployableEllipsis(
                                 backgroundColor = backgroundColor,
                                 newStatusBarInfo = changeStatusBarInfo(
@@ -1089,6 +1108,13 @@ private fun LevelContent(
                                 fontWeight = FontWeight.Normal
                             )
                         }
+                        Text(
+                            text = "->",
+                            fontSize = 16.sp / 1.15f,
+                            color = if (isNotBad) UIC_green else UIC_red,
+                            fontFamily = JetBrainsFont(),
+                            fontWeight = FontWeight.Bold
+                        )
                         Box(modifier = Modifier.weight(0.5f)) {
                             TextWithDeployableEllipsis(
                                 backgroundColor = backgroundColor,
@@ -1100,7 +1126,9 @@ private fun LevelContent(
                                 hazeState = hazeState,
                                 contentBefore = {
                                     Text(
-                                        text = "-> " + habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(pps)
+                                        text = " " + habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(
+                                            pps
+                                        )
                                             .toBestString() + " ",
                                         fontSize = 16.sp / 1.15f,
                                         color = if (isNotBad) UIC_green else UIC_red,
@@ -1178,7 +1206,9 @@ private fun LevelContent(
                             fontWeight = FontWeight.Normal
                         )
                         Text(
-                            text = "-> " + habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(pps).toString(),
+                            text = "-> " + habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(
+                                pps
+                            ).toString(),
                             fontSize = 16.sp / 1.15f,
                             color = if (isNotBad) UIC_green else UIC_red,
                             maxLines = 1,
@@ -1193,7 +1223,9 @@ private fun LevelContent(
                         if (phantomDays != BigDecimal.ZERO)
                             Text(
                                 text = " (${
-                                    habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(pps)
+                                    habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(
+                                        pps
+                                    )
                                         .toBestString()
                                 })",
                                 fontSize = 16.sp / 1.15f,
@@ -1254,11 +1286,12 @@ private fun ProgressGraphContent(
                         Brush.linearGradient(
                             listOf(
                                 seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f),
-                                seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f).multiply(
-                                    0.2f,
-                                    0.2f,
-                                    0.2f
-                                )
+                                seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)
+                                    .multiply(
+                                        0.2f,
+                                        0.2f,
+                                        0.2f
+                                    )
                             ), Offset(0f, 0f), Offset.Infinite
                         ),
                         RoundedCornerShape(17.8.dp / 1.15f)
@@ -1307,7 +1340,8 @@ private fun ProgressGraphContent(
             modifier = Modifier.fillMaxWidth()
                 .height(45.2.dp / 1.15f)
                 .background(
-                    seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f).multiply(0.4f, 0.4f, 0.4f, 0.4f),
+                    seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)
+                        .multiply(0.4f, 0.4f, 0.4f, 0.4f),
                     RoundedCornerShape(22.7.dp / 1.15f)
                 )
                 .padding(horizontal = 6.4.dp / 1.15f),
@@ -1493,7 +1527,8 @@ private fun BarChartContent() {
             }
         }
 
-        val totalWidthDp = ((values.size + (values.last().toBestString().length - 3) / 3) * (barWidth + barSpacing))
+        val totalWidthDp = ((values.size + (values.last()
+            .toBestString().length - 3) / 3) * (barWidth + barSpacing))
 
         if (values.isNotEmpty()) {
             Box(
@@ -1528,7 +1563,8 @@ private fun BarChartContent() {
                     values.forEachIndexed { i, value ->
                         val v = value.doubleValue(false).toFloat()
                         val x = i * (barWidthPx + spacingPx)
-                        val barHeight = (chartHeight * abs(v / (if (range != 0.0) range.toFloat() else 1f)))
+                        val barHeight =
+                            (chartHeight * abs(v / (if (range != 0.0) range.toFloat() else 1f)))
 
                         val top = if (v >= 0f) zeroY - barHeight else zeroY
                         val bottom = if (v >= 0f) zeroY else zeroY + barHeight

@@ -174,7 +174,7 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
 
         if (listProgressedStatusBar.isNotEmpty()) {
             mutex.withLock {
-                if (listProgressedStatusBar.isNotEmpty()) { //second check
+                if (listProgressedStatusBar.isNotEmpty()) {
                     workText = listProgressedStatusBar.last()
                     startSize = listProgressedStatusBar.size
                     isProcessed = true

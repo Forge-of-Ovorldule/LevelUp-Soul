@@ -177,7 +177,7 @@ fun TableContent(
                                     color = seeColor,
                                     fontWeight = FontWeight.Normal,
                                     fontFamily = JetBrainsFont(),
-                                    fontSize = firstSellFontSize
+                                    fontSize = firstSellFontSize / 1.15f
                                 )
                                 val needOrCanMore =
                                     habits[sortedHabits[y]].needGoal - habits[sortedHabits[y]].habitDay[habits[sortedHabits[y]].habitDay.size - 1].totalOfAPeriod
