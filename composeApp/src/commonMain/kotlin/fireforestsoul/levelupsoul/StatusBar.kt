@@ -20,7 +20,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ionspin.kotlin.bignum.integer.util.times
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeEffect
@@ -32,6 +31,7 @@ import kotlinx.coroutines.withContext
 import kotlin.String
 
 var statusBarInfo by mutableStateOf(StatusBarInfo())
+var updateTimerForStatusBar by mutableStateOf(false)
 
 fun changeStatusBarInfo(
     text: String = "",
@@ -68,6 +68,7 @@ fun StatusBar(hazeState: HazeState) {
 
     LaunchedEffect(
         Unit,
+        updateTimerForStatusBar,
         statusBarInfo,
         statusBarInfo.text,
         statusBarInfo.backgroundColor,
@@ -78,6 +79,7 @@ fun StatusBar(hazeState: HazeState) {
         displayTextColor = statusBarInfo.textColor
         displayBackgroundColor = statusBarInfo.backgroundColor
         displayDownPanelSize = statusBarInfo.downPanelSize
+        updateTimerForStatusBar = false
         makeTextForStatusBar()
     }
 

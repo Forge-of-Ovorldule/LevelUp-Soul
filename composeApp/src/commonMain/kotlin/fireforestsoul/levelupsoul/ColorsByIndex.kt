@@ -145,11 +145,7 @@ suspend fun calculateProgressiveColor(
             emitCurrentColor()
 
         } finally {
-            try {
-                listProgressedStatusBar.remove(addProcess)
-            } catch (e: Exception) {
-                listProgressedStatusBar.clear()
-            }
+            listProgressedStatusBar.remove(addProcess)
         }
     }
 }

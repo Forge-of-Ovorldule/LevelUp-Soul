@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -86,6 +85,7 @@ fun TextWithDeployableEllipsis(
                         .clickable {
                             newStatusBarInfo.text = text
                             newStatusBarInfo.textColor = color
+                            updateTimerForStatusBar = true
                             statusBarInfo = newStatusBarInfo
                         },
                     contentAlignment = Alignment.Center
