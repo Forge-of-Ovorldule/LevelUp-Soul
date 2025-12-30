@@ -48,8 +48,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import dev.chrisbanes.haze.HazeState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -118,10 +116,13 @@ fun TableContent(
                     var noSeeColor by remember { mutableStateOf(seeColor.multiply(0.5f, 0.5f, 0.5f)) }
 
                     LaunchedEffect(sortedHabits[y]) {
-                        withContext(Dispatchers.Default) {
-                            seeColor = seeColorByIndex(sortedHabits[y])
-                            noSeeColor = seeColor.multiply(0.5f, 0.5f, 0.5f)
-                        }
+                        calculateProgressiveColor(
+                            index = sortedHabits[y],
+                            onColorUpdate = { newColor ->
+                                seeColor = newColor
+                                noSeeColor = newColor.multiply(0.5f, 0.5f, 0.5f)
+                            }
+                        )
                     }
 
                     Box(
@@ -246,10 +247,13 @@ fun TableContent(
                         var noSeeColor by remember { mutableStateOf(seeColor.multiply(0.5f, 0.5f, 0.5f)) }
 
                         LaunchedEffect(sortedHabits[y]) {
-                            withContext(Dispatchers.Default) {
-                                seeColor = seeColorByIndex(sortedHabits[y])
-                                noSeeColor = seeColor.multiply(0.5f, 0.5f, 0.5f)
-                            }
+                            calculateProgressiveColor(
+                                index = sortedHabits[y],
+                                onColorUpdate = { newColor ->
+                                    seeColor = newColor
+                                    noSeeColor = newColor.multiply(0.5f, 0.5f, 0.5f)
+                                }
+                            )
                         }
 
                         Column(

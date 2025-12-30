@@ -52,8 +52,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @Composable
 fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel) {
@@ -91,9 +89,12 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                         var seeColorByX by remember { mutableStateOf(soul_color) }
 
                         LaunchedEffect(sortedHabits[x]) {
-                            seeColorByX = withContext(Dispatchers.Default) {
-                                seeColorByIndex(sortedHabits[x])
-                            }
+                            calculateProgressiveColor(
+                                index = sortedHabits[x],
+                                onColorUpdate = { newColor ->
+                                    seeColorByX = newColor
+                                }
+                            )
                         }
 
                         Text(

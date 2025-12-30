@@ -14,107 +14,144 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlin.math.max
 import kotlin.math.min
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 
-fun seeColorByIndex(index: Int): Color {
-    if (habits[index].typeOfColorHabits == TypeOfColorHabits.SELECTED)
-        return habits[index].colorGood
+suspend fun calculateProgressiveColor(
+    index: Int,
+    onColorUpdate: (Color) -> Unit
+) {
+    if (habits[index].typeOfColorHabits == TypeOfColorHabits.SELECTED) {
+        onColorUpdate(habits[index].colorGood)
+        return
+    }
+
+    var kProgress = 0f
+    var kLevel = 0f
+    var kNeedDays = 0f
+
+    var kDays = 0f
+    var kNeedGoal = 0f
+    var kLevelChange = 0f
+
+    var kStreak = 0f
+    var kTypeOfGoal = 0f
+
+    fun emitCurrentColor() {
+        val red = ((kProgress + kLevel + kNeedDays) / 3 * 255).toInt().coerceIn(0, 255)
+        val green = ((kDays + kNeedGoal + kLevelChange) / 3 * 255).toInt().coerceIn(0, 255)
+        val blue = ((kStreak + kTypeOfGoal) / 2 * 255).toInt().coerceIn(0, 255)
+
+        onColorUpdate(Color(red, green, blue))
+    }
 
     val addProcess = ts_Calculating_adaptive_color_habits
     listProgressedStatusBar.add(addProcess)
-    statusBarInfo = changeStatusBarInfo(
-        ts_Calculating_adaptive_color_habits,
-        habits[index].colorGood,
-        isProcessed = true
-    )
 
-    fun getProgressK(): Float {
-        var maxProgress = Float.MIN_VALUE
-        var minProgress = Float.MAX_VALUE
-        for (habit in habits) {
-            maxProgress = max(progress(habit), maxProgress)
-            minProgress = min(progress(habit), maxProgress)
-        }
-        return if (maxProgress == minProgress) 1f else (progress(index) - minProgress) / (if (maxProgress - minProgress == 0f) 1f else (maxProgress - minProgress))
-    }
-
-    fun getDaysK(): Float {
-        var maxDays = Int.MIN_VALUE
-        var minDays = Int.MAX_VALUE
-        for (habit in habits) {
-            maxDays = max(habit.habitDay.size, maxDays)
-            minDays = min(habit.habitDay.size, maxDays)
-        }
-        return if (maxDays == minDays) 1f else (habits[index].habitDay.size - minDays).toFloat() / (if (maxDays - minDays == 0) 1f else (maxDays - minDays).toFloat())
-    }
-
-    fun getStreakK(): Float {
-        if (habitStreaks(index).isNotEmpty()) {
-            var maxStreak = Int.MIN_VALUE
-            val minStreak = 0
+    withContext(Dispatchers.Default) {
+        try {
+            var maxProgress = Float.MIN_VALUE
+            var minProgress = Float.MAX_VALUE
             for (habit in habits) {
-                maxStreak = max(if (habitStreaks(habit).isNotEmpty()) habitStreaks(habit)[0] else 0, maxStreak)
+                maxProgress = max(progress(habit), maxProgress)
+                minProgress = min(progress(habit), minProgress)
             }
-            return if (maxStreak == minStreak) 1f else (habitStreaks(index)[0] - minStreak).toFloat() / (if (maxStreak - minStreak == 0) 1f else (maxStreak - minStreak).toFloat())
+            kProgress =
+                if (maxProgress == minProgress) 1f else (progress(index) - minProgress) / (if (maxProgress - minProgress == 0f) 1f else (maxProgress - minProgress))
+
+            emitCurrentColor()
+            yield()
+
+            var maxDays = Int.MIN_VALUE
+            var minDays = Int.MAX_VALUE
+            for (habit in habits) {
+                maxDays = max(habit.habitDay.size, maxDays)
+                minDays = min(habit.habitDay.size, minDays)
+            }
+            kDays =
+                if (maxDays == minDays) 1f else (habits[index].habitDay.size - minDays).toFloat() / (if (maxDays - minDays == 0) 1f else (maxDays - minDays).toFloat())
+
+            emitCurrentColor()
+            yield()
+
+            if (habitStreaks(index).isNotEmpty()) {
+                var maxStreak = Int.MIN_VALUE
+                val minStreak = 0
+                for (habit in habits) {
+                    val s = if (habitStreaks(habit).isNotEmpty()) habitStreaks(habit)[0] else 0
+                    maxStreak = max(s, maxStreak)
+                }
+                kStreak =
+                    if (maxStreak == minStreak) 1f else (habitStreaks(index)[0] - minStreak).toFloat() / (if (maxStreak - minStreak == 0) 1f else (maxStreak - minStreak).toFloat())
+            } else {
+                kStreak = 0f
+            }
+
+            emitCurrentColor()
+            yield()
+
+            var maxLevel = Int.MIN_VALUE
+            var minLevel = Int.MAX_VALUE
+            for (habit in habits) {
+                maxLevel = max(habit.level, maxLevel)
+                minLevel = min(habit.level, minLevel)
+            }
+            kLevel =
+                if (maxLevel == minLevel) 1f else (habits[index].level - minLevel).toFloat() / (if (maxLevel - minLevel == 0) 1f else (maxLevel - minLevel).toFloat())
+
+            emitCurrentColor()
+            yield()
+
+            var maxNeedGoal = Double.MIN_VALUE.toBigDecimal()
+            var minNeedGoal = Double.MAX_VALUE.toBigDecimal()
+            for (habit in habits) {
+                maxNeedGoal = maxOf(habit.needGoal, maxNeedGoal)
+                minNeedGoal = minOf(habit.needGoal, minNeedGoal)
+            }
+            val diffGoal = maxNeedGoal - minNeedGoal
+            kNeedGoal =
+                if (maxNeedGoal == minNeedGoal) 1f else (habits[index].needGoal - minNeedGoal).floatValue(false) / (if (diffGoal == BigDecimal.ZERO) 1f else diffGoal.floatValue(
+                    false
+                ))
+
+            emitCurrentColor()
+            yield()
+
+            kTypeOfGoal = when (habits[index].typeOfGoalHabits) {
+                TypeOfGoalHabits.NO_MORE -> 0f
+                TypeOfGoalHabits.AT_LEAST -> 1f
+            }
+
+            emitCurrentColor()
+            yield()
+
+            var maxNeedDays = Int.MIN_VALUE
+            var minNeedDays = Int.MAX_VALUE
+            for (habit in habits) {
+                maxNeedDays = maxOf(habit.needDays, maxNeedDays)
+                minNeedDays = minOf(habit.needDays, minNeedDays)
+            }
+            kNeedDays =
+                if (maxNeedDays == minNeedDays) 1f else (habits[index].needDays - minNeedDays).toFloat() / (if (maxNeedDays - minNeedDays == 0) 1f else (maxNeedDays - minNeedDays).toFloat())
+
+            emitCurrentColor()
+            yield()
+
+            kLevelChange = ((if (habits[index].changeLevel) 1f else 0f)
+                    + (if (habits[index].changeNeedGoalWithLevel) 1f else 0f)
+                    + (if (habits[index].changeNeedDaysWithLevel) 1f else 0f)) / 3f
+
+            emitCurrentColor()
+
+        } finally {
+            try {
+                listProgressedStatusBar.remove(addProcess)
+            } catch (e: Exception) {
+                listProgressedStatusBar.clear()
+            }
         }
-        return 0f
     }
-
-    fun getLevelK(): Float {
-        var maxLevel = Int.MIN_VALUE
-        var minLevel = Int.MAX_VALUE
-        for (habit in habits) {
-            maxLevel = max(habit.level, maxLevel)
-            minLevel = min(habit.level, maxLevel)
-        }
-        return if (maxLevel == minLevel) 1f else (habits[index].level - minLevel).toFloat() / (if (maxLevel - minLevel == 0) 1f else (maxLevel - minLevel).toFloat())
-    }
-
-    fun getNeedGoalK(): Float {
-        var maxNeedGoal = Double.MIN_VALUE.toBigDecimal()
-        var minNeedGoal = Double.MAX_VALUE.toBigDecimal()
-        for (habit in habits) {
-            maxNeedGoal = maxOf(habit.needGoal, maxNeedGoal)
-            minNeedGoal = minOf(habit.needGoal, maxNeedGoal)
-        }
-        return if (maxNeedGoal == minNeedGoal) 1f else (habits[index].needGoal - minNeedGoal).floatValue(false) / (if (maxNeedGoal - minNeedGoal == BigDecimal.ZERO) 1f else (maxNeedGoal - minNeedGoal).floatValue(
-            false
-        ))
-    }
-
-    fun getTypeOfGoalK(): Float {
-        return when (habits[index].typeOfGoalHabits) {
-            TypeOfGoalHabits.NO_MORE -> 0f
-            TypeOfGoalHabits.AT_LEAST -> 1f
-        }
-    }
-
-    fun getNeedDaysK(): Float {
-        var maxNeedDays = Int.MIN_VALUE
-        var minNeedDays = Int.MAX_VALUE
-        for (habit in habits) {
-            maxNeedDays = maxOf(habit.needDays, maxNeedDays)
-            minNeedDays = minOf(habit.needDays, maxNeedDays)
-        }
-        return if (maxNeedDays == minNeedDays) 1f else (habits[index].needDays - minNeedDays).toFloat() / (if (maxNeedDays - minNeedDays == 0) 1f else (maxNeedDays - minNeedDays).toFloat())
-    }
-
-    fun getLevelChangeK(): Float {
-        return ((if (habits[index].changeLevel) 1f else 0f)
-                + (if (habits[index].changeNeedGoalWithLevel) 1f else 0f)
-                + (if (habits[index].changeNeedDaysWithLevel) 1f else 0f)) / 3f
-    }
-
-    try {
-        listProgressedStatusBar.remove(addProcess)
-    } catch (e: Exception) {
-        listProgressedStatusBar.clear()
-    }
-
-    return Color(
-        ((getProgressK() + getLevelK() + getNeedDaysK()) / 3 * 255).toInt(),
-        ((getDaysK() + getNeedGoalK() + getLevelChangeK()) / 3 * 255).toInt(),
-        ((getStreakK() + getTypeOfGoalK()) / 2 * 255).toInt(),
-    )
 }
 
 fun getSeeSoulColor(): Color {

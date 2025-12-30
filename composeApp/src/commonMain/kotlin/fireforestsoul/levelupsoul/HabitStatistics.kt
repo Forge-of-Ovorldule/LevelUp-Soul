@@ -79,9 +79,7 @@ import androidx.compose.ui.unit.times
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import dev.chrisbanes.haze.HazeState
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.DayOfWeek
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.abs
@@ -95,9 +93,12 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
     var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
-        withContext(Dispatchers.Default) {
-            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
-        }
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
     }
 
     Box(
@@ -476,10 +477,14 @@ private fun HabitStatisticsStatusIcon(
     var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
-        withContext(Dispatchers.Default) {
-            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
-        }
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
     }
+
 
     Box(
         modifier = Modifier.size(35.56.dp / 1.15f)
@@ -689,10 +694,14 @@ private fun ProgressContent(
     var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
-        withContext(Dispatchers.Default) {
-            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
-        }
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
     }
+
 
     @Composable
     fun DonutChart(
@@ -916,10 +925,14 @@ private fun LevelContent(
     var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
-        withContext(Dispatchers.Default) {
-            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
-        }
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
     }
+
 
     @Composable
     fun CircleImage(
@@ -1268,10 +1281,14 @@ private fun ProgressGraphContent(
     var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
-        withContext(Dispatchers.Default) {
-            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
-        }
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
     }
+
 
     var isSmooth by remember { mutableStateOf(true) }
 
@@ -1481,10 +1498,14 @@ private fun BarChartContent() {
     var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
-        withContext(Dispatchers.Default) {
-            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
-        }
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
     }
+
 
     @Composable
     fun BarChart(
@@ -1714,10 +1735,14 @@ fun CalendarContent() {
     var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
-        withContext(Dispatchers.Default) {
-            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
-        }
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
     }
+
 
     @Composable
     fun HabitGrid(
@@ -1803,10 +1828,14 @@ fun StreaksContent() {
     var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
-        withContext(Dispatchers.Default) {
-            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
-        }
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
     }
+
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -1852,10 +1881,14 @@ fun DistributionByDayOfTheWeekContent() {
     var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
-        withContext(Dispatchers.Default) {
-            seeColorByHabitAndStatisticsEditX = seeColorByIndex(habit_statistics_and_edit_x)
-        }
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
     }
+
 
     data class DataBox(var x: Float, var y: Float, var width: Float, var height: Float)
 
