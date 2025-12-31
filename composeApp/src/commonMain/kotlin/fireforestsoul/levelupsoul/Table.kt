@@ -115,7 +115,7 @@ fun TableContent(
                     var seeColor by remember { mutableStateOf(soul_color) }
                     var noSeeColor by remember { mutableStateOf(seeColor.multiply(0.5f, 0.5f, 0.5f)) }
 
-                    LaunchedEffect(sortedHabits[y]) {
+                    LaunchedEffect(sortedHabits[y], progress(sortedHabits[y])) {
                         calculateProgressiveColor(
                             index = sortedHabits[y],
                             onColorUpdate = { newColor ->
@@ -246,7 +246,7 @@ fun TableContent(
                         var seeColor by remember { mutableStateOf(soul_color) }
                         var noSeeColor by remember { mutableStateOf(seeColor.multiply(0.5f, 0.5f, 0.5f)) }
 
-                        LaunchedEffect(sortedHabits[y]) {
+                        LaunchedEffect(sortedHabits[y], progress(sortedHabits[y])) {
                             calculateProgressiveColor(
                                 index = sortedHabits[y],
                                 onColorUpdate = { newColor ->

@@ -88,7 +88,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                     ) {
                         var seeColorByX by remember { mutableStateOf(soul_color) }
 
-                        LaunchedEffect(sortedHabits[x]) {
+                        LaunchedEffect(sortedHabits[x], progress(sortedHabits[x])) {
                             calculateProgressiveColor(
                                 index = sortedHabits[x],
                                 onColorUpdate = { newColor ->
