@@ -178,7 +178,14 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel,
                                             )
                                     )
                                 }
-                                Text(
+                                TextWithDeployableEllipsis(
+                                    backgroundColor = UIC,
+                                    newStatusBarInfo = changeStatusBarInfo(
+                                        backgroundColor = UIC,
+                                        downPanelSize = 48.dp,
+                                        isProcessed = false
+                                    ),
+                                    hazeState = hazeState,
                                     text = if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST)
                                         if (habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod < habits[sortedHabits[x]].needGoal)
                                             "$ts_You_need ${(habits[sortedHabits[x]].needGoal - habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod).toBestString()} ${habits[sortedHabits[x]].nameOfUnitsOfDimension} $ts_more"
@@ -191,9 +198,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel,
                                             ts_You_failed,
                                     color = UICT_no_see,
                                     fontSize = 13.sp,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = TextStyle(shadow = Shadow(blurRadius = 1f))
+                                    fontFamily = JetBrainsFont()
                                 )
                             }
                             if (showDialog) {
