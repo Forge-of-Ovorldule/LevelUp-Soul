@@ -119,7 +119,7 @@ var ts_Thursday = "Thursday"
 var ts_Friday = "Friday"
 var ts_Saturday = "Saturday"
 var ts_Sunday = "Sunday"
-var ts_Calculating_adaptive_color_habits = "Calculating adaptive color habits"
+var ts_Calculating_adaptive_color_habits = "Calculating adaptive color for habits"
 
 fun changeLanguage() {
     if (language == Languages.RU) {
@@ -233,7 +233,7 @@ fun changeLanguage() {
         ts_Friday = "Пятница"
         ts_Saturday = "Суббота"
         ts_Sunday = "Воскресенье"
-        ts_Calculating_adaptive_color_habits = "Вычисление адаптивных цветовых привычек"
+        ts_Calculating_adaptive_color_habits = "Вычисление адаптивных цветов привычек"
     } else {
         ts_Edit = "Edit"
         ts_Cancel = "Cancel"
@@ -345,6 +345,6 @@ fun changeLanguage() {
         ts_Friday = "Friday"
         ts_Saturday = "Saturday"
         ts_Sunday = "Sunday"
-        ts_Calculating_adaptive_color_habits = "Calculating adaptive color habits"
+        ts_Calculating_adaptive_color_habits = "Calculating adaptive color for habits"
     }
 }
