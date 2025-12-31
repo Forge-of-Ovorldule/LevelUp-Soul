@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -87,17 +88,18 @@ fun TextWithDeployableEllipsis(
                             newStatusBarInfo.textColor = color
                             updateTimerForStatusBar = true
                             statusBarInfo = newStatusBarInfo
-                        },
+                        }
+                        .padding(horizontal = with(LocalDensity.current) { fontSize.toDp() / 3.4f }),
                     contentAlignment = Alignment.Center
                 ) {
                     Box(
                         modifier = Modifier
                             .border(
-                                0.35.dp,
+                                with(LocalDensity.current) { fontSize.toDp() / 85f },
                                 color.multiply(0.5f, 0.5f, 0.5f, 0.5f),
-                                RoundedCornerShape(5.22.dp)
+                                RoundedCornerShape(with(LocalDensity.current) { fontSize.toDp() / 5.67f })
                             )
-                            .clip(RoundedCornerShape(5.22.dp))
+                            .clip(RoundedCornerShape(with(LocalDensity.current) { fontSize.toDp() / 5.67f }))
                             .hazeEffect(
                                 hazeState,
                                 HazeStyle(
@@ -107,7 +109,7 @@ fun TextWithDeployableEllipsis(
                                     noiseFactor = 0f
                                 )
                             )
-                            .padding(horizontal = 3.48.dp),
+                            .padding(horizontal = with(LocalDensity.current) { fontSize.toDp() / 8.5f }),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
