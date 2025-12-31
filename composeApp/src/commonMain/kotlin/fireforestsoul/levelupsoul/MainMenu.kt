@@ -34,10 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontFamily
 import org.jetbrains.compose.resources.painterResource
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -267,11 +264,17 @@ fun MainMenuContent(
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             if (appStatus == AppStatus.TABLE || appStatus == AppStatus.TABLE_UPDATER)
-                TableContent(viewModel, verticalScrollForTableContent, horizontalScrollForTableContent, countdownDate, hazeState)
+                TableContent(
+                    viewModel,
+                    verticalScrollForTableContent,
+                    horizontalScrollForTableContent,
+                    countdownDate,
+                    hazeState
+                )
             if (appStatus == AppStatus.SOUL_STATISTICS)
                 SoulStatisticsContent()
             if (appStatus == AppStatus.HABITS_LIST || appStatus == AppStatus.HABITS_LIST_UPDATER)
-                HabitsListContent(verticalScrollForHabitsListContent, viewModel)
+                HabitsListContent(verticalScrollForHabitsListContent, viewModel, hazeState)
         }
     }
 }

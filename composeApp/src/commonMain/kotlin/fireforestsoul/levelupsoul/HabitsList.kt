@@ -52,9 +52,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
+import dev.chrisbanes.haze.HazeState
 
 @Composable
-fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel) {
+fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel, hazeState: HazeState) {
     backAppStatus = AppStatus.HABITS_LIST_UPDATER
     val sortedHabits = MutableList(habits.size) { it }
     sortedHabits.sortSystem()
@@ -113,15 +114,19 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                             horizontalAlignment = Alignment.Start,
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            Text(
+                            TextWithDeployableEllipsis(
+                                backgroundColor = UIC,
+                                newStatusBarInfo = changeStatusBarInfo(
+                                    backgroundColor = UIC,
+                                    downPanelSize = 48.dp,
+                                    isProcessed = false
+                                ),
+                                hazeState = hazeState,
                                 text = habits[sortedHabits[x]].nameOfHabit,
+                                color = UICT_see,
                                 fontSize = 16.5.sp,
                                 fontWeight = FontWeight.W500,
-                                color = UICT_see,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                style = TextStyle(shadow = Shadow(blurRadius = 1f))
-
+                                fontFamily = JetBrainsFont()
                             )
 
                             var inputText by remember { mutableStateOf("") }
