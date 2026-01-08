@@ -15,8 +15,13 @@ import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlin.math.max
 import kotlin.math.min
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
+
+val listMutex = Mutex()
 
 suspend fun calculateProgressiveColor(
     index: Int,
@@ -27,16 +32,19 @@ suspend fun calculateProgressiveColor(
         return
     }
 
-    var kProgress = 0f
-    var kLevel = 0f
-    var kNeedDays = 0f
+    val kRed = habits[index].colorGood.red
+    var kProgress = kRed
+    var kLevel = kRed
+    var kNeedDays = kRed
 
-    var kDays = 0f
-    var kNeedGoal = 0f
-    var kLevelChange = 0f
+    val kGreen = habits[index].colorGood.green
+    var kDays = kGreen
+    var kNeedGoal = kGreen
+    var kLevelChange = kGreen
 
-    var kStreak = 0f
-    var kTypeOfGoal = 0f
+    val kBlue = habits[index].colorGood.blue
+    var kStreak = kBlue
+    var kTypeOfGoal = kBlue
 
     fun emitCurrentColor() {
         val red = ((kProgress + kLevel + kNeedDays) / 3 * 255).toInt().coerceIn(0, 255)
@@ -46,11 +54,12 @@ suspend fun calculateProgressiveColor(
         onColorUpdate(Color(red, green, blue))
     }
 
-    val addProcess = ts_Calculating_adaptive_color_habits
-    listProgressedStatusBar.add(addProcess)
+    val addProcess = "$ts_Calculating_adaptive_color_habits ($ts_Habit $index)"
 
     withContext(Dispatchers.Default) {
         try {
+            listMutex.withLock { listProgressedStatusBar.add(addProcess) }
+
             var maxProgress = Float.MIN_VALUE
             var minProgress = Float.MAX_VALUE
             for (habit in habits) {
@@ -111,7 +120,9 @@ suspend fun calculateProgressiveColor(
             }
             val diffGoal = maxNeedGoal - minNeedGoal
             kNeedGoal =
-                if (maxNeedGoal == minNeedGoal) 1f else (habits[index].needGoal - minNeedGoal).floatValue(false) / (if (diffGoal == BigDecimal.ZERO) 1f else diffGoal.floatValue(
+                if (maxNeedGoal == minNeedGoal) 1f else (habits[index].needGoal - minNeedGoal).floatValue(
+                    false
+                ) / (if (diffGoal == BigDecimal.ZERO) 1f else diffGoal.floatValue(
                     false
                 ))
 
@@ -145,7 +156,11 @@ suspend fun calculateProgressiveColor(
             emitCurrentColor()
 
         } finally {
-            listProgressedStatusBar.remove(addProcess)
+            withContext(NonCancellable) {
+                listMutex.withLock {
+                    listProgressedStatusBar.removeAll { it == addProcess }
+                }
+            }
         }
     }
 }

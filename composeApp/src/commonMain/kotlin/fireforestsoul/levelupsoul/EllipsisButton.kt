@@ -22,8 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.window.Popup
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeEffect
@@ -32,7 +30,7 @@ import dev.chrisbanes.haze.hazeEffect
 fun TextWithDeployableEllipsis(
     backgroundColor: Color,
     newStatusBarInfo: StatusBarInfo,
-    hazeState: HazeState,
+    hazeState: HazeState?,
     contentBefore: @Composable () -> Unit = {},
     text: String,
     contentAfter: @Composable () -> Unit = {},
@@ -77,65 +75,47 @@ fun TextWithDeployableEllipsis(
 
                 Box(
                     modifier = Modifier
+                        .clickable {
+                            newStatusBarInfo.text = text
+                            newStatusBarInfo.textColor = color
+                            updateTimerForStatusBar = true
+                            statusBarInfo = newStatusBarInfo
+                        }
                         .padding(
                             start = with(LocalDensity.current) { fontSize.toDp() / 6.8f },
-                            end = with(LocalDensity.current) { fontSize.toDp() / 3.4f })
-                        .padding(horizontal = with(LocalDensity.current) { fontSize.toDp() / 8.5f }),
+                            end = with(LocalDensity.current) { fontSize.toDp() / 3.4f }),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "…",
-                        color = Color.Transparent,
-                        fontSize = fontSize,
-                        fontWeight = fontWeight,
-                        fontFamily = fontFamily
-                    )
-                }
-
-                Popup(
-                    alignment = Alignment.CenterEnd,
-                    offset = IntOffset(0, 0)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .clickable {
-                                newStatusBarInfo.text = text
-                                newStatusBarInfo.textColor = color
-                                updateTimerForStatusBar = true
-                                statusBarInfo = newStatusBarInfo
-                            }
-                            .padding(
-                                start = with(LocalDensity.current) { fontSize.toDp() / 6.8f },
-                                end = with(LocalDensity.current) { fontSize.toDp() / 3.4f }),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .border(
-                                    with(LocalDensity.current) { fontSize.toDp() / 85f },
-                                    color.multiply(0.5f, 0.5f, 0.5f, 0.5f),
-                                    RoundedCornerShape(with(LocalDensity.current) { fontSize.toDp() / 5.67f })
-                                )
-                                .clip(RoundedCornerShape(with(LocalDensity.current) { fontSize.toDp() / 5.67f }))
-                                .hazeEffect(state = hazeState) {
-                                    style = HazeStyle(
-                                        tint = null,
-                                        blurRadius = 8.7.dp, //8.7.dp,
-                                        noiseFactor = 0f,
-                                        backgroundColor = backgroundColor.copy(0.25f)
-                                    )
-                                }
-                                .padding(horizontal = with(LocalDensity.current) { fontSize.toDp() / 8.5f }),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "…",
-                                color = color.multiply(0.5f, 0.5f, 0.5f),
-                                fontSize = fontSize,
-                                fontWeight = fontWeight,
-                                fontFamily = fontFamily
+                    var boxMod = Modifier
+                        .border(
+                            with(LocalDensity.current) { fontSize.toDp() / 85f },
+                            color.multiply(0.5f, 0.5f, 0.5f, 0.5f),
+                            RoundedCornerShape(with(LocalDensity.current) { fontSize.toDp() / 5.67f })
+                        )
+                        .clip(RoundedCornerShape(with(LocalDensity.current) { fontSize.toDp() / 5.67f }))
+                    if (hazeState != null) {
+                        boxMod = boxMod.hazeEffect(state = hazeState) {
+                            style = HazeStyle(
+                                tint = null,
+                                blurRadius = 8.7.dp,
+                                noiseFactor = 0f,
+                                backgroundColor = backgroundColor.copy(0.25f)
                             )
                         }
+
+                    }
+                    Box(
+                        modifier = boxMod
+                            .padding(horizontal = with(LocalDensity.current) { fontSize.toDp() / 8.5f }),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "…",
+                            color = color.multiply(0.5f, 0.5f, 0.5f),
+                            fontSize = fontSize,
+                            fontWeight = fontWeight,
+                            fontFamily = fontFamily
+                        )
                     }
                 }
             }
