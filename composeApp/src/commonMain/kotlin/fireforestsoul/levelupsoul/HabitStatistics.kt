@@ -129,6 +129,52 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                 ) {
                     val maxWidthBox = maxWidth
 
+                    Box(
+                        modifier = Modifier.padding(
+                            start = maxWidthBox / 1080 * 801.79f,
+                            top = maxHeightBox / 536 * 54.07f
+                        )
+                    ) {
+                        Text(
+                            text = habits[habit_statistics_and_edit_x].iconChar,
+                            color = seeColorByHabitAndStatisticsEditX,
+                            fontSize = 60.sp / 1.15f,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.rotate(-28.79f),
+                            fontFamily = JetBrainsFont()
+                        )
+                    }
+                    Box(
+                        modifier = Modifier.padding(
+                            start = maxWidthBox / 1080 * 51.32f,
+                            top = maxHeightBox / 536 * 181.29f
+                        )
+                    ) {
+                        Text(
+                            text = habits[habit_statistics_and_edit_x].iconChar,
+                            color = seeColorByHabitAndStatisticsEditX,
+                            fontSize = 51.2.sp / 1.15f,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.rotate(33.94f),
+                            fontFamily = JetBrainsFont()
+                        )
+                    }
+                    Box(
+                        modifier = Modifier.padding(
+                            start = maxWidthBox / 1080 * 677.25f,
+                            top = maxHeightBox / 536 * 288.99f
+                        )
+                    ) {
+                        Text(
+                            text = habits[habit_statistics_and_edit_x].iconChar,
+                            color = seeColorByHabitAndStatisticsEditX,
+                            fontSize = 34.sp / 1.15f,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.rotate(-17.23f),
+                            fontFamily = JetBrainsFont()
+                        )
+                    }
+
                     IconButton(
                         { viewModel.setStatus(backAppStatus) },
                         modifier = Modifier.padding(14.dp / 1.15f, 12.dp / 1.15f)
@@ -242,52 +288,6 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                                 )
                             }
                         }
-                    }
-
-                    Box(
-                        modifier = Modifier.padding(
-                            start = maxWidthBox / 1080 * 801.79f,
-                            top = maxHeightBox / 536 * 54.07f
-                        )
-                    ) {
-                        Text(
-                            text = habits[habit_statistics_and_edit_x].iconChar,
-                            color = seeColorByHabitAndStatisticsEditX,
-                            fontSize = 60.sp / 1.15f,
-                            fontWeight = FontWeight.Black,
-                            modifier = Modifier.rotate(-28.79f),
-                            fontFamily = JetBrainsFont()
-                        )
-                    }
-                    Box(
-                        modifier = Modifier.padding(
-                            start = maxWidthBox / 1080 * 51.32f,
-                            top = maxHeightBox / 536 * 181.29f
-                        )
-                    ) {
-                        Text(
-                            text = habits[habit_statistics_and_edit_x].iconChar,
-                            color = seeColorByHabitAndStatisticsEditX,
-                            fontSize = 51.2.sp / 1.15f,
-                            fontWeight = FontWeight.Black,
-                            modifier = Modifier.rotate(33.94f),
-                            fontFamily = JetBrainsFont()
-                        )
-                    }
-                    Box(
-                        modifier = Modifier.padding(
-                            start = maxWidthBox / 1080 * 677.25f,
-                            top = maxHeightBox / 536 * 288.99f
-                        )
-                    ) {
-                        Text(
-                            text = habits[habit_statistics_and_edit_x].iconChar,
-                            color = seeColorByHabitAndStatisticsEditX,
-                            fontSize = 34.sp / 1.15f,
-                            fontWeight = FontWeight.Black,
-                            modifier = Modifier.rotate(-17.23f),
-                            fontFamily = JetBrainsFont()
-                        )
                     }
                 }
             },
