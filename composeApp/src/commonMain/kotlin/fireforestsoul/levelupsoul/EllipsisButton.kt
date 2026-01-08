@@ -40,16 +40,23 @@ fun TextWithDeployableEllipsis(
     fontFamily: FontFamily? = null,
     textAlign: TextAlign = TextAlign.Unspecified
 ) {
-    var isOverflowing by remember(text, Unit) { mutableStateOf(false) }
+    var isOverflowing by remember(text) { mutableStateOf(false) }
 
-    Row {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.wrapContentWidth()
+    ) {
 
         contentBefore()
 
-        if (!isOverflowing) {
+        Row(
+            modifier = Modifier.weight(1f, fill = false),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
                 text = text,
                 maxLines = 1,
+                modifier = Modifier.weight(1f, fill = false),
                 overflow = TextOverflow.Clip,
                 color = color,
                 fontSize = fontSize,
@@ -57,30 +64,14 @@ fun TextWithDeployableEllipsis(
                 fontFamily = fontFamily,
                 textAlign = textAlign,
                 onTextLayout = { result ->
-                    if (result.hasVisualOverflow) {
-                        isOverflowing = true
+                    if (isOverflowing != result.hasVisualOverflow) {
+                        isOverflowing = result.hasVisualOverflow
                     }
                 },
                 softWrap = false
             )
-        } else {
-            Row(
-                modifier = Modifier.weight(1f),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = text,
-                    maxLines = 1,
-                    overflow = TextOverflow.Clip,
-                    modifier = Modifier.weight(1f),
-                    color = color,
-                    fontSize = fontSize,
-                    fontWeight = fontWeight,
-                    fontFamily = fontFamily,
-                    textAlign = textAlign,
-                    softWrap = false
-                )
 
+            if (isOverflowing) {
                 Box(
                     modifier = Modifier
                         .clickable {
@@ -89,7 +80,7 @@ fun TextWithDeployableEllipsis(
                             updateTimerForStatusBar = true
                             statusBarInfo = newStatusBarInfo
                         }
-                        .padding(horizontal = with(LocalDensity.current) { fontSize.toDp() / 3.4f }),
+                        .padding(end = with(LocalDensity.current) { fontSize.toDp() / 3.4f }),
                     contentAlignment = Alignment.Center
                 ) {
                     Box(
