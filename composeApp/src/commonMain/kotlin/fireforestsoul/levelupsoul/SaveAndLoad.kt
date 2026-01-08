@@ -14,7 +14,19 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.datetime.LocalDate
 
+private fun saveSystem(
+    saves: () -> Unit
+) {
+    openSaveFiles()
+    saves()
+    closeSaveFiles()
+}
+
+expect fun openSaveFiles()
+expect fun closeSaveFiles()
+
 expect fun saveValue(value: Any, name: String)
+
 fun Any.savedElementToString(): String {
     return when (val value = this) {
         is Color -> value.value.toString(16)
@@ -23,16 +35,28 @@ fun Any.savedElementToString(): String {
 }
 
 fun saveAllValues() {
+    saveSystem {
+        saveAllValuesProcess()
+    }
+}
+
+private fun saveAllValuesProcess() {
     saveValue(app_version, "app_version")
-    habits.save()
-    saveSettings()
+    habits.saveProcess()
+    saveSettingsProcess()
     saveValue(soul_level, "soul_level")
     saveValue(soul_last_level_change_date, "soul_last_level_change_date")
-    language.saveLanguage()
+    language.saveLanguageProcess()
     saveValue(backAppStatus, "backAppStatus")
 }
 
 fun Habit.saveHabitDays(habitIndex: Int) {
+    saveSystem {
+        this.saveHabitDaysProcess(habitIndex)
+    }
+}
+
+private fun Habit.saveHabitDaysProcess(habitIndex: Int) {
     saveValue(this.habitDay.size, "habits-$habitIndex-habitDay-size")
     for (y in 0 until this.habitDay.size) {
         saveValue(this.habitDay[y].today, "habits-$habitIndex-habitDay-$y-today")
@@ -42,6 +66,12 @@ fun Habit.saveHabitDays(habitIndex: Int) {
 }
 
 fun Habit.save(index: Int) {
+    saveSystem {
+        this.saveProcess(index)
+    }
+}
+
+private fun Habit.saveProcess(index: Int) {
     saveValue(this.nameOfHabit, "habits-$index-nameOfHabit")
     saveValue(this.nameOfUnitsOfDimension, "habits-$index-nameOfUnitsOfDimension")
     saveValue(this.typeOfGoalHabits, "habits-$index-typeOfGoalHabits")
@@ -57,21 +87,39 @@ fun Habit.save(index: Int) {
     saveValue(this.level, "habits-$index-level")
     saveValue(this.iconChar, "habits-$index-iconChar")
     saveValue(this.phantomNeedDays, "habits-$index-phantomNeedDays")
-    this.saveHabitDays(index)
+    this.saveHabitDaysProcess(index)
 }
 
 fun MutableList<Habit>.save() {
+    saveSystem {
+        this.saveProcess()
+    }
+}
+
+private fun MutableList<Habit>.saveProcess() {
     saveValue(this.size, "habits-size")
     for (x in 0 until this.size) {
-        this[x].save(x)
+        this[x].saveProcess(x)
     }
 }
 
 fun Languages.saveLanguage() {
+    saveSystem {
+        this.saveLanguageProcess()
+    }
+}
+
+private fun Languages.saveLanguageProcess() {
     saveValue(this, "language")
 }
 
 fun saveSettings() {
+    saveSystem {
+        saveSettingsProcess()
+    }
+}
+
+private fun saveSettingsProcess() {
     saveValue(soul_color_type, "soul_color_type")
     saveValue(soul_color, "soul_color")
     saveValue(soul_name, "soul_name")

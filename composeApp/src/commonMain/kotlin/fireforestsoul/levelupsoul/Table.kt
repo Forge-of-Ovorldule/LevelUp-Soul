@@ -38,6 +38,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,7 +47,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import dev.chrisbanes.haze.HazeState
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -66,7 +66,6 @@ fun TableContent(
     verticalScroll: ScrollState,
     horizontalScroll: ScrollState,
     countdownDate: LocalDate,
-    hazeState: HazeState
 ) {
     val sortedHabits = MutableList(habits.size) { it }
     sortedHabits.sortSystem()
@@ -76,7 +75,6 @@ fun TableContent(
     val firstCellSizeX = 200.dp
     val firstCellSizeY = 40.dp
     val nextCellSizeX = 45.dp
-    val nextCellSizeY = firstCellSizeY
     val spacedCell = 3.dp
     val sizeOfBorder = 1.dp
     val roundedBorder = 7.5.dp
@@ -112,8 +110,26 @@ fun TableContent(
                     contentAlignment = Alignment.Center
                 ) {}
                 for (y in 0 until habits.size) {
-                    val seeColor = seeColorByIndex(sortedHabits[y])
-                    val noSeeColor = noSeeColorByIndex(sortedHabits[y])
+                    var seeColor by remember { mutableStateOf(soul_color) }
+                    var noSeeColor by remember {
+                        mutableStateOf(
+                            seeColor.multiply(
+                                0.5f,
+                                0.5f,
+                                0.5f
+                            )
+                        )
+                    }
+
+                    LaunchedEffect(sortedHabits[y], progress(sortedHabits[y])) {
+                        calculateProgressiveColor(
+                            index = sortedHabits[y],
+                            onColorUpdate = { newColor ->
+                                seeColor = newColor
+                                noSeeColor = newColor.multiply(0.5f, 0.5f, 0.5f)
+                            }
+                        )
+                    }
 
                     Box(
                         modifier = Modifier
@@ -139,7 +155,10 @@ fun TableContent(
                                 modifier = Modifier.padding(start = 8.dp)
                             ) {
                                 DonutChart(
-                                    values = listOf(progress(sortedHabits[y]), 1f - progress(sortedHabits[y])),
+                                    values = listOf(
+                                        progress(sortedHabits[y]),
+                                        1f - progress(sortedHabits[y])
+                                    ),
                                     colors = listOf(seeColor, noSeeColor),
                                     modifier = Modifier
                                         .size(24.25.dp)
@@ -158,17 +177,17 @@ fun TableContent(
                             ) {
                                 TextWithDeployableEllipsis(
                                     backgroundColor = UIC_black,
-                                    newStatusBarInfo = StatusBarInfo(
+                                    newStatusBarInfo = changeStatusBarInfo(
                                         backgroundColor = UIC_dark,
                                         downPanelSize = 48.dp,
                                         isProcessed = false
                                     ),
-                                    hazeState = hazeState,
+                                    hazeState = null,
                                     text = habits[sortedHabits[y]].nameOfHabit,
                                     color = seeColor,
                                     fontWeight = FontWeight.Normal,
                                     fontFamily = JetBrainsFont(),
-                                    fontSize = firstSellFontSize
+                                    fontSize = firstSellFontSize / 1.15f
                                 )
                                 val needOrCanMore =
                                     habits[sortedHabits[y]].needGoal - habits[sortedHabits[y]].habitDay[habits[sortedHabits[y]].habitDay.size - 1].totalOfAPeriod
@@ -202,13 +221,13 @@ fun TableContent(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(spacedCell),
-                        modifier = Modifier.height(nextCellSizeY)
+                        modifier = Modifier.height(firstCellSizeY)
                     ) {
                         for (x in 0 until max(maxCellX, 10)) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Center,
-                                modifier = Modifier.size(nextCellSizeX, nextCellSizeY)
+                                modifier = Modifier.size(nextCellSizeX, firstCellSizeY)
                             ) {
                                 Text(
                                     text = (countdownDate.minus(
@@ -233,14 +252,32 @@ fun TableContent(
                     }
                     //results
                     for (y in 0 until habits.size) {
-                        val seeColor = seeColorByIndex(sortedHabits[y])
-                        val noSeeColor = noSeeColorByIndex(sortedHabits[y])
+                        var seeColor by remember { mutableStateOf(soul_color) }
+                        var noSeeColor by remember {
+                            mutableStateOf(
+                                seeColor.multiply(
+                                    0.5f,
+                                    0.5f,
+                                    0.5f
+                                )
+                            )
+                        }
+
+                        LaunchedEffect(sortedHabits[y], progress(sortedHabits[y])) {
+                            calculateProgressiveColor(
+                                index = sortedHabits[y],
+                                onColorUpdate = { newColor ->
+                                    seeColor = newColor
+                                    noSeeColor = newColor.multiply(0.5f, 0.5f, 0.5f)
+                                }
+                            )
+                        }
 
                         Column(
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.Start,
                             modifier = Modifier
-                                .height(nextCellSizeY)
+                                .height(firstCellSizeY)
                                 .border(
                                     sizeOfBorder,
                                     color = noSeeColor,
@@ -263,7 +300,7 @@ fun TableContent(
                                         Box(
                                             modifier = Modifier
                                                 .width(nextCellSizeX)
-                                                .height(nextCellSizeY * 7 / 16),
+                                                .height(firstCellSizeY * 7 / 16),
                                             contentAlignment = Alignment.Center
                                         ) {
                                             if (xIndex < habits[sortedHabits[y]].habitDay.size) {
@@ -286,9 +323,10 @@ fun TableContent(
                                                         containerColor = UIC,
                                                         onDismissRequest = { showDialog = false },
                                                         title = {
-                                                            val dateToSet = habits[sortedHabits[y]].startDate.plus(
-                                                                xIndex, DateTimeUnit.DAY
-                                                            )
+                                                            val dateToSet =
+                                                                habits[sortedHabits[y]].startDate.plus(
+                                                                    xIndex, DateTimeUnit.DAY
+                                                                )
                                                             Text(
                                                                 text = "$ts_Do_you_want_to_set_a_value_for ${dateToSet.month} ${dateToSet.dayOfMonth}, ${dateToSet.year} $ts_for_habit ${habits[sortedHabits[y]].nameOfHabit}?",
                                                                 fontWeight = FontWeight.Normal,
@@ -308,7 +346,9 @@ fun TableContent(
                                                                         color = UICT_no_see
                                                                     )
                                                                 },
-                                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                                                keyboardOptions = KeyboardOptions(
+                                                                    keyboardType = KeyboardType.Number
+                                                                ),
                                                                 singleLine = true,
                                                                 textStyle = TextStyle(
                                                                     fontSize = 16.sp,
@@ -349,14 +389,17 @@ fun TableContent(
                                                                 fontSize = 16.sp,
                                                                 color = Color(150, 200, 150),
                                                                 modifier = Modifier.clickable {
-                                                                    val value = inputText.toDoubleOrNull()
+                                                                    val value =
+                                                                        inputText.toDoubleOrNull()
                                                                     if (value != null) {
                                                                         habits[sortedHabits[y]].habitDay[xIndex].today =
                                                                             inputText.toBigDecimal()
                                                                         habits[sortedHabits[y]].saveHabitDays(
                                                                             sortedHabits[y]
                                                                         )
-                                                                        habits[sortedHabits[y]].update(sortedHabits)
+                                                                        habits[sortedHabits[y]].update(
+                                                                            sortedHabits
+                                                                        )
                                                                     }
                                                                     showDialog = false
                                                                     viewModel.setStatus(AppStatus.TABLE_UPDATER)

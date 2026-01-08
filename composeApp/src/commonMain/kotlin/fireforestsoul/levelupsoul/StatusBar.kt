@@ -20,17 +20,34 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ionspin.kotlin.bignum.integer.util.times
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeEffect
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlin.String
 
 var statusBarInfo by mutableStateOf(StatusBarInfo())
+var updateTimerForStatusBar by mutableStateOf(false)
+
+fun changeStatusBarInfo(
+    text: String = "",
+    textColor: Color? = null,
+    backgroundColor: Color? = null,
+    downPanelSize: Dp? = null,
+    isProcessed: Boolean? = null
+): StatusBarInfo {
+    return StatusBarInfo(
+        text = text,
+        textColor = textColor ?: statusBarInfo.textColor,
+        backgroundColor = backgroundColor ?: statusBarInfo.backgroundColor,
+        downPanelSize = downPanelSize ?: statusBarInfo.downPanelSize,
+        isProcessed = isProcessed ?: statusBarInfo.isProcessed,
+    )
+}
 
 data class StatusBarInfo(
     var text: String = "",
@@ -40,6 +57,8 @@ data class StatusBarInfo(
     var isProcessed: Boolean = false
 )
 
+var listProgressedStatusBar = mutableListOf<String>()
+
 @Composable
 fun StatusBar(hazeState: HazeState) {
 
@@ -47,7 +66,20 @@ fun StatusBar(hazeState: HazeState) {
     var displayBackgroundColor by mutableStateOf(statusBarInfo.backgroundColor)
     var displayDownPanelSize by mutableStateOf(statusBarInfo.downPanelSize)
 
-    LaunchedEffect(Unit, statusBarInfo.text) {
+    LaunchedEffect(
+        Unit,
+        updateTimerForStatusBar,
+        statusBarInfo,
+        statusBarInfo.text,
+        statusBarInfo.backgroundColor,
+        statusBarInfo.downPanelSize,
+        statusBarInfo.isProcessed,
+        statusBarInfo.textColor
+    ) {
+        displayTextColor = statusBarInfo.textColor
+        displayBackgroundColor = statusBarInfo.backgroundColor
+        displayDownPanelSize = statusBarInfo.downPanelSize
+        updateTimerForStatusBar = false
         makeTextForStatusBar()
     }
 
@@ -95,46 +127,80 @@ fun StatusBar(hazeState: HazeState) {
 }
 
 private var statusBarTextNow by mutableStateOf("")
+private var workText: String = statusBarInfo.text
+private var startSize = listProgressedStatusBar.size
+private var isProcessed = statusBarInfo.isProcessed
+private val mutex = Mutex()
 
 private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
-    val scope = CoroutineScope(Dispatchers.Default)
+    if (!statusBarInfo.isProcessed) {
+        workText = statusBarInfo.text
+        isProcessed = false
+    }
+    startSize = listProgressedStatusBar.size
 
     while (true) {
-        if (statusBarInfo.text != "") {
-            if (statusBarTextNow.length - addedEllipsis < statusBarInfo.text.length) {
-                statusBarTextNow = statusBarInfo.text.take(statusBarTextNow.length + 1)
-                delay(75)
-            } else if (statusBarTextNow.length - addedEllipsis == statusBarInfo.text.length) {
-                full = true
-                statusBarTextNow = statusBarInfo.text
-                if (statusBarInfo.isProcessed) {
-                    scope.launch {
-                        addEllipsis()
-                    }
-                }
-                delay(5000)
-                statusBarInfo.text = ""
-                full = false
-            } else {
-                statusBarTextNow = statusBarTextNow.take(statusBarTextNow.length - 1)
-                delay(75)
+        val currentText = mutex.withLock { workText }
+
+        if (!currentText.isNullOrEmpty()) { //!!! проверка на Null необходима
+            val currentListSize = mutex.withLock { listProgressedStatusBar.size }
+
+            if (currentListSize != startSize) {
+                workText = ""
+                continue
             }
-        } else if (statusBarTextNow.isNotEmpty()) {
-            statusBarTextNow = statusBarTextNow.take(statusBarTextNow.length - 1)
+
+            if (statusBarTextNow.length < currentText.length) {
+                statusBarTextNow = currentText.take(statusBarTextNow.length + 1)
+                delay(75)
+                continue
+            }
+
+            if (statusBarTextNow.length == currentText.length) {
+                statusBarTextNow = currentText
+                if (isProcessed) {
+                    while (currentListSize == mutex.withLock { listProgressedStatusBar.size }) {
+                        statusBarTextNow = currentText + ".".repeat(addedEllipsis)
+                        addedEllipsis++
+                        if (addedEllipsis == 4) addedEllipsis = 0
+                        delay(400)
+                    }
+                    addedEllipsis = 0
+                } else {
+                    delay(5000)
+                }
+                workText = ""
+                continue
+            }
+
+            mutex.withLock {
+                if (statusBarTextNow.isNotEmpty()) {
+                    statusBarTextNow = statusBarTextNow.dropLast(1)
+                }
+            }
             delay(75)
+            continue
         }
+
+        var hasNewWork = false
+        mutex.withLock {
+            if (listProgressedStatusBar.isNotEmpty()) {
+                workText = listProgressedStatusBar.last()
+                startSize = listProgressedStatusBar.size
+                isProcessed = true
+                hasNewWork = true
+            }
+        }
+
+        if (hasNewWork) {
+            continue
+        }
+
+        if (statusBarTextNow.isNotEmpty()) {
+            statusBarTextNow = statusBarTextNow.dropLast(1)
+        }
+        delay(75)
     }
 }
 
-private var full = false
 private var addedEllipsis = 0
-
-private suspend fun addEllipsis() = withContext(Dispatchers.Default) {
-    while (full) {
-        statusBarTextNow = statusBarInfo.text + '.' * addedEllipsis
-        addedEllipsis++
-        if (addedEllipsis == 4) addedEllipsis = 0
-        delay(400)
-    }
-    addedEllipsis = 0
-}

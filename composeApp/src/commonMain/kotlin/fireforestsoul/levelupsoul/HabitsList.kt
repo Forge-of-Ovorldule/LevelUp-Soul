@@ -32,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -85,10 +86,21 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                         verticalAlignment = Alignment.Top,
                         horizontalArrangement = Arrangement.spacedBy(12.26.dp)
                     ) {
+                        var seeColorByX by remember { mutableStateOf(soul_color) }
+
+                        LaunchedEffect(sortedHabits[x], progress(sortedHabits[x])) {
+                            calculateProgressiveColor(
+                                index = sortedHabits[x],
+                                onColorUpdate = { newColor ->
+                                    seeColorByX = newColor
+                                }
+                            )
+                        }
+
                         Text(
                             text = habits[sortedHabits[x]].iconChar,
                             textAlign = TextAlign.Center,
-                            color = seeColorByIndex(sortedHabits[x]),
+                            color = seeColorByX,
                             modifier = Modifier.size(57.47.dp),
                             maxLines = 1,
                             fontSize = 45.sp,
@@ -101,15 +113,19 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                             horizontalAlignment = Alignment.Start,
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            Text(
+                            TextWithDeployableEllipsis(
+                                backgroundColor = UIC,
+                                newStatusBarInfo = changeStatusBarInfo(
+                                    backgroundColor = UIC,
+                                    downPanelSize = 48.dp,
+                                    isProcessed = false
+                                ),
+                                hazeState = null,
                                 text = habits[sortedHabits[x]].nameOfHabit,
+                                color = UICT_see,
                                 fontSize = 16.5.sp,
                                 fontWeight = FontWeight.W500,
-                                color = UICT_see,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                style = TextStyle(shadow = Shadow(blurRadius = 1f))
-
+                                fontFamily = JetBrainsFont()
                             )
 
                             var inputText by remember { mutableStateOf("") }
@@ -137,7 +153,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                         .height(5.75.dp)
                                         .background(
                                             if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST) UIC_light
-                                            else seeColorByIndex(sortedHabits[x]),
+                                            else seeColorByX,
                                             RoundedCornerShape(2.88.dp)
                                         )
                                         .shadow(5.dp)
@@ -147,9 +163,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                     Box(
                                         modifier = Modifier.fillMaxHeight()
                                             .background(
-                                                if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST) seeColorByIndex(
-                                                    sortedHabits[x]
-                                                )
+                                                if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST) seeColorByX
                                                 else UIC_light,
                                                 RoundedCornerShape(2.88.dp)
                                             )
@@ -163,7 +177,14 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                             )
                                     )
                                 }
-                                Text(
+                                TextWithDeployableEllipsis(
+                                    backgroundColor = UIC,
+                                    newStatusBarInfo = changeStatusBarInfo(
+                                        backgroundColor = UIC,
+                                        downPanelSize = 48.dp,
+                                        isProcessed = false
+                                    ),
+                                    hazeState = null,
                                     text = if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST)
                                         if (habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod < habits[sortedHabits[x]].needGoal)
                                             "$ts_You_need ${(habits[sortedHabits[x]].needGoal - habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod).toBestString()} ${habits[sortedHabits[x]].nameOfUnitsOfDimension} $ts_more"
@@ -176,12 +197,22 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                             ts_You_failed,
                                     color = UICT_no_see,
                                     fontSize = 13.sp,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = TextStyle(shadow = Shadow(blurRadius = 1f))
+                                    fontFamily = JetBrainsFont()
                                 )
                             }
                             if (showDialog) {
+                                val textFieldColorsByUicDark = TextFieldDefaults.colors(
+                                    focusedTextColor = UICT_see,
+                                    unfocusedTextColor = UICT_no_see,
+                                    disabledTextColor = UICT_no_see,
+                                    focusedContainerColor = UIC_dark,
+                                    unfocusedContainerColor = UIC_dark,
+                                    disabledContainerColor = UIC_dark,
+                                    cursorColor = UICT_see,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent
+                                )
                                 AlertDialog(
                                     containerColor = UIC,
                                     onDismissRequest = { showDialog = false },
@@ -213,18 +244,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                                 color = UICT_see
                                             ),
                                             shape = RoundedCornerShape(15.dp),
-                                            colors = TextFieldDefaults.colors(
-                                                focusedTextColor = UICT_see,
-                                                unfocusedTextColor = UICT_no_see,
-                                                disabledTextColor = UICT_no_see,
-                                                focusedContainerColor = UIC_dark,
-                                                unfocusedContainerColor = UIC_dark,
-                                                disabledContainerColor = UIC_dark,
-                                                cursorColor = UICT_see,
-                                                focusedIndicatorColor = Color.Transparent,
-                                                unfocusedIndicatorColor = Color.Transparent,
-                                                disabledIndicatorColor = Color.Transparent
-                                            )
+                                            colors = textFieldColorsByUicDark
                                         )
                                     },
                                     dismissButton = {
@@ -250,7 +270,9 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                                 if (value != null) {
                                                     habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today =
                                                         inputText.toBigDecimal()
-                                                    habits[sortedHabits[x]].saveHabitDays(sortedHabits[x])
+                                                    habits[sortedHabits[x]].saveHabitDays(
+                                                        sortedHabits[x]
+                                                    )
                                                     habits[sortedHabits[x]].update(sortedHabits)
                                                 }
                                                 showDialog = false

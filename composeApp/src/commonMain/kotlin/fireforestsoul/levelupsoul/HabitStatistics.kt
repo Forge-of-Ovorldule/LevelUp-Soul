@@ -78,7 +78,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.times
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.delay
 import kotlinx.datetime.DayOfWeek
 import org.jetbrains.compose.resources.painterResource
@@ -89,7 +90,18 @@ var habit_statistics_and_edit_x = 0
 private var pps_for_habit_statistic = 0
 
 @Composable
-fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
+fun HabitStatistics(viewModel: AppViewModel) {
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -117,6 +129,57 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                         }
                 ) {
                     val maxWidthBox = maxWidth
+                    val hazeState = rememberHazeState()
+
+                    Box(
+                        modifier = Modifier.hazeSource(hazeState)
+                    ) {
+                        Box(
+                            modifier = Modifier.padding(
+                                start = maxWidthBox / 1080 * 801.79f,
+                                top = maxHeightBox / 536 * 54.07f
+                            )
+                        ) {
+                            Text(
+                                text = habits[habit_statistics_and_edit_x].iconChar,
+                                color = seeColorByHabitAndStatisticsEditX,
+                                fontSize = 60.sp / 1.15f,
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier.rotate(-28.79f),
+                                fontFamily = JetBrainsFont()
+                            )
+                        }
+                        Box(
+                            modifier = Modifier.padding(
+                                start = maxWidthBox / 1080 * 51.32f,
+                                top = maxHeightBox / 536 * 181.29f
+                            )
+                        ) {
+                            Text(
+                                text = habits[habit_statistics_and_edit_x].iconChar,
+                                color = seeColorByHabitAndStatisticsEditX,
+                                fontSize = 51.2.sp / 1.15f,
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier.rotate(33.94f),
+                                fontFamily = JetBrainsFont()
+                            )
+                        }
+                        Box(
+                            modifier = Modifier.padding(
+                                start = maxWidthBox / 1080 * 677.25f,
+                                top = maxHeightBox / 536 * 288.99f
+                            )
+                        ) {
+                            Text(
+                                text = habits[habit_statistics_and_edit_x].iconChar,
+                                color = seeColorByHabitAndStatisticsEditX,
+                                fontSize = 34.sp / 1.15f,
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier.rotate(-17.23f),
+                                fontFamily = JetBrainsFont()
+                            )
+                        }
+                    }
 
                     IconButton(
                         { viewModel.setStatus(backAppStatus) },
@@ -138,7 +201,7 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                     ) {
                         TextWithDeployableEllipsis(
                             backgroundColor = UIC_black,
-                            newStatusBarInfo = StatusBarInfo(
+                            newStatusBarInfo = changeStatusBarInfo(
                                 backgroundColor = Color.Black,
                                 downPanelSize = 48.67.dp,
                                 isProcessed = false
@@ -185,12 +248,12 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                             Box(
                                 modifier = Modifier.size(maxWidthBox * 0.33f, 40.dp / 1.15f)
                                     .background(
-                                        seeColorByIndex(habit_statistics_and_edit_x),
+                                        seeColorByHabitAndStatisticsEditX,
                                         RoundedCornerShape(27.2.dp / 1.15f)
                                     )
                                     .border(
                                         0.7.dp,
-                                        seeColorByIndex(habit_statistics_and_edit_x),
+                                        seeColorByHabitAndStatisticsEditX,
                                         RoundedCornerShape(27.2.dp / 1.15f)
                                     ),
                                 contentAlignment = Alignment.Center
@@ -198,7 +261,7 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                                 Text(
                                     text = ts_Statistic,
                                     color = checkBackgroundBright(
-                                        seeColorByIndex(habit_statistics_and_edit_x),
+                                        seeColorByHabitAndStatisticsEditX,
                                         UICT_see
                                     ),
                                     maxLines = 1,
@@ -212,7 +275,7 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                                     .background(Color.Transparent)
                                     .border(
                                         0.7.dp,
-                                        seeColorByIndex(habit_statistics_and_edit_x),
+                                        seeColorByHabitAndStatisticsEditX,
                                         RoundedCornerShape(27.2.dp / 1.15f)
                                     )
                                     .clickable { viewModel.setStatus(AppStatus.EDIT_HABIT) },
@@ -221,7 +284,7 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                                 Text(
                                     text = ts_Edit,
                                     color = checkBackgroundBright(
-                                        seeColorByIndex(habit_statistics_and_edit_x),
+                                        seeColorByHabitAndStatisticsEditX,
                                         UICT_see
                                     ),
                                     maxLines = 1,
@@ -231,52 +294,6 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                                 )
                             }
                         }
-                    }
-
-                    Box(
-                        modifier = Modifier.padding(
-                            start = maxWidthBox / 1080 * 801.79f,
-                            top = maxHeightBox / 536 * 54.07f
-                        )
-                    ) {
-                        Text(
-                            text = habits[habit_statistics_and_edit_x].iconChar,
-                            color = seeColorByIndex(habit_statistics_and_edit_x),
-                            fontSize = 60.sp / 1.15f,
-                            fontWeight = FontWeight.Black,
-                            modifier = Modifier.rotate(-28.79f),
-                            fontFamily = JetBrainsFont()
-                        )
-                    }
-                    Box(
-                        modifier = Modifier.padding(
-                            start = maxWidthBox / 1080 * 51.32f,
-                            top = maxHeightBox / 536 * 181.29f
-                        )
-                    ) {
-                        Text(
-                            text = habits[habit_statistics_and_edit_x].iconChar,
-                            color = seeColorByIndex(habit_statistics_and_edit_x),
-                            fontSize = 51.2.sp / 1.15f,
-                            fontWeight = FontWeight.Black,
-                            modifier = Modifier.rotate(33.94f),
-                            fontFamily = JetBrainsFont()
-                        )
-                    }
-                    Box(
-                        modifier = Modifier.padding(
-                            start = maxWidthBox / 1080 * 677.25f,
-                            top = maxHeightBox / 536 * 288.99f
-                        )
-                    ) {
-                        Text(
-                            text = habits[habit_statistics_and_edit_x].iconChar,
-                            color = seeColorByIndex(habit_statistics_and_edit_x),
-                            fontSize = 34.sp / 1.15f,
-                            fontWeight = FontWeight.Black,
-                            modifier = Modifier.rotate(-17.23f),
-                            fontFamily = JetBrainsFont()
-                        )
                     }
                 }
             },
@@ -362,7 +379,7 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                         Brush.verticalGradient(
                             listOf(
                                 UIC_black,
-                                noSeeColorByIndex(habit_statistics_and_edit_x)
+                                seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)
                             )
                         )
                     )
@@ -413,7 +430,7 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                     ) {
                         when (habitStatisticsStatus) {
                             HabitStatisticsStatus.GOAL -> {
-                                GoalContent(progressPeriodSetting, hazeState)
+                                GoalContent(progressPeriodSetting)
                                 LaunchedEffect(Unit) {
                                     while (true) {
                                         progressPeriodSetting = pps_for_habit_statistic
@@ -423,7 +440,10 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                             }
 
                             HabitStatisticsStatus.PROGRESS -> ProgressContent(progressPeriodSetting)
-                            HabitStatisticsStatus.LEVEL -> LevelContent(progressPeriodSetting, hazeState)
+                            HabitStatisticsStatus.LEVEL -> LevelContent(
+                                progressPeriodSetting,
+                            )
+
                             HabitStatisticsStatus.PROGRESS_GRAPH -> ProgressGraphContent(
                                 progressPeriodSetting
                             )
@@ -459,11 +479,23 @@ private fun HabitStatisticsStatusIcon(
     contentDescription: String,
     onClick: () -> Unit
 ) {
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
+    }
+
+
     Box(
         modifier = Modifier.size(35.56.dp / 1.15f)
             .clickable(onClick = onClick)
             .background(
-                if (habitStatisticsStatus == statusNow) seeColorByIndex(habit_statistics_and_edit_x)
+                if (habitStatisticsStatus == statusNow) seeColorByHabitAndStatisticsEditX
                 else UIC_light_x2,
                 RoundedCornerShape(8.89.dp / 1.15f)
             ),
@@ -479,7 +511,7 @@ private fun HabitStatisticsStatusIcon(
             )
             else ColorFilter.tint(
                 checkBackgroundBright(
-                    seeColorByIndex(habit_statistics_and_edit_x),
+                    seeColorByHabitAndStatisticsEditX,
                     reversColor(UIC_light_x05),
                     UIC_light_x05
                 ), BlendMode.Modulate
@@ -491,7 +523,6 @@ private fun HabitStatisticsStatusIcon(
 @Composable
 private fun GoalContent(
     pps: Int,
-    hazeState: HazeState
 ) {
     @Composable
     fun PPSInfoDialog(smallText: String) {
@@ -587,12 +618,12 @@ private fun GoalContent(
             Column {
                 TextWithDeployableEllipsis(
                     backgroundColor = UIC_dark,
-                    newStatusBarInfo = StatusBarInfo(
+                    newStatusBarInfo = changeStatusBarInfo(
                         backgroundColor = UIC_dark,
                         downPanelSize = 48.67.dp,
                         isProcessed = false
                     ),
-                    hazeState = hazeState,
+                    hazeState = null,
                     text = text,
                     fontFamily = JetBrainsFont(),
                     fontWeight = FontWeight.Medium,
@@ -664,25 +695,37 @@ private fun GoalContent(
 private fun ProgressContent(
     pps: Int
 ) {
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
+    }
+
+
     @Composable
     fun DonutChart(
         progress: Float,
         modifier: Modifier = Modifier,
         strokeWidth: Dp = 20.dp / 1.15f,
-        trackColor: Color = noSeeColorByIndex(habit_statistics_and_edit_x),
-        progressColor: Color = seeColorByIndex(habit_statistics_and_edit_x),
+        trackColor: Color = seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f),
+        progressColor: Color = seeColorByHabitAndStatisticsEditX,
         label: String = ts_all,
         withLabel: Boolean = false,
         bottomLabel: String = "",
         withBottomLabel: Boolean = !withLabel,
         isPlusProgress: Boolean = !withLabel,
-        isBottonLabel: Boolean = true
+        isBottomLabel: Boolean = true
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.8.dp / 1.15f)
         ) {
-            if (withBottomLabel && !isBottonLabel) {
+            if (withBottomLabel && !isBottomLabel) {
                 Text(
                     text = bottomLabel,
                     fontSize = 12.8.sp / 1.15f,
@@ -762,7 +805,7 @@ private fun ProgressContent(
                     }
                 }
             }
-            if (withBottomLabel && isBottonLabel) {
+            if (withBottomLabel && isBottomLabel) {
                 Text(
                     text = bottomLabel,
                     fontSize = 12.8.sp / 1.15f,
@@ -799,12 +842,16 @@ private fun ProgressContent(
                 DonutChart(
                     progress = progress,
                     strokeWidth = 8.7.dp,
-                    isBottonLabel = true,
-                    trackColor = if (progress >= 0f) noSeeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
-                        noSeeColorByIndex(habit_statistics_and_edit_x)
+                    isBottomLabel = true,
+                    trackColor = if (progress >= 0f) seeColorByHabitAndStatisticsEditX.multiply(
+                        0.5f,
+                        0.5f,
+                        0.5f
+                    ) else reversNoBiggerColor(
+                        seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)
                     ),
-                    progressColor = if (progress >= 0f) seeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
-                        seeColorByIndex(habit_statistics_and_edit_x)
+                    progressColor = if (progress >= 0f) seeColorByHabitAndStatisticsEditX else reversNoBiggerColor(
+                        seeColorByHabitAndStatisticsEditX
                     ),
                     modifier = Modifier.size(90.dp / 1.15f),
                     bottomLabel = ts_day
@@ -813,12 +860,16 @@ private fun ProgressContent(
                 DonutChart(
                     progress = progress,
                     strokeWidth = 8.7.dp,
-                    isBottonLabel = true,
-                    trackColor = if (progress >= 0f) noSeeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
-                        noSeeColorByIndex(habit_statistics_and_edit_x)
+                    isBottomLabel = true,
+                    trackColor = if (progress >= 0f) seeColorByHabitAndStatisticsEditX.multiply(
+                        0.5f,
+                        0.5f,
+                        0.5f
+                    ) else reversNoBiggerColor(
+                        seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)
                     ),
-                    progressColor = if (progress >= 0f) seeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
-                        seeColorByIndex(habit_statistics_and_edit_x)
+                    progressColor = if (progress >= 0f) seeColorByHabitAndStatisticsEditX else reversNoBiggerColor(
+                        seeColorByHabitAndStatisticsEditX
                     ),
                     modifier = Modifier.size(90.dp / 1.15f),
                     bottomLabel = ts_week
@@ -833,12 +884,16 @@ private fun ProgressContent(
                 DonutChart(
                     progress = progress,
                     strokeWidth = 8.7.dp,
-                    isBottonLabel = false,
-                    trackColor = if (progress >= 0f) noSeeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
-                        noSeeColorByIndex(habit_statistics_and_edit_x)
+                    isBottomLabel = false,
+                    trackColor = if (progress >= 0f) seeColorByHabitAndStatisticsEditX.multiply(
+                        0.5f,
+                        0.5f,
+                        0.5f
+                    ) else reversNoBiggerColor(
+                        seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)
                     ),
-                    progressColor = if (progress >= 0f) seeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
-                        seeColorByIndex(habit_statistics_and_edit_x)
+                    progressColor = if (progress >= 0f) seeColorByHabitAndStatisticsEditX else reversNoBiggerColor(
+                        seeColorByHabitAndStatisticsEditX
                     ),
                     modifier = Modifier.size(90.dp / 1.15f),
                     bottomLabel = ts_month
@@ -847,12 +902,16 @@ private fun ProgressContent(
                 DonutChart(
                     progress = progress,
                     strokeWidth = 8.7.dp,
-                    isBottonLabel = false,
-                    trackColor = if (progress >= 0f) noSeeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
-                        noSeeColorByIndex(habit_statistics_and_edit_x)
+                    isBottomLabel = false,
+                    trackColor = if (progress >= 0f) seeColorByHabitAndStatisticsEditX.multiply(
+                        0.5f,
+                        0.5f,
+                        0.5f
+                    ) else reversNoBiggerColor(
+                        seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)
                     ),
-                    progressColor = if (progress >= 0f) seeColorByIndex(habit_statistics_and_edit_x) else reversNoBiggerColor(
-                        seeColorByIndex(habit_statistics_and_edit_x)
+                    progressColor = if (progress >= 0f) seeColorByHabitAndStatisticsEditX else reversNoBiggerColor(
+                        seeColorByHabitAndStatisticsEditX
                     ),
                     modifier = Modifier.size(90.dp / 1.15f),
                     bottomLabel = ts_year
@@ -865,8 +924,19 @@ private fun ProgressContent(
 @Composable
 private fun LevelContent(
     pps: Int,
-    hazeState: HazeState
 ) {
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
+    }
+
+
     @Composable
     fun CircleImage(
         isNotBad: Boolean,
@@ -882,8 +952,8 @@ private fun LevelContent(
             Box(
                 modifier = Modifier.size(size)
                     .background(
-                        if (isNotBad) seeColorByIndex(habit_statistics_and_edit_x)
-                        else reversNoBiggerColor(seeColorByIndex(habit_statistics_and_edit_x)),
+                        if (isNotBad) seeColorByHabitAndStatisticsEditX
+                        else reversNoBiggerColor(seeColorByHabitAndStatisticsEditX),
                         RoundedCornerShape(size / 2)
                     )
                     .clip(RoundedCornerShape(size / 2)),
@@ -893,8 +963,14 @@ private fun LevelContent(
                     painter = painterResource(if (isNotBad) Res.drawable.habit_statistic__level__up else Res.drawable.habit_statistic__level__down),
                     contentDescription = ts_Level,
                     colorFilter = ColorFilter.tint(
-                        if (isNotBad) noSeeColorByIndex(habit_statistics_and_edit_x)
-                        else reversNoBiggerColor(noSeeColorByIndex(habit_statistics_and_edit_x)),
+                        if (isNotBad) seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)
+                        else reversNoBiggerColor(
+                            seeColorByHabitAndStatisticsEditX.multiply(
+                                0.5f,
+                                0.5f,
+                                0.5f
+                            )
+                        ),
                         BlendMode.Modulate
                     ),
                     modifier = Modifier.size(size / 2)
@@ -913,8 +989,14 @@ private fun LevelContent(
                 val stroke = Stroke(width = (20.dp / 1.15f).toPx(), cap = StrokeCap.Round)
 
                 drawArc(
-                    color = if (isGood) noSeeColorByIndex(habit_statistics_and_edit_x)
-                    else reversNoBiggerColor(noSeeColorByIndex(habit_statistics_and_edit_x)),
+                    color = if (isGood) seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)
+                    else reversNoBiggerColor(
+                        seeColorByHabitAndStatisticsEditX.multiply(
+                            0.5f,
+                            0.5f,
+                            0.5f
+                        )
+                    ),
                     startAngle = -90f,
                     sweepAngle = 360f,
                     useCenter = false,
@@ -923,8 +1005,8 @@ private fun LevelContent(
                 )
 
                 drawArc(
-                    color = if (isGood) seeColorByIndex(habit_statistics_and_edit_x)
-                    else reversNoBiggerColor(seeColorByIndex(habit_statistics_and_edit_x)),
+                    color = if (isGood) seeColorByHabitAndStatisticsEditX
+                    else reversNoBiggerColor(seeColorByHabitAndStatisticsEditX),
                     startAngle = -90f,
                     sweepAngle = 360f * habits[habit_statistics_and_edit_x].getToLevelUp(pps),
                     useCenter = false,
@@ -1005,15 +1087,18 @@ private fun LevelContent(
             paramElement(ts_Goal, isNotBad) { backgroundColor ->
                 if (habits[habit_statistics_and_edit_x].changeNeedGoalWithLevel && !(isNotBad && isNotGood)) {
                     Row {
-                        Box(modifier = Modifier.weight(0.5f)) {
+                        Box(
+                            modifier = Modifier.weight(0.5f),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
                             TextWithDeployableEllipsis(
                                 backgroundColor = backgroundColor,
-                                newStatusBarInfo = StatusBarInfo(
+                                newStatusBarInfo = changeStatusBarInfo(
                                     backgroundColor = UIC_dark,
                                     downPanelSize = 48.67.dp,
                                     isProcessed = false
                                 ),
-                                hazeState = hazeState,
+                                hazeState = null,
                                 contentBefore = {
                                     Text(
                                         text = habits[habit_statistics_and_edit_x].needGoal.toBestString() + " ",
@@ -1039,18 +1124,27 @@ private fun LevelContent(
                                 fontWeight = FontWeight.Normal
                             )
                         }
+                        Text(
+                            text = "->",
+                            fontSize = 16.sp / 1.15f,
+                            color = if (isNotBad) UIC_green else UIC_red,
+                            fontFamily = JetBrainsFont(),
+                            fontWeight = FontWeight.Bold
+                        )
                         Box(modifier = Modifier.weight(0.5f)) {
                             TextWithDeployableEllipsis(
                                 backgroundColor = backgroundColor,
-                                newStatusBarInfo = StatusBarInfo(
+                                newStatusBarInfo = changeStatusBarInfo(
                                     backgroundColor = UIC_dark,
                                     downPanelSize = 48.67.dp,
                                     isProcessed = false
                                 ),
-                                hazeState = hazeState,
+                                hazeState = null,
                                 contentBefore = {
                                     Text(
-                                        text = "-> " + habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(pps)
+                                        text = " " + habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(
+                                            pps
+                                        )
                                             .toBestString() + " ",
                                         fontSize = 16.sp / 1.15f,
                                         color = if (isNotBad) UIC_green else UIC_red,
@@ -1069,12 +1163,12 @@ private fun LevelContent(
                 } else {
                     TextWithDeployableEllipsis(
                         backgroundColor = backgroundColor,
-                        newStatusBarInfo = StatusBarInfo(
+                        newStatusBarInfo = changeStatusBarInfo(
                             backgroundColor = UIC_dark,
                             downPanelSize = 48.67.dp,
                             isProcessed = false
                         ),
-                        hazeState = hazeState,
+                        hazeState = null,
                         contentBefore = {
                             Text(
                                 text = habits[habit_statistics_and_edit_x].needGoal.toBestString() + " ",
@@ -1128,7 +1222,9 @@ private fun LevelContent(
                             fontWeight = FontWeight.Normal
                         )
                         Text(
-                            text = "-> " + habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(pps).toString(),
+                            text = "-> " + habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(
+                                pps
+                            ).toString(),
                             fontSize = 16.sp / 1.15f,
                             color = if (isNotBad) UIC_green else UIC_red,
                             maxLines = 1,
@@ -1143,7 +1239,9 @@ private fun LevelContent(
                         if (phantomDays != BigDecimal.ZERO)
                             Text(
                                 text = " (${
-                                    habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(pps)
+                                    habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(
+                                        pps
+                                    )
                                         .toBestString()
                                 })",
                                 fontSize = 16.sp / 1.15f,
@@ -1183,6 +1281,18 @@ private fun LevelContent(
 private fun ProgressGraphContent(
     pps: Int
 ) {
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
+    }
+
+
     var isSmooth by remember { mutableStateOf(true) }
 
     @Composable
@@ -1195,19 +1305,20 @@ private fun ProgressGraphContent(
                     .background(
                         Brush.linearGradient(
                             listOf(
-                                noSeeColorByIndex(habit_statistics_and_edit_x),
-                                noSeeColorByIndex(habit_statistics_and_edit_x).multiply(
-                                    0.2f,
-                                    0.2f,
-                                    0.2f
-                                )
+                                seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f),
+                                seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)
+                                    .multiply(
+                                        0.2f,
+                                        0.2f,
+                                        0.2f
+                                    )
                             ), Offset(0f, 0f), Offset.Infinite
                         ),
                         RoundedCornerShape(17.8.dp / 1.15f)
                     )
                     .border(
                         0.4.dp / 1.15f,
-                        seeColorByIndex(habit_statistics_and_edit_x),
+                        seeColorByHabitAndStatisticsEditX,
                         RoundedCornerShape(17.8.dp / 1.15f)
                     ),
                 contentAlignment = Alignment.Center
@@ -1249,7 +1360,8 @@ private fun ProgressGraphContent(
             modifier = Modifier.fillMaxWidth()
                 .height(45.2.dp / 1.15f)
                 .background(
-                    noSeeColorByIndex(habit_statistics_and_edit_x).multiply(0.4f, 0.4f, 0.4f, 0.4f),
+                    seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)
+                        .multiply(0.4f, 0.4f, 0.4f, 0.4f),
                     RoundedCornerShape(22.7.dp / 1.15f)
                 )
                 .padding(horizontal = 6.4.dp / 1.15f),
@@ -1269,8 +1381,8 @@ private fun ProgressGraphContent(
     fun SmoothLineChart(
         data: List<Float>,
         modifier: Modifier = Modifier.fillMaxWidth().height(180.8.dp / 1.15f),
-        lineColor: Color = seeColorByIndex(habit_statistics_and_edit_x),
-        gradientStart: Color = noSeeColorByIndex(habit_statistics_and_edit_x),
+        lineColor: Color = seeColorByHabitAndStatisticsEditX,
+        gradientStart: Color = seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f),
         gradientEnd: Color = UIC_dark,
         gridColor: Color = UIC_light,
         strokeWidth: Dp = 2.dp / 1.15f,
@@ -1386,18 +1498,30 @@ private fun ProgressGraphContent(
 
 @Composable
 private fun BarChartContent() {
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
+    }
+
+
     @Composable
     fun BarChart(
         values: List<BigDecimal>,
         dates: List<String>,
         positiveGradient: List<Color> = listOf(
-            seeColorByIndex(habit_statistics_and_edit_x),
-            seeColorByIndex(habit_statistics_and_edit_x).multiply(0.59f, 0.59f, 0.59f)
+            seeColorByHabitAndStatisticsEditX,
+            seeColorByHabitAndStatisticsEditX.multiply(0.59f, 0.59f, 0.59f)
         ),
         negativeGradient: List<Color> = listOf(
-            reversNoBiggerColor(seeColorByIndex(habit_statistics_and_edit_x)),
+            reversNoBiggerColor(seeColorByHabitAndStatisticsEditX),
             reversNoBiggerColor(
-                seeColorByIndex(habit_statistics_and_edit_x).multiply(
+                seeColorByHabitAndStatisticsEditX.multiply(
                     0.59f,
                     0.59f,
                     0.59f
@@ -1427,7 +1551,8 @@ private fun BarChartContent() {
             }
         }
 
-        val totalWidthDp = ((values.size + (values.last().toBestString().length - 3) / 3) * (barWidth + barSpacing))
+        val totalWidthDp = ((values.size + (values.last()
+            .toBestString().length - 3) / 3) * (barWidth + barSpacing))
 
         if (values.isNotEmpty()) {
             Box(
@@ -1462,7 +1587,8 @@ private fun BarChartContent() {
                     values.forEachIndexed { i, value ->
                         val v = value.doubleValue(false).toFloat()
                         val x = i * (barWidthPx + spacingPx)
-                        val barHeight = (chartHeight * abs(v / (if (range != 0.0) range.toFloat() else 1f)))
+                        val barHeight =
+                            (chartHeight * abs(v / (if (range != 0.0) range.toFloat() else 1f)))
 
                         val top = if (v >= 0f) zeroY - barHeight else zeroY
                         val bottom = if (v >= 0f) zeroY else zeroY + barHeight
@@ -1609,6 +1735,18 @@ private fun BarChartContent() {
 
 @Composable
 fun CalendarContent() {
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
+    }
+
+
     @Composable
     fun HabitGrid(
         startDay: Int = when (habits[habit_statistics_and_edit_x].startDate.dayOfWeek) {
@@ -1623,8 +1761,8 @@ fun CalendarContent() {
         },
         labels: List<Int> = listDaysNumbers(habit_statistics_and_edit_x),
         goods: List<Boolean> = listDaysBoolean(habit_statistics_and_edit_x),
-        goodColor: Color = seeColorByIndex(habit_statistics_and_edit_x),
-        badColor: Color = noSeeColorByIndex(habit_statistics_and_edit_x),
+        goodColor: Color = seeColorByHabitAndStatisticsEditX,
+        badColor: Color = seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f),
         modifier: Modifier = Modifier
     ) {
         val scrollState = rememberScrollState()
@@ -1640,32 +1778,8 @@ fun CalendarContent() {
             Row(horizontalArrangement = Arrangement.spacedBy(9.2.dp / 1.15f)) {
                 while (index < goods.size + startDay) {
                     Column(verticalArrangement = Arrangement.spacedBy(9.2.dp / 1.15f)) {
-                        if (index < startDay) {
-                            Box(modifier = Modifier.size(15.65.dp))
-                        } else {
-                            Box(
-                                modifier = Modifier.size(15.65.dp)
-                                    .background(
-                                        if (goods[index - startDay]) goodColor else badColor,
-                                        RoundedCornerShape(3.dp / 1.15f)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = labels[index - startDay].toString(),
-                                    fontSize = 10.8.sp / 1.15f,
-                                    color = checkBackgroundBright(
-                                        if (goods[index - startDay]) goodColor else badColor,
-                                        UICT_see
-                                    ),
-                                    maxLines = 1,
-                                    fontFamily = JetBrainsFont(),
-                                    fontWeight = FontWeight.ExtraLight
-                                )
-                            }
-                        }
-                        index++
-                        while ((index) % 7 != 0 && index < goods.size + startDay) {
+                        @Composable
+                        fun MiniDataBox() {
                             if (index < startDay) {
                                 Box(modifier = Modifier.size(15.65.dp))
                             } else {
@@ -1692,6 +1806,11 @@ fun CalendarContent() {
                             }
                             index++
                         }
+
+                        MiniDataBox()
+                        while ((index) % 7 != 0 && index < goods.size + startDay) {
+                            MiniDataBox()
+                        }
                     }
                 }
             }
@@ -1709,6 +1828,18 @@ fun CalendarContent() {
 
 @Composable
 fun StreaksContent() {
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
+    }
+
+
     Column(
         modifier = Modifier.fillMaxWidth()
             .padding(horizontal = 29.2.dp / 1.15f)
@@ -1726,7 +1857,7 @@ fun StreaksContent() {
                     modifier = Modifier.fillMaxWidth(k)
                         .height(24.4.dp / 1.15f)
                         .background(
-                            seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
+                            seeColorByHabitAndStatisticsEditX.multiply(k, k, k),
                             RoundedCornerShape(8.8.dp / 1.15f)
                         ),
                     contentAlignment = Alignment.Center
@@ -1734,7 +1865,7 @@ fun StreaksContent() {
                     Text(
                         text = "$streak $ts_days",
                         color = checkBackgroundBright(
-                            seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
+                            seeColorByHabitAndStatisticsEditX.multiply(k, k, k),
                             UICT_see
                         ),
                         fontSize = 12.8.sp / 1.15f,
@@ -1750,6 +1881,17 @@ fun StreaksContent() {
 
 @Composable
 fun DistributionByDayOfTheWeekContent() {
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+
+    LaunchedEffect(habit_statistics_and_edit_x) {
+        calculateProgressiveColor(
+            index = habit_statistics_and_edit_x,
+            onColorUpdate = { newColor ->
+                seeColorByHabitAndStatisticsEditX = newColor
+            }
+        )
+    }
+
 
     data class DataBox(var x: Float, var y: Float, var width: Float, var height: Float)
 
@@ -1906,7 +2048,7 @@ fun DistributionByDayOfTheWeekContent() {
                 Text(
                     text = labels[index],
                     color = checkBackgroundBright(
-                        seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
+                        seeColorByHabitAndStatisticsEditX.multiply(k, k, k),
                         UICT_see
                     ),
                     fontSize = 12.8.sp / 1.15f,
@@ -1917,7 +2059,7 @@ fun DistributionByDayOfTheWeekContent() {
                 Text(
                     text = "${(k * 100).toInt()}%",
                     color = checkBackgroundBright(
-                        seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
+                        seeColorByHabitAndStatisticsEditX.multiply(k, k, k),
                         UICT_see
                     ),
                     fontSize = 16.sp / 1.15f,
@@ -1928,7 +2070,7 @@ fun DistributionByDayOfTheWeekContent() {
                 Text(
                     text = "${realValues[index].toBestString()} ${habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension}",
                     color = checkBackgroundBright(
-                        seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
+                        seeColorByHabitAndStatisticsEditX.multiply(k, k, k),
                         UICT_see
                     ),
                     fontSize = 12.8.sp / 1.15f,
@@ -1964,7 +2106,7 @@ fun DistributionByDayOfTheWeekContent() {
                     modifier = Modifier.offset(boxes[i].x.dp, boxes[i].y.dp)
                         .size(boxes[i].width.dp, boxes[i].height.dp)
                         .background(
-                            seeColorByIndex(habit_statistics_and_edit_x).multiply(k, k, k),
+                            seeColorByHabitAndStatisticsEditX.multiply(k, k, k),
                             RoundedCornerShape(14.4.dp / 1.15f)
                         )
                 ) {

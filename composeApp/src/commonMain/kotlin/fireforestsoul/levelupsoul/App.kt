@@ -9,9 +9,11 @@
 
 package fireforestsoul.levelupsoul
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
@@ -45,13 +47,15 @@ fun App(viewModel: AppViewModel) {
 
     Box(
         modifier = Modifier
+            .fillMaxSize()
+            .background(UIC_dark)
             .padding(WindowInsets.systemBars.asPaddingValues())
             .hazeSource(hazeState)
     ) {
         when (appStatus) {
             AppStatus.LOADING -> LoadingContent(viewModel)
             AppStatus.CREATE_HABIT -> CreateHabit(viewModel)
-            AppStatus.HABIT_STATISTICS -> HabitStatistics(viewModel, hazeState)
+            AppStatus.HABIT_STATISTICS -> HabitStatistics(viewModel)
             AppStatus.EDIT_HABIT -> EditHabit(viewModel)
             else -> {
                 if (appStatus == AppStatus.TABLE_UPDATER) {
@@ -71,14 +75,14 @@ fun App(viewModel: AppViewModel) {
                 viewModel,
                 verticalScrollForTableContent,
                 horizontalScrollForTableContent,
-                verticalScrollForHabitsListContent,
-                hazeState
+                verticalScrollForHabitsListContent
             )
         }
     }
 
     Box(
         modifier = Modifier
+            .fillMaxSize()
             .padding(WindowInsets.systemBars.asPaddingValues())
     ) {
         StatusBar(hazeState)
