@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.datetime.LocalDate
+import kotlin.collections.forEach
 
 private fun saveSystem(
     saves: () -> Unit
@@ -51,38 +52,12 @@ private fun saveAllValuesProcess() {
 
 private fun saveCashesProcess() {
     saveValue(backAppStatus, "backAppStatus")
-    saveValue(
-        listPointsOfHabitStatistic[HabitStatisticsStatus.GOAL] ?: 0f,
-        "listPointsOfHabitStatistic-HabitStatisticsStatus-GOAL"
-    )
-    saveValue(
-        listPointsOfHabitStatistic[HabitStatisticsStatus.PROGRESS] ?: 0f,
-        "listPointsOfHabitStatistic-HabitStatisticsStatus-PROGRESS"
-    )
-    saveValue(
-        listPointsOfHabitStatistic[HabitStatisticsStatus.LEVEL] ?: 0f,
-        "listPointsOfHabitStatistic-HabitStatisticsStatus-LEVEL"
-    )
-    saveValue(
-        listPointsOfHabitStatistic[HabitStatisticsStatus.PROGRESS_GRAPH] ?: 0f,
-        "listPointsOfHabitStatistic-HabitStatisticsStatus-PROGRESS_GRAPH"
-    )
-    saveValue(
-        listPointsOfHabitStatistic[HabitStatisticsStatus.BAR_CHART] ?: 0f,
-        "listPointsOfHabitStatistic-HabitStatisticsStatus-BAR_CHART"
-    )
-    saveValue(
-        listPointsOfHabitStatistic[HabitStatisticsStatus.CALENDAR] ?: 0f,
-        "listPointsOfHabitStatistic-HabitStatisticsStatus-CALENDAR"
-    )
-    saveValue(
-        listPointsOfHabitStatistic[HabitStatisticsStatus.DISTRIBUTION_BY_DAY_OF_THE_WEEK] ?: 0f,
-        "listPointsOfHabitStatistic-HabitStatisticsStatus-DISTRIBUTION_BY_DAY_OF_THE_WEEK"
-    )
-    saveValue(
-        listPointsOfHabitStatistic[HabitStatisticsStatus.STREAKS] ?: 0f,
-        "listPointsOfHabitStatistic-HabitStatisticsStatus-GOAL"
-    )
+    HabitStatisticsStatus.entries.forEach { status ->
+        saveValue(
+            listPointsOfHabitStatistic[status] ?: 0f,
+            "listPointsOfHabitStatistic-HabitStatisticsStatus-${status.name}"
+        )
+    }
 }
 
 fun Habit.saveHabitDays(habitIndex: Int) {
@@ -179,6 +154,7 @@ fun <T> String.loadedElementToVal(value: T): T {
         is LocalDate -> element.let { LocalDate.parse(it) }
         is Languages -> enumValueOf<Languages>(element)
         is AppStatus -> enumValueOf<AppStatus>(element)
+        is Float -> element.toFloatOrNull() ?: value
         else -> value
     } as T
 }
@@ -232,6 +208,14 @@ fun loadAllValues() {
         language = loadValue(language, "language")
         withExponent = loadValue(withExponent, "withExponent")
         backAppStatus = loadValue(backAppStatus, "backAppStatus")
+        if (oldAppVersion >= 1001005000) {
+            HabitStatisticsStatus.entries.forEach { status ->
+                listPointsOfHabitStatistic[status] = loadValue(
+                    listPointsOfHabitStatistic[status] ?: 0f,
+                    "listPointsOfHabitStatistic-HabitStatisticsStatus-${status.name}"
+                )
+            }
+        }
     }
 }
 
