@@ -140,9 +140,9 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
     startSize = listProgressedStatusBar.size
 
     while (true) {
-        val currentText = workText
+        val currentText = mutex.withLock { workText }
 
-        if (currentText.isNotEmpty()) {
+        if (!currentText.isNullOrEmpty()) { //!!! проверка на Null необходима
             val currentListSize = mutex.withLock { listProgressedStatusBar.size }
 
             if (currentListSize != startSize) {
@@ -173,8 +173,10 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
                 continue
             }
 
-            if (statusBarTextNow.isNotEmpty()) {
-                statusBarTextNow = statusBarTextNow.dropLast(1)
+            mutex.withLock {
+                if (statusBarTextNow.isNotEmpty()) {
+                    statusBarTextNow = statusBarTextNow.dropLast(1)
+                }
             }
             delay(75)
             continue

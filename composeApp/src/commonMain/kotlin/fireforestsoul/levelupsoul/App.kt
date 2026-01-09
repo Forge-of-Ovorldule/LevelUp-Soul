@@ -55,7 +55,7 @@ fun App(viewModel: AppViewModel) {
         when (appStatus) {
             AppStatus.LOADING -> LoadingContent(viewModel)
             AppStatus.CREATE_HABIT -> CreateHabit(viewModel)
-            AppStatus.HABIT_STATISTICS -> HabitStatistics(viewModel, hazeState)
+            AppStatus.HABIT_STATISTICS -> HabitStatistics(viewModel)
             AppStatus.EDIT_HABIT -> EditHabit(viewModel)
             else -> {
                 if (appStatus == AppStatus.TABLE_UPDATER) {
@@ -75,8 +75,7 @@ fun App(viewModel: AppViewModel) {
                 viewModel,
                 verticalScrollForTableContent,
                 horizontalScrollForTableContent,
-                verticalScrollForHabitsListContent,
-                hazeState
+                verticalScrollForHabitsListContent
             )
         }
     }

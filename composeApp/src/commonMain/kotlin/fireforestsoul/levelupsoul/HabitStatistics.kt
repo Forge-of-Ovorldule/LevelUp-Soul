@@ -78,7 +78,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.times
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.delay
 import kotlinx.datetime.DayOfWeek
 import org.jetbrains.compose.resources.painterResource
@@ -89,7 +90,7 @@ var habit_statistics_and_edit_x = 0
 private var pps_for_habit_statistic = 0
 
 @Composable
-fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
+fun HabitStatistics(viewModel: AppViewModel) {
     var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
@@ -128,51 +129,56 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                         }
                 ) {
                     val maxWidthBox = maxWidth
+                    val hazeState = rememberHazeState()
 
                     Box(
-                        modifier = Modifier.padding(
-                            start = maxWidthBox / 1080 * 801.79f,
-                            top = maxHeightBox / 536 * 54.07f
-                        )
+                        modifier = Modifier.hazeSource(hazeState)
                     ) {
-                        Text(
-                            text = habits[habit_statistics_and_edit_x].iconChar,
-                            color = seeColorByHabitAndStatisticsEditX,
-                            fontSize = 60.sp / 1.15f,
-                            fontWeight = FontWeight.Black,
-                            modifier = Modifier.rotate(-28.79f),
-                            fontFamily = JetBrainsFont()
-                        )
-                    }
-                    Box(
-                        modifier = Modifier.padding(
-                            start = maxWidthBox / 1080 * 51.32f,
-                            top = maxHeightBox / 536 * 181.29f
-                        )
-                    ) {
-                        Text(
-                            text = habits[habit_statistics_and_edit_x].iconChar,
-                            color = seeColorByHabitAndStatisticsEditX,
-                            fontSize = 51.2.sp / 1.15f,
-                            fontWeight = FontWeight.Black,
-                            modifier = Modifier.rotate(33.94f),
-                            fontFamily = JetBrainsFont()
-                        )
-                    }
-                    Box(
-                        modifier = Modifier.padding(
-                            start = maxWidthBox / 1080 * 677.25f,
-                            top = maxHeightBox / 536 * 288.99f
-                        )
-                    ) {
-                        Text(
-                            text = habits[habit_statistics_and_edit_x].iconChar,
-                            color = seeColorByHabitAndStatisticsEditX,
-                            fontSize = 34.sp / 1.15f,
-                            fontWeight = FontWeight.Black,
-                            modifier = Modifier.rotate(-17.23f),
-                            fontFamily = JetBrainsFont()
-                        )
+                        Box(
+                            modifier = Modifier.padding(
+                                start = maxWidthBox / 1080 * 801.79f,
+                                top = maxHeightBox / 536 * 54.07f
+                            )
+                        ) {
+                            Text(
+                                text = habits[habit_statistics_and_edit_x].iconChar,
+                                color = seeColorByHabitAndStatisticsEditX,
+                                fontSize = 60.sp / 1.15f,
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier.rotate(-28.79f),
+                                fontFamily = JetBrainsFont()
+                            )
+                        }
+                        Box(
+                            modifier = Modifier.padding(
+                                start = maxWidthBox / 1080 * 51.32f,
+                                top = maxHeightBox / 536 * 181.29f
+                            )
+                        ) {
+                            Text(
+                                text = habits[habit_statistics_and_edit_x].iconChar,
+                                color = seeColorByHabitAndStatisticsEditX,
+                                fontSize = 51.2.sp / 1.15f,
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier.rotate(33.94f),
+                                fontFamily = JetBrainsFont()
+                            )
+                        }
+                        Box(
+                            modifier = Modifier.padding(
+                                start = maxWidthBox / 1080 * 677.25f,
+                                top = maxHeightBox / 536 * 288.99f
+                            )
+                        ) {
+                            Text(
+                                text = habits[habit_statistics_and_edit_x].iconChar,
+                                color = seeColorByHabitAndStatisticsEditX,
+                                fontSize = 34.sp / 1.15f,
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier.rotate(-17.23f),
+                                fontFamily = JetBrainsFont()
+                            )
+                        }
                     }
 
                     IconButton(
@@ -424,7 +430,7 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                     ) {
                         when (habitStatisticsStatus) {
                             HabitStatisticsStatus.GOAL -> {
-                                GoalContent(progressPeriodSetting, hazeState)
+                                GoalContent(progressPeriodSetting)
                                 LaunchedEffect(Unit) {
                                     while (true) {
                                         progressPeriodSetting = pps_for_habit_statistic
@@ -436,7 +442,6 @@ fun HabitStatistics(viewModel: AppViewModel, hazeState: HazeState) {
                             HabitStatisticsStatus.PROGRESS -> ProgressContent(progressPeriodSetting)
                             HabitStatisticsStatus.LEVEL -> LevelContent(
                                 progressPeriodSetting,
-                                hazeState
                             )
 
                             HabitStatisticsStatus.PROGRESS_GRAPH -> ProgressGraphContent(
@@ -518,7 +523,6 @@ private fun HabitStatisticsStatusIcon(
 @Composable
 private fun GoalContent(
     pps: Int,
-    hazeState: HazeState
 ) {
     @Composable
     fun PPSInfoDialog(smallText: String) {
@@ -619,7 +623,7 @@ private fun GoalContent(
                         downPanelSize = 48.67.dp,
                         isProcessed = false
                     ),
-                    hazeState = hazeState,
+                    hazeState = null,
                     text = text,
                     fontFamily = JetBrainsFont(),
                     fontWeight = FontWeight.Medium,
@@ -715,13 +719,13 @@ private fun ProgressContent(
         bottomLabel: String = "",
         withBottomLabel: Boolean = !withLabel,
         isPlusProgress: Boolean = !withLabel,
-        isBottonLabel: Boolean = true
+        isBottomLabel: Boolean = true
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.8.dp / 1.15f)
         ) {
-            if (withBottomLabel && !isBottonLabel) {
+            if (withBottomLabel && !isBottomLabel) {
                 Text(
                     text = bottomLabel,
                     fontSize = 12.8.sp / 1.15f,
@@ -801,7 +805,7 @@ private fun ProgressContent(
                     }
                 }
             }
-            if (withBottomLabel && isBottonLabel) {
+            if (withBottomLabel && isBottomLabel) {
                 Text(
                     text = bottomLabel,
                     fontSize = 12.8.sp / 1.15f,
@@ -838,7 +842,7 @@ private fun ProgressContent(
                 DonutChart(
                     progress = progress,
                     strokeWidth = 8.7.dp,
-                    isBottonLabel = true,
+                    isBottomLabel = true,
                     trackColor = if (progress >= 0f) seeColorByHabitAndStatisticsEditX.multiply(
                         0.5f,
                         0.5f,
@@ -856,7 +860,7 @@ private fun ProgressContent(
                 DonutChart(
                     progress = progress,
                     strokeWidth = 8.7.dp,
-                    isBottonLabel = true,
+                    isBottomLabel = true,
                     trackColor = if (progress >= 0f) seeColorByHabitAndStatisticsEditX.multiply(
                         0.5f,
                         0.5f,
@@ -880,7 +884,7 @@ private fun ProgressContent(
                 DonutChart(
                     progress = progress,
                     strokeWidth = 8.7.dp,
-                    isBottonLabel = false,
+                    isBottomLabel = false,
                     trackColor = if (progress >= 0f) seeColorByHabitAndStatisticsEditX.multiply(
                         0.5f,
                         0.5f,
@@ -898,7 +902,7 @@ private fun ProgressContent(
                 DonutChart(
                     progress = progress,
                     strokeWidth = 8.7.dp,
-                    isBottonLabel = false,
+                    isBottomLabel = false,
                     trackColor = if (progress >= 0f) seeColorByHabitAndStatisticsEditX.multiply(
                         0.5f,
                         0.5f,
@@ -920,7 +924,6 @@ private fun ProgressContent(
 @Composable
 private fun LevelContent(
     pps: Int,
-    hazeState: HazeState
 ) {
     var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
 
@@ -1095,7 +1098,7 @@ private fun LevelContent(
                                     downPanelSize = 48.67.dp,
                                     isProcessed = false
                                 ),
-                                hazeState = hazeState,
+                                hazeState = null,
                                 contentBefore = {
                                     Text(
                                         text = habits[habit_statistics_and_edit_x].needGoal.toBestString() + " ",
@@ -1136,7 +1139,7 @@ private fun LevelContent(
                                     downPanelSize = 48.67.dp,
                                     isProcessed = false
                                 ),
-                                hazeState = hazeState,
+                                hazeState = null,
                                 contentBefore = {
                                     Text(
                                         text = " " + habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(
@@ -1165,7 +1168,7 @@ private fun LevelContent(
                             downPanelSize = 48.67.dp,
                             isProcessed = false
                         ),
-                        hazeState = hazeState,
+                        hazeState = null,
                         contentBefore = {
                             Text(
                                 text = habits[habit_statistics_and_edit_x].needGoal.toBestString() + " ",

@@ -52,10 +52,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import dev.chrisbanes.haze.HazeState
 
 @Composable
-fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel, hazeState: HazeState) {
+fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel) {
     backAppStatus = AppStatus.HABITS_LIST_UPDATER
     val sortedHabits = MutableList(habits.size) { it }
     sortedHabits.sortSystem()
@@ -121,7 +120,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel,
                                     downPanelSize = 48.dp,
                                     isProcessed = false
                                 ),
-                                hazeState = hazeState,
+                                hazeState = null,
                                 text = habits[sortedHabits[x]].nameOfHabit,
                                 color = UICT_see,
                                 fontSize = 16.5.sp,
@@ -185,7 +184,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel,
                                         downPanelSize = 48.dp,
                                         isProcessed = false
                                     ),
-                                    hazeState = hazeState,
+                                    hazeState = null,
                                     text = if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST)
                                         if (habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod < habits[sortedHabits[x]].needGoal)
                                             "$ts_You_need ${(habits[sortedHabits[x]].needGoal - habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod).toBestString()} ${habits[sortedHabits[x]].nameOfUnitsOfDimension} $ts_more"
@@ -271,7 +270,9 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel,
                                                 if (value != null) {
                                                     habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today =
                                                         inputText.toBigDecimal()
-                                                    habits[sortedHabits[x]].saveHabitDays(sortedHabits[x])
+                                                    habits[sortedHabits[x]].saveHabitDays(
+                                                        sortedHabits[x]
+                                                    )
                                                     habits[sortedHabits[x]].update(sortedHabits)
                                                 }
                                                 showDialog = false
