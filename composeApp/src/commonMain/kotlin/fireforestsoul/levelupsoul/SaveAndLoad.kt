@@ -46,8 +46,43 @@ private fun saveAllValuesProcess() {
     saveSettingsProcess()
     saveValue(soul_level, "soul_level")
     saveValue(soul_last_level_change_date, "soul_last_level_change_date")
-    language.saveLanguageProcess()
+    saveCashesProcess()
+}
+
+private fun saveCashesProcess() {
     saveValue(backAppStatus, "backAppStatus")
+    saveValue(
+        listPointsOfHabitStatistic[HabitStatisticsStatus.GOAL] ?: 0f,
+        "listPointsOfHabitStatistic-HabitStatisticsStatus-GOAL"
+    )
+    saveValue(
+        listPointsOfHabitStatistic[HabitStatisticsStatus.PROGRESS] ?: 0f,
+        "listPointsOfHabitStatistic-HabitStatisticsStatus-PROGRESS"
+    )
+    saveValue(
+        listPointsOfHabitStatistic[HabitStatisticsStatus.LEVEL] ?: 0f,
+        "listPointsOfHabitStatistic-HabitStatisticsStatus-LEVEL"
+    )
+    saveValue(
+        listPointsOfHabitStatistic[HabitStatisticsStatus.PROGRESS_GRAPH] ?: 0f,
+        "listPointsOfHabitStatistic-HabitStatisticsStatus-PROGRESS_GRAPH"
+    )
+    saveValue(
+        listPointsOfHabitStatistic[HabitStatisticsStatus.BAR_CHART] ?: 0f,
+        "listPointsOfHabitStatistic-HabitStatisticsStatus-BAR_CHART"
+    )
+    saveValue(
+        listPointsOfHabitStatistic[HabitStatisticsStatus.CALENDAR] ?: 0f,
+        "listPointsOfHabitStatistic-HabitStatisticsStatus-CALENDAR"
+    )
+    saveValue(
+        listPointsOfHabitStatistic[HabitStatisticsStatus.DISTRIBUTION_BY_DAY_OF_THE_WEEK] ?: 0f,
+        "listPointsOfHabitStatistic-HabitStatisticsStatus-DISTRIBUTION_BY_DAY_OF_THE_WEEK"
+    )
+    saveValue(
+        listPointsOfHabitStatistic[HabitStatisticsStatus.STREAKS] ?: 0f,
+        "listPointsOfHabitStatistic-HabitStatisticsStatus-GOAL"
+    )
 }
 
 fun Habit.saveHabitDays(habitIndex: Int) {
@@ -124,6 +159,7 @@ private fun saveSettingsProcess() {
     saveValue(soul_color, "soul_color")
     saveValue(soul_name, "soul_name")
     saveValue(withExponent, "withExponent")
+    language.saveLanguageProcess()
 }
 
 expect fun <T> loadValue(value: T, name: String): T
