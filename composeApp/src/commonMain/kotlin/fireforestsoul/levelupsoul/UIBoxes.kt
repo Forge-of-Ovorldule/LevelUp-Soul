@@ -491,6 +491,11 @@ fun SettingsDialog() {
     var exponent by remember { mutableStateOf(withExponent) }
     var soulName by remember { mutableStateOf(soul_name) }
     var soulColor by remember { mutableStateOf(soul_color) }
+    var sortHabitStatisticsSectionsByFrequencyOfUse by remember {
+        mutableStateOf(
+            sort_habit_statistics_sections_by_frequency_of_use
+        )
+    }
 
     if (showDialog) {
         AlertDialog(
@@ -613,6 +618,22 @@ fun SettingsDialog() {
                             color = UICT_see
                         )
                     }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = sortHabitStatisticsSectionsByFrequencyOfUse,
+                            onCheckedChange = { sortHabitStatisticsSectionsByFrequencyOfUse = it },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = UICT_no_see,
+                                uncheckedColor = UICT_no_see,
+                                checkmarkColor = UICT_see
+                            )
+                        )
+                        Text(
+                            text = ts_Sort_habit_statistics_sections_by_frequency_of_use,
+                            fontSize = 16.sp,
+                            color = UICT_see
+                        )
+                    }
                 }
             },
             confirmButton = {
@@ -622,8 +643,9 @@ fun SettingsDialog() {
                         soul_name = soulName
                         soul_color = soulColor
                         soul_color_type = typeOfColor
+                        sort_habit_statistics_sections_by_frequency_of_use = sortHabitStatisticsSectionsByFrequencyOfUse
                         saveSettings()
-                        showDialog = false
+                        showDialog = false //it's use
                     },
                     colors = ButtonColors(
                         containerColor = UIC,

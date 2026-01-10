@@ -113,7 +113,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
             HabitStatisticsStatus.GOAL
         listPointsOfHabitStatistic[startStatus] = listPointsOfHabitStatistic.getValue(startStatus) + 0.25f
 
-        var habitStatisticsStatus by remember { mutableStateOf(startStatus) }
+        var habitStatisticsStatus by remember { mutableStateOf(if (sort_habit_statistics_sections_by_frequency_of_use) startStatus else HabitStatisticsStatus.GOAL) }
         var progressPeriodSetting by remember { mutableStateOf(habits[habit_statistics_and_edit_x].habitDay.size) }
         pps_for_habit_statistic = progressPeriodSetting
 
@@ -312,11 +312,15 @@ fun HabitStatistics(viewModel: AppViewModel) {
                     contentAlignment = Alignment.Center
                 ) {
                     val sortedStatuses = remember {
-                        HabitStatisticsStatus.entries
-                            .filter {
-                                it != HabitStatisticsStatus.LEVEL || habits[habit_statistics_and_edit_x].changeLevel
-                            }
-                            .sortedByDescending { listPointsOfHabitStatistic[it] ?: 0f }
+                        val filtered = HabitStatisticsStatus.entries.filter {
+                            it != HabitStatisticsStatus.LEVEL || habits[habit_statistics_and_edit_x].changeLevel
+                        }
+
+                        if (sort_habit_statistics_sections_by_frequency_of_use) {
+                            filtered.sortedByDescending { listPointsOfHabitStatistic[it] ?: 0f }
+                        } else {
+                            filtered
+                        }
                     }
 
                     Row(

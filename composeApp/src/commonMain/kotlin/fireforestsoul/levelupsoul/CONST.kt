@@ -42,5 +42,6 @@ var soul_level = 0
 var soul_last_level_change_date = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
 var language: Languages = Languages.EN
+var sort_habit_statistics_sections_by_frequency_of_use = false
 
 var backAppStatus = AppStatus.TABLE
