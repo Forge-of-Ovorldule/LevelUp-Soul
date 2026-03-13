@@ -1,22 +1,28 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/95624b4c-a454-4d1a-a07d-79b9aa576923" width="200" alt="LevelUp Soul">
-  <h1 align="center">🔥 LevelUp Soul</h1>
-  <p align="center"><b>Кузница характера через осознанные привычки</b></p>
-  <p align="center">Трекер личного роста, где привычки — металл, а дисциплина — молот</p>
+  <img src="https://github.com/user-attachments/assets/95624b4c-a454-4d1a-a07d-79b9aa576923" width="180" alt="LevelUp-Soul">
+  <h1 align="center">🔥 LevelUp-Soul</h1>
+  <p align="center"><b>Кроссплатформенная система геймификации саморазвития</b></p>
+  <p align="center">Инженерное решение для трекинга привычек, построенное на принципах внутренней дисциплины и точности данных</p>
   
-  <!-- Бейджи -->
   <div align="center">
-    <img src="https://img.shields.io/badge/version-1.1.0-blue" alt="Версия">
+    <img src="https://img.shields.io/badge/version-1.1.4-blue" alt="Версия">
+    <img src="https://img.shields.io/badge/Kotlin-Multiplatform-purple?logo=kotlin" alt="KMP">
+    <img src="https://img.shields.io/badge/UI-Compose%20Multiplatform-orange" alt="Compose">
     <img src="https://img.shields.io/badge/status-Production-brightgreen" alt="Статус">
     <img src="https://img.shields.io/badge/license-Apache%202.0-yellow" alt="Лицензия">
-    <img src="https://img.shields.io/badge/platform-Android%20|%20Desktop%20|%20Web-9cf" alt="Платформы">
-    <img src="https://img.shields.io/github/commit-activity/m/Forge-of-Ovorldule/LevelUp-Soul?color=blueviolet" alt="Активность">
   </div>
 </p>
 
 ---
 
-## 🌟 Визуализируй свой рост
+## 📋 Описание проекта
+**LevelUp-Soul** — это программный комплекс, разработанный в рамках конкурса «Высший пилотаж» (НИУ ВШЭ). Приложение объединяет механизмы классических трекеров привычек с ролевыми игровыми моделями (RPG). 
+
+**Ключевое отличие:** отказ от внешних триггеров (уведомлений) в пользу формирования внутренней ответственности и использование высокоточных алгоритмов вычисления прогресса.
+
+---
+
+## 🌟 Интерфейс и возможности
 
 <div align="center">
   <img src="https://github.com/user-attachments/assets/cfc0d9f1-91e0-4de7-ac47-00ab43bced3f" width="23%" alt="Интерфейс">
@@ -25,95 +31,81 @@
   <img src="https://github.com/user-attachments/assets/c6169bca-47c8-44f8-af34-a8a2e6826cda" width="23%" alt="Диаграммы">
 </div>
 
-> "Система, где каждое действие закаляет характер, а прогресс становится осязаемым"
+- **Многоплатформенность:** Нативная работа на Android, Windows, Linux, MacOS и Web (Wasm).
+- **Математическая точность:** Использование `BigDecimal` (через библиотеку BigNum) для исключения погрешностей при расчете прогресса.
+- **Геймификация:** Интегральный показатель «Уровень Души», завязанный на дисциплине (алгоритм 20-дневных циклов).
+- **Аналитика:** Визуализация данных через интерактивные диаграммы и тепловые карты календаря.
+- **Privacy First:** Полное локальное хранение данных в формате JSON/XML/LocalStorage без передачи на сторонние сервера.
 
 ---
 
-## 🚀 Ключевые возможности
-
-- **Динамические уровни привычек** с автоматическим расчетом прогресса
-- **Уровень Души** как интегральный показатель роста
-- **Глубокая статистика** с круговыми, столбчатыми и линейными диаграммами
-- **Календарь достижений** с визуализацией прогресса
-- **Персонализированные иконки** для каждой привычки
-- **Адаптивная цветовая система** оформления
+## 🛠 Технологический стек
+- **Язык:** Kotlin 2.1.0+
+- **Фреймворк:** Compose Multiplatform (UI для всех платформ)
+- **Архитектура:** MVVM (Model-View-ViewModel)
+- **Хранение данных:** Multiplatform Settings / DataStore
+- **Сборка:** Gradle (KMP конфигурация)
 
 ---
 
-## 📥 Получить приложение
+## 🏗 Инструкция по сборке
 
-### Android
-[<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_ru-store.png?raw=true" width="200">](https://www.rustore.ru/catalog/app/fireforestsoul.levelupsoul)
+Для запуска проекта локально необходимо наличие **JDK 17+** и **Android Studio (Ladybug+)**.
 
-### Web версия
-Доступна по адресу:  
-https://forge-of-ovorldule.github.io/LevelUp-Soul-site/
+1. Клонируйте репозиторий:
+```bash
+git clone https://github.com/Forge-of-Ovorldule/LevelUp-Soul.git
+```
 
----
+2. Запуск Desktop-версии (Windows/Linux/MacOS):
+```bash
+./gradlew :composeApp:run
+```
 
-## 🛣 Roadmap развития
 
-| Версия | Статус | Основные изменения |
-|--------|--------|-------------------|
-| **v1.1.1** | <img src="https://img.shields.io/badge/В_разработке-FF8C00" alt="В разработке"> | Новая статистика привычек (больше графиков и редизайн) |
-| **v1.1.2** | <img src="https://img.shields.io/badge/В_планах-6495ED" alt="В планах"> | Дополнительное обновление статистики (анимации и переходы) |
-| **v1.2.0** | <img src="https://img.shields.io/badge/Идея-9370DB" alt="Идея"> | Питомец, напоминающий о привычках 🐾 |
+3. Сборка Android-версии:
+```bash
+./gradlew :composeApp:assembleDebug
 
----
+```
 
-## 📊 Статистика разработки
 
-<div align="center">
-  <a href="https://github.com/Forge-of-Ovorldule/LevelUp-Soul/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=Forge-of-Ovorldule/LevelUp-Soul" alt="Участники">
-  </a>
-  
-  <a href="https://github.com/Forge-of-Ovorldule/LevelUp-Soul/pulse">
-    <img src="https://repobeats.axiom.co/api/embed/cc84e5a9a1b0b9d5f9d1c3f7d9d7f3d1e1f3b2f.svg" alt="Активность репозитория">
-  </a>
-  
-  <img src="https://img.shields.io/github/languages/code-size/Forge-of-Ovorldule/LevelUp-Soul?color=blue" alt="Размер кода">
-  <img src="https://img.shields.io/github/repo-size/Forge-of-Ovorldule/LevelUp-Soul?color=informational" alt="Размер репозитория">
-</div>
 
 ---
 
-## ❓ Частые вопросы
+## 🧠 Принципы проектирования (Философия)
 
-<details>
-<summary>Как рассчитывается Уровень Души?</summary>
-  
-Уровень Души повышается, если в течение 20 дней подряд прогресс привычек был выше 80%.  
-Понижается, если прогресс падает ниже 20% в течение того же периода.
-</details>
+> **Почему нет пуш-уведомлений?** > Проект следует концепции осознанного саморазвития. Мы считаем, что внешние уведомления превращают привычку в механическое действие по сигналу. LevelUp-Soul фокусируется на воспитании внутренней тяги к росту.
 
-<details>
-<summary>Есть ли синхронизация между устройствами?</summary>
-  
-На данный момент синхронизация отсутствует и в ближайший год не планируется.
-</details>
+> **Локальность данных** > Все вычисления и хранение логов происходят на устройстве пользователя. Это гарантирует 100% конфиденциальность и доступность функционала без интернета.
 
-<details>
-<summary>Можно ли экспортировать данные?</summary>
-  
-Экспорт данных доступен только в Desktop-версии. В мобильной версии эта функция появится в будущих обновлениях.
-</details>
+---
+
+## 📥 Загрузка
+
+| Платформа | Источник |
+| --- | --- |
+| **Android** | [Скачать в RuStore](https://www.rustore.ru/catalog/app/fireforestsoul.levelupsoul) |
+| **Desktop / APK** | [GitHub Releases](https://github.com/Forge-of-Ovorldule/LevelUp-Soul/releases) |
+| **Web (Demo)** | [Открыть в браузере](https://forge-of-ovorldule.github.io/LevelUp-Soul-site/) |
+
+---
+
+## 🛣 Roadmap
+
+* [x] v1.1.2 — Обновление стабильности и фантомный период для выполнения привычки.
+* [x] v1.1.3 — Обновление сохранений и улучшение их стабильности.
+* [x] v1.1.4 — Исправление всех накопившихся багов.
+* [ ] v1.1.5 — Дополнительное мини-обовление статистики привычек.
+* [ ] v1.2.0 — Группы привычек.
+* [ ] v2.0.0 — Формирование единой экосистемы планирования.
 
 ---
 
 ## 📜 Лицензия
 
-```text
-Apache License 2.0
-Copyright (c) 2025 Forge of Ovorldule
-
-Подробности в файле LICENSE.
-```
-[Полный текст лицензии](LICENSE)
+Распространяется под лицензией **Apache License 2.0**. Подробности в файле [LICENSE](https://www.google.com/search?q=LICENSE).
 
 ---
 
-> **LevelUp Soul — это не просто трекер привычек.**  
-> **Это ваша личная кузница характера, где каждый день — новый шаг к лучшей версии себя.**  
-> Присоединяйтесь к нашему [Telegram-сообществу](https://t.me/ForgeOfOvorldule) для обсуждения идей!  
-> **#ForgeYourSoul 🔥**
+<p align="center">Создано с 🧠 и 🔥 в 2025-2026 гг.</p>
