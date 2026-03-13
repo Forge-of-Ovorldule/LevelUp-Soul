@@ -91,7 +91,7 @@ class Habit(
                                 TypeOfGoalHabits.NO_MORE -> phantomNeedDays /= "0.8".toBigDecimal()
                             }
                             needDays =
-                                if (phantomNeedDays % 1 != BigDecimal.ZERO) phantomNeedDays.intValue(false) + 1 else phantomNeedDays.intValue(
+                                if (phantomNeedDays == phantomNeedDays.intValue(false).toBigDecimal()) phantomNeedDays.intValue(false) + 1 else phantomNeedDays.intValue(
                                     false
                                 )
                         }

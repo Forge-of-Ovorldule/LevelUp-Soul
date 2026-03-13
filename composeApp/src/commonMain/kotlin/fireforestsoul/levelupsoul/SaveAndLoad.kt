@@ -133,6 +133,7 @@ private fun saveSettingsProcess() {
     saveValue(soul_color_type, "soul_color_type")
     saveValue(soul_color, "soul_color")
     saveValue(soul_name, "soul_name")
+    saveValue(sort_habit_statistics_sections_by_frequency_of_use, "sort_habit_statistics_sections_by_frequency_of_use")
     saveValue(withExponent, "withExponent")
     language.saveLanguageProcess()
 }
@@ -215,6 +216,10 @@ fun loadAllValues() {
                     "listPointsOfHabitStatistic-HabitStatisticsStatus-${status.name}"
                 )
             }
+            sort_habit_statistics_sections_by_frequency_of_use = loadValue(
+                sort_habit_statistics_sections_by_frequency_of_use,
+                "sort_habit_statistics_sections_by_frequency_of_use"
+            )
         }
     }
 }
