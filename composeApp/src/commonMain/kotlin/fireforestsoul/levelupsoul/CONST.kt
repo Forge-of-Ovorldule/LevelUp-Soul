@@ -26,7 +26,7 @@ enum class AppStatus {
     HABITS_LIST_UPDATER
 }
 
-const val app_version: Long = 1001004000 //version(001).001.004.000
+const val app_version: Long = 1001005000 //version(001).001.005.000
 
 const val old1001000000_save_file_name = "LevelUp-Soul.FireForestSouls-saving"
 const val save_file_name = "levelup-soul-saving-by-forge-of-ovorldule"
@@ -42,5 +42,6 @@ var soul_level = 0
 var soul_last_level_change_date = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
 var language: Languages = Languages.EN
+var sort_habit_statistics_sections_by_frequency_of_use = false
 
 var backAppStatus = AppStatus.TABLE

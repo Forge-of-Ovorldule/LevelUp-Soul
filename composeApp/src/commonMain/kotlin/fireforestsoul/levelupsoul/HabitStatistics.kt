@@ -108,7 +108,12 @@ fun HabitStatistics(viewModel: AppViewModel) {
             .background(Brush.verticalGradient(listOf(UIC_dark, UIC_black)))
     ) {
 
-        var habitStatisticsStatus by remember { mutableStateOf(HabitStatisticsStatus.GOAL) }
+        var startStatus = listPointsOfHabitStatistic.maxBy { it.value }.key
+        if (startStatus == HabitStatisticsStatus.LEVEL && !habits[habit_statistics_and_edit_x].changeLevel) startStatus =
+            HabitStatisticsStatus.GOAL
+        listPointsOfHabitStatistic[startStatus] = listPointsOfHabitStatistic.getValue(startStatus) + 0.25f
+
+        var habitStatisticsStatus by remember { mutableStateOf(if (sort_habit_statistics_sections_by_frequency_of_use) startStatus else HabitStatisticsStatus.GOAL) }
         var progressPeriodSetting by remember { mutableStateOf(habits[habit_statistics_and_edit_x].habitDay.size) }
         pps_for_habit_statistic = progressPeriodSetting
 
@@ -306,67 +311,40 @@ fun HabitStatistics(viewModel: AppViewModel) {
                         .padding(bottom = 13.78.dp / 1.15f),
                     contentAlignment = Alignment.Center
                 ) {
+                    val sortedStatuses = remember {
+                        val filtered = HabitStatisticsStatus.entries.filter {
+                            it != HabitStatisticsStatus.LEVEL || habits[habit_statistics_and_edit_x].changeLevel
+                        }
+
+                        if (sort_habit_statistics_sections_by_frequency_of_use) {
+                            filtered.sortedByDescending { listPointsOfHabitStatistic[it] ?: 0f }
+                        } else {
+                            filtered
+                        }
+                    }
+
                     Row(
-                        modifier = Modifier.fillMaxWidth()
-                            .background(UIC_light, RoundedCornerShape(20.89.dp / 1.15f))
-                            .padding(horizontal = 20.89.dp / 1.15f)
-                            .height(48.44.dp / 1.15f)
-                            .horizontalScroll(rememberScrollState()),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(UIC_light, RoundedCornerShape(18.16.dp))
+                            .horizontalScroll(rememberScrollState())
+                            .padding(horizontal = 18.16.dp)
+                            .height(42.12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        HabitStatisticsStatusIcon(
-                            habitStatisticsStatus = HabitStatisticsStatus.GOAL,
-                            statusNow = habitStatisticsStatus,
-                            icon = painterResource(Res.drawable.habit_statistic__goal),
-                            contentDescription = ts_Goal
-                        ) { habitStatisticsStatus = HabitStatisticsStatus.GOAL }
-                        HabitStatisticsStatusIcon(
-                            habitStatisticsStatus = HabitStatisticsStatus.PROGRESS,
-                            statusNow = habitStatisticsStatus,
-                            icon = painterResource(Res.drawable.habit_statistic__progress),
-                            contentDescription = ts_Progress
-                        ) { habitStatisticsStatus = HabitStatisticsStatus.PROGRESS }
-                        if (habits[habit_statistics_and_edit_x].changeLevel) {
+                        sortedStatuses.forEach { status ->
                             HabitStatisticsStatusIcon(
-                                habitStatisticsStatus = HabitStatisticsStatus.LEVEL,
+                                habitStatisticsStatus = status,
                                 statusNow = habitStatisticsStatus,
-                                icon = painterResource(Res.drawable.habit_statistic__level),
-                                contentDescription = ts_Level
-                            ) { habitStatisticsStatus = HabitStatisticsStatus.LEVEL }
-                        }
-                        HabitStatisticsStatusIcon(
-                            habitStatisticsStatus = HabitStatisticsStatus.PROGRESS_GRAPH,
-                            statusNow = habitStatisticsStatus,
-                            icon = painterResource(Res.drawable.habit_statistic__progress_graph),
-                            contentDescription = ts_Progress_graph
-                        ) { habitStatisticsStatus = HabitStatisticsStatus.PROGRESS_GRAPH }
-                        HabitStatisticsStatusIcon(
-                            habitStatisticsStatus = HabitStatisticsStatus.BAR_CHART,
-                            statusNow = habitStatisticsStatus,
-                            icon = painterResource(Res.drawable.habit_statistic__bar_chart),
-                            contentDescription = ts_Bar_chart
-                        ) { habitStatisticsStatus = HabitStatisticsStatus.BAR_CHART }
-                        HabitStatisticsStatusIcon(
-                            habitStatisticsStatus = HabitStatisticsStatus.CALENDAR,
-                            statusNow = habitStatisticsStatus,
-                            icon = painterResource(Res.drawable.habit_statistic__calendar),
-                            contentDescription = ts_Calendar
-                        ) { habitStatisticsStatus = HabitStatisticsStatus.CALENDAR }
-                        HabitStatisticsStatusIcon(
-                            habitStatisticsStatus = HabitStatisticsStatus.STREAKS,
-                            statusNow = habitStatisticsStatus,
-                            icon = painterResource(Res.drawable.habit_statistic__streaks),
-                            contentDescription = ts_Streaks
-                        ) { habitStatisticsStatus = HabitStatisticsStatus.STREAKS }
-                        HabitStatisticsStatusIcon(
-                            habitStatisticsStatus = HabitStatisticsStatus.DISTRIBUTION_BY_DAY_OF_THE_WEEK,
-                            statusNow = habitStatisticsStatus,
-                            icon = painterResource(Res.drawable.habit_statistic__distribution_by_day_of_the_week),
-                            contentDescription = ts_Distribution_by_day_of_the_week
-                        ) {
-                            habitStatisticsStatus =
-                                HabitStatisticsStatus.DISTRIBUTION_BY_DAY_OF_THE_WEEK
+                                icon = getStatusIcon(status),
+                                contentDescription = getStatusDescription(status)
+                            ) {
+                                habitStatisticsStatus = status
+
+                                val currentPoints = listPointsOfHabitStatistic[status] ?: 0f
+                                listPointsOfHabitStatistic[status] = currentPoints + 1f
+                            }
                         }
                     }
                 }
@@ -460,7 +438,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
     }
 }
 
-private enum class HabitStatisticsStatus {
+enum class HabitStatisticsStatus {
     GOAL,
     PROGRESS,
     LEVEL,
@@ -470,6 +448,41 @@ private enum class HabitStatisticsStatus {
     DISTRIBUTION_BY_DAY_OF_THE_WEEK,
     STREAKS
 }
+
+var listPointsOfHabitStatistic = mutableMapOf(
+    HabitStatisticsStatus.GOAL to 0f,
+    HabitStatisticsStatus.PROGRESS to 0f,
+    HabitStatisticsStatus.LEVEL to 0f,
+    HabitStatisticsStatus.PROGRESS_GRAPH to 0f,
+    HabitStatisticsStatus.BAR_CHART to 0f,
+    HabitStatisticsStatus.CALENDAR to 0f,
+    HabitStatisticsStatus.DISTRIBUTION_BY_DAY_OF_THE_WEEK to 0f,
+    HabitStatisticsStatus.STREAKS to 0f
+)
+
+@Composable
+private fun getStatusIcon(status: HabitStatisticsStatus) = when (status) {
+    HabitStatisticsStatus.GOAL -> painterResource(Res.drawable.habit_statistic__goal)
+    HabitStatisticsStatus.PROGRESS -> painterResource(Res.drawable.habit_statistic__progress)
+    HabitStatisticsStatus.LEVEL -> painterResource(Res.drawable.habit_statistic__level)
+    HabitStatisticsStatus.PROGRESS_GRAPH -> painterResource(Res.drawable.habit_statistic__progress_graph)
+    HabitStatisticsStatus.BAR_CHART -> painterResource(Res.drawable.habit_statistic__bar_chart)
+    HabitStatisticsStatus.CALENDAR -> painterResource(Res.drawable.habit_statistic__calendar)
+    HabitStatisticsStatus.STREAKS -> painterResource(Res.drawable.habit_statistic__streaks)
+    HabitStatisticsStatus.DISTRIBUTION_BY_DAY_OF_THE_WEEK -> painterResource(Res.drawable.habit_statistic__distribution_by_day_of_the_week)
+}
+
+private fun getStatusDescription(status: HabitStatisticsStatus): String = when (status) {
+    HabitStatisticsStatus.GOAL -> ts_Goal
+    HabitStatisticsStatus.PROGRESS -> ts_Progress
+    HabitStatisticsStatus.LEVEL -> ts_Level
+    HabitStatisticsStatus.PROGRESS_GRAPH -> ts_Progress_graph
+    HabitStatisticsStatus.BAR_CHART -> ts_Bar_chart
+    HabitStatisticsStatus.CALENDAR -> ts_Calendar
+    HabitStatisticsStatus.STREAKS -> ts_Streaks
+    HabitStatisticsStatus.DISTRIBUTION_BY_DAY_OF_THE_WEEK -> ts_Distribution_by_day_of_the_week
+}
+
 
 @Composable
 private fun HabitStatisticsStatusIcon(

@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.datetime.LocalDate
+import kotlin.collections.forEach
 
 private fun saveSystem(
     saves: () -> Unit
@@ -46,8 +47,17 @@ private fun saveAllValuesProcess() {
     saveSettingsProcess()
     saveValue(soul_level, "soul_level")
     saveValue(soul_last_level_change_date, "soul_last_level_change_date")
-    language.saveLanguageProcess()
+    saveCashesProcess()
+}
+
+private fun saveCashesProcess() {
     saveValue(backAppStatus, "backAppStatus")
+    HabitStatisticsStatus.entries.forEach { status ->
+        saveValue(
+            listPointsOfHabitStatistic[status] ?: 0f,
+            "listPointsOfHabitStatistic-HabitStatisticsStatus-${status.name}"
+        )
+    }
 }
 
 fun Habit.saveHabitDays(habitIndex: Int) {
@@ -123,7 +133,9 @@ private fun saveSettingsProcess() {
     saveValue(soul_color_type, "soul_color_type")
     saveValue(soul_color, "soul_color")
     saveValue(soul_name, "soul_name")
+    saveValue(sort_habit_statistics_sections_by_frequency_of_use, "sort_habit_statistics_sections_by_frequency_of_use")
     saveValue(withExponent, "withExponent")
+    language.saveLanguageProcess()
 }
 
 expect fun <T> loadValue(value: T, name: String): T
@@ -143,6 +155,7 @@ fun <T> String.loadedElementToVal(value: T): T {
         is LocalDate -> element.let { LocalDate.parse(it) }
         is Languages -> enumValueOf<Languages>(element)
         is AppStatus -> enumValueOf<AppStatus>(element)
+        is Float -> element.toFloatOrNull() ?: value
         else -> value
     } as T
 }
@@ -196,6 +209,18 @@ fun loadAllValues() {
         language = loadValue(language, "language")
         withExponent = loadValue(withExponent, "withExponent")
         backAppStatus = loadValue(backAppStatus, "backAppStatus")
+        if (oldAppVersion >= 1001005000) {
+            HabitStatisticsStatus.entries.forEach { status ->
+                listPointsOfHabitStatistic[status] = loadValue(
+                    listPointsOfHabitStatistic[status] ?: 0f,
+                    "listPointsOfHabitStatistic-HabitStatisticsStatus-${status.name}"
+                )
+            }
+            sort_habit_statistics_sections_by_frequency_of_use = loadValue(
+                sort_habit_statistics_sections_by_frequency_of_use,
+                "sort_habit_statistics_sections_by_frequency_of_use"
+            )
+        }
     }
 }
 
