@@ -260,7 +260,8 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                         0.7.dp,
                                         seeColorByHabitAndStatisticsEditX,
                                         RoundedCornerShape(27.2.dp / 1.15f)
-                                    ),
+                                    )
+                                    .padding(horizontal = 6.17.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -283,7 +284,8 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                         seeColorByHabitAndStatisticsEditX,
                                         RoundedCornerShape(27.2.dp / 1.15f)
                                     )
-                                    .clickable { viewModel.setStatus(AppStatus.EDIT_HABIT) },
+                                    .clickable { viewModel.setStatus(AppStatus.EDIT_HABIT) }
+                                    .padding(horizontal = 6.17.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -374,7 +376,6 @@ fun HabitStatistics(viewModel: AppViewModel) {
                         UIC_dark,
                         RoundedCornerShape(topStart = 66.4.dp / 1.15f, topEnd = 66.4.dp / 1.15f)
                     )
-                    .verticalScroll(verticalScroll)
             ) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -405,6 +406,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                     }
                     Box(
                         modifier = Modifier.fillMaxWidth()
+                            .verticalScroll(verticalScroll)
                     ) {
                         when (habitStatisticsStatus) {
                             HabitStatisticsStatus.GOAL -> {
