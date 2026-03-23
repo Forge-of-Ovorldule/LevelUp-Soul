@@ -374,7 +374,6 @@ fun HabitStatistics(viewModel: AppViewModel) {
                         UIC_dark,
                         RoundedCornerShape(topStart = 66.4.dp / 1.15f, topEnd = 66.4.dp / 1.15f)
                     )
-                    .verticalScroll(verticalScroll)
             ) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -405,6 +404,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                     }
                     Box(
                         modifier = Modifier.fillMaxWidth()
+                            .verticalScroll(verticalScroll)
                     ) {
                         when (habitStatisticsStatus) {
                             HabitStatisticsStatus.GOAL -> {
