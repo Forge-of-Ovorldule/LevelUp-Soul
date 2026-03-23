@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -101,14 +102,14 @@ fun StatusBar(hazeState: HazeState) {
                     .hazeEffect(
                         hazeState,
                         HazeStyle(
-                            tint = null,
+                            tint = HazeTint(UIC_white.copy(0f)),
+                            blurRadius = 8.7.dp,
+                            noiseFactor = 0f,
                             backgroundColor = checkBackgroundBright(
                                 displayBackgroundColor,
                                 displayBackgroundColor.multiply(2f, 2f, 2f, 0.25f),
                                 displayBackgroundColor.multiply(0.5f, 0.5f, 0.5f, 0.25f)
                             ),
-                            blurRadius = 8.7.dp,
-                            noiseFactor = 0f
                         )
                     )
                     .padding(8.7.dp, 3.78.dp)

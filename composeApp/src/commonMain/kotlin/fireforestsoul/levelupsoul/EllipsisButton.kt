@@ -20,10 +20,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
 
 @Composable
@@ -96,10 +98,10 @@ fun TextWithDeployableEllipsis(
                     if (hazeState != null) {
                         boxMod = boxMod.hazeEffect(state = hazeState) {
                             style = HazeStyle(
-                                tint = null,
+                                tint = HazeTint(UIC_white.copy(0f)),
                                 blurRadius = 8.7.dp,
                                 noiseFactor = 0f,
-                                backgroundColor = backgroundColor.copy(0.25f)
+                                backgroundColor = backgroundColor,
                             )
                         }
 

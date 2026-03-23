@@ -261,7 +261,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                         seeColorByHabitAndStatisticsEditX,
                                         RoundedCornerShape(27.2.dp / 1.15f)
                                     )
-                                    .padding(horizontal = 6.17.dp),
+                                    .padding(horizontal = 6.43.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -285,7 +285,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                         RoundedCornerShape(27.2.dp / 1.15f)
                                     )
                                     .clickable { viewModel.setStatus(AppStatus.EDIT_HABIT) }
-                                    .padding(horizontal = 6.17.dp),
+                                    .padding(horizontal = 6.43.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
