@@ -40,6 +40,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -47,6 +49,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,6 +84,7 @@ import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.abs
@@ -116,6 +120,28 @@ fun HabitStatistics(viewModel: AppViewModel) {
         var habitStatisticsStatus by remember { mutableStateOf(if (sort_habit_statistics_sections_by_frequency_of_use) startStatus else HabitStatisticsStatus.GOAL) }
         var progressPeriodSetting by remember { mutableStateOf(habits[habit_statistics_and_edit_x].habitDay.size) }
         pps_for_habit_statistic = progressPeriodSetting
+
+        val sortedStatuses = remember {
+            val filtered = HabitStatisticsStatus.entries.filter {
+                it != HabitStatisticsStatus.LEVEL || habits[habit_statistics_and_edit_x].changeLevel
+            }
+
+            if (sort_habit_statistics_sections_by_frequency_of_use) {
+                filtered.sortedByDescending { listPointsOfHabitStatistic[it] ?: 0f }
+            } else {
+                filtered
+            }
+        }
+
+        val scope = rememberCoroutineScope()
+        val pagerState = rememberPagerState(
+            initialPage = sortedStatuses.indexOf(habitStatisticsStatus).coerceAtLeast(0),
+            pageCount = { sortedStatuses.size }
+        )
+
+        LaunchedEffect(pagerState.currentPage) {
+            habitStatisticsStatus = sortedStatuses[pagerState.currentPage]
+        }
 
         Scaffold(
             modifier = Modifier
@@ -313,18 +339,6 @@ fun HabitStatistics(viewModel: AppViewModel) {
                         .padding(bottom = 13.78.dp / 1.15f),
                     contentAlignment = Alignment.Center
                 ) {
-                    val sortedStatuses = remember {
-                        val filtered = HabitStatisticsStatus.entries.filter {
-                            it != HabitStatisticsStatus.LEVEL || habits[habit_statistics_and_edit_x].changeLevel
-                        }
-
-                        if (sort_habit_statistics_sections_by_frequency_of_use) {
-                            filtered.sortedByDescending { listPointsOfHabitStatistic[it] ?: 0f }
-                        } else {
-                            filtered
-                        }
-                    }
-
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -335,14 +349,16 @@ fun HabitStatistics(viewModel: AppViewModel) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        sortedStatuses.forEach { status ->
+                        sortedStatuses.forEachIndexed { index, status ->
                             HabitStatisticsStatusIcon(
                                 habitStatisticsStatus = status,
                                 statusNow = habitStatisticsStatus,
                                 icon = getStatusIcon(status),
                                 contentDescription = getStatusDescription(status)
                             ) {
-                                habitStatisticsStatus = status
+                                scope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
 
                                 val currentPoints = listPointsOfHabitStatistic[status] ?: 0f
                                 listPointsOfHabitStatistic[status] = currentPoints + 1f
@@ -404,34 +420,42 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             color = UICT_see
                         )
                     }
-                    Box(
-                        modifier = Modifier.fillMaxWidth()
-                            .verticalScroll(verticalScroll)
-                    ) {
-                        when (habitStatisticsStatus) {
-                            HabitStatisticsStatus.GOAL -> {
-                                GoalContent(progressPeriodSetting)
-                                LaunchedEffect(Unit) {
-                                    while (true) {
-                                        progressPeriodSetting = pps_for_habit_statistic
-                                        delay(50)
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.Top // Чтобы контент не прыгал по центру
+                    ) { pageIndex ->
+                        val statusForPage = sortedStatuses[pageIndex]
+
+                        Box(
+                            modifier = Modifier.fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            when (statusForPage) {
+                                HabitStatisticsStatus.GOAL -> {
+                                    GoalContent(progressPeriodSetting)
+                                    LaunchedEffect(Unit) {
+                                        while (true) {
+                                            progressPeriodSetting = pps_for_habit_statistic
+                                            delay(50)
+                                        }
                                     }
                                 }
+
+                                HabitStatisticsStatus.PROGRESS -> ProgressContent(progressPeriodSetting)
+                                HabitStatisticsStatus.LEVEL -> LevelContent(
+                                    progressPeriodSetting,
+                                )
+
+                                HabitStatisticsStatus.PROGRESS_GRAPH -> ProgressGraphContent(
+                                    progressPeriodSetting
+                                )
+
+                                HabitStatisticsStatus.BAR_CHART -> BarChartContent()
+                                HabitStatisticsStatus.CALENDAR -> CalendarContent()
+                                HabitStatisticsStatus.STREAKS -> StreaksContent()
+                                HabitStatisticsStatus.DISTRIBUTION_BY_DAY_OF_THE_WEEK -> DistributionByDayOfTheWeekContent()
                             }
-
-                            HabitStatisticsStatus.PROGRESS -> ProgressContent(progressPeriodSetting)
-                            HabitStatisticsStatus.LEVEL -> LevelContent(
-                                progressPeriodSetting,
-                            )
-
-                            HabitStatisticsStatus.PROGRESS_GRAPH -> ProgressGraphContent(
-                                progressPeriodSetting
-                            )
-
-                            HabitStatisticsStatus.BAR_CHART -> BarChartContent()
-                            HabitStatisticsStatus.CALENDAR -> CalendarContent()
-                            HabitStatisticsStatus.STREAKS -> StreaksContent()
-                            HabitStatisticsStatus.DISTRIBUTION_BY_DAY_OF_THE_WEEK -> DistributionByDayOfTheWeekContent()
                         }
                     }
                 }
