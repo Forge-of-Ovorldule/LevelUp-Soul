@@ -106,43 +106,42 @@ fun HabitStatistics(viewModel: AppViewModel) {
         )
     }
 
+    var startStatus = listPointsOfHabitStatistic.maxBy { it.value }.key
+    if (startStatus == HabitStatisticsStatus.LEVEL && !habits[habit_statistics_and_edit_x].changeLevel) startStatus =
+        HabitStatisticsStatus.GOAL
+    listPointsOfHabitStatistic[startStatus] = listPointsOfHabitStatistic.getValue(startStatus) + 0.25f
+
+    var habitStatisticsStatus by remember { mutableStateOf(if (sort_habit_statistics_sections_by_frequency_of_use) startStatus else HabitStatisticsStatus.GOAL) }
+    var progressPeriodSetting by remember { mutableStateOf(habits[habit_statistics_and_edit_x].habitDay.size) }
+    pps_for_habit_statistic = progressPeriodSetting
+
+    val sortedStatuses = remember {
+        val filtered = HabitStatisticsStatus.entries.filter {
+            it != HabitStatisticsStatus.LEVEL || habits[habit_statistics_and_edit_x].changeLevel
+        }
+
+        if (sort_habit_statistics_sections_by_frequency_of_use) {
+            filtered.sortedByDescending { listPointsOfHabitStatistic[it] ?: 0f }
+        } else {
+            filtered
+        }
+    }
+
+    val scope = rememberCoroutineScope()
+    val pagerState = rememberPagerState(
+        initialPage = sortedStatuses.indexOf(habitStatisticsStatus).coerceAtLeast(0),
+        pageCount = { sortedStatuses.size }
+    )
+
+    LaunchedEffect(pagerState.currentPage) {
+        habitStatisticsStatus = sortedStatuses[pagerState.currentPage]
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Brush.verticalGradient(listOf(UIC_dark, UIC_black)))
     ) {
-
-        var startStatus = listPointsOfHabitStatistic.maxBy { it.value }.key
-        if (startStatus == HabitStatisticsStatus.LEVEL && !habits[habit_statistics_and_edit_x].changeLevel) startStatus =
-            HabitStatisticsStatus.GOAL
-        listPointsOfHabitStatistic[startStatus] = listPointsOfHabitStatistic.getValue(startStatus) + 0.25f
-
-        var habitStatisticsStatus by remember { mutableStateOf(if (sort_habit_statistics_sections_by_frequency_of_use) startStatus else HabitStatisticsStatus.GOAL) }
-        var progressPeriodSetting by remember { mutableStateOf(habits[habit_statistics_and_edit_x].habitDay.size) }
-        pps_for_habit_statistic = progressPeriodSetting
-
-        val sortedStatuses = remember {
-            val filtered = HabitStatisticsStatus.entries.filter {
-                it != HabitStatisticsStatus.LEVEL || habits[habit_statistics_and_edit_x].changeLevel
-            }
-
-            if (sort_habit_statistics_sections_by_frequency_of_use) {
-                filtered.sortedByDescending { listPointsOfHabitStatistic[it] ?: 0f }
-            } else {
-                filtered
-            }
-        }
-
-        val scope = rememberCoroutineScope()
-        val pagerState = rememberPagerState(
-            initialPage = sortedStatuses.indexOf(habitStatisticsStatus).coerceAtLeast(0),
-            pageCount = { sortedStatuses.size }
-        )
-
-        LaunchedEffect(pagerState.currentPage) {
-            habitStatisticsStatus = sortedStatuses[pagerState.currentPage]
-        }
-
         Scaffold(
             modifier = Modifier
                 .background(Brush.verticalGradient(listOf(UIC_dark, UIC_black))),
@@ -423,7 +422,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                     HorizontalPager(
                         state = pagerState,
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.Top // Чтобы контент не прыгал по центру
+                        verticalAlignment = Alignment.Top
                     ) { pageIndex ->
                         val statusForPage = sortedStatuses[pageIndex]
 
