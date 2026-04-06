@@ -89,6 +89,7 @@ import kotlinx.datetime.DayOfWeek
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 var habit_statistics_and_edit_x = 0
 private var pps_for_habit_statistic = 0
@@ -106,43 +107,42 @@ fun HabitStatistics(viewModel: AppViewModel) {
         )
     }
 
+    var startStatus = listPointsOfHabitStatistic.maxBy { it.value }.key
+    if (startStatus == HabitStatisticsStatus.LEVEL && !habits[habit_statistics_and_edit_x].changeLevel) startStatus =
+        HabitStatisticsStatus.GOAL
+    listPointsOfHabitStatistic[startStatus] = listPointsOfHabitStatistic.getValue(startStatus) + 0.25f
+
+    var habitStatisticsStatus by remember { mutableStateOf(if (sort_habit_statistics_sections_by_frequency_of_use) startStatus else HabitStatisticsStatus.GOAL) }
+    var progressPeriodSetting by remember { mutableStateOf(habits[habit_statistics_and_edit_x].habitDay.size) }
+    pps_for_habit_statistic = progressPeriodSetting
+
+    val sortedStatuses = remember {
+        val filtered = HabitStatisticsStatus.entries.filter {
+            it != HabitStatisticsStatus.LEVEL || habits[habit_statistics_and_edit_x].changeLevel
+        }
+
+        if (sort_habit_statistics_sections_by_frequency_of_use) {
+            filtered.sortedByDescending { listPointsOfHabitStatistic[it] ?: 0f }
+        } else {
+            filtered
+        }
+    }
+
+    val scope = rememberCoroutineScope()
+    val pagerState = rememberPagerState(
+        initialPage = sortedStatuses.indexOf(habitStatisticsStatus).coerceAtLeast(0),
+        pageCount = { sortedStatuses.size }
+    )
+
+    LaunchedEffect(pagerState.currentPage) {
+        habitStatisticsStatus = sortedStatuses[pagerState.currentPage]
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Brush.verticalGradient(listOf(UIC_dark, UIC_black)))
     ) {
-
-        var startStatus = listPointsOfHabitStatistic.maxBy { it.value }.key
-        if (startStatus == HabitStatisticsStatus.LEVEL && !habits[habit_statistics_and_edit_x].changeLevel) startStatus =
-            HabitStatisticsStatus.GOAL
-        listPointsOfHabitStatistic[startStatus] = listPointsOfHabitStatistic.getValue(startStatus) + 0.25f
-
-        var habitStatisticsStatus by remember { mutableStateOf(if (sort_habit_statistics_sections_by_frequency_of_use) startStatus else HabitStatisticsStatus.GOAL) }
-        var progressPeriodSetting by remember { mutableStateOf(habits[habit_statistics_and_edit_x].habitDay.size) }
-        pps_for_habit_statistic = progressPeriodSetting
-
-        val sortedStatuses = remember {
-            val filtered = HabitStatisticsStatus.entries.filter {
-                it != HabitStatisticsStatus.LEVEL || habits[habit_statistics_and_edit_x].changeLevel
-            }
-
-            if (sort_habit_statistics_sections_by_frequency_of_use) {
-                filtered.sortedByDescending { listPointsOfHabitStatistic[it] ?: 0f }
-            } else {
-                filtered
-            }
-        }
-
-        val scope = rememberCoroutineScope()
-        val pagerState = rememberPagerState(
-            initialPage = sortedStatuses.indexOf(habitStatisticsStatus).coerceAtLeast(0),
-            pageCount = { sortedStatuses.size }
-        )
-
-        LaunchedEffect(pagerState.currentPage) {
-            habitStatisticsStatus = sortedStatuses[pagerState.currentPage]
-        }
-
         Scaffold(
             modifier = Modifier
                 .background(Brush.verticalGradient(listOf(UIC_dark, UIC_black))),
@@ -382,8 +382,6 @@ fun HabitStatistics(viewModel: AppViewModel) {
                     .height(paddingValues.calculateTopPadding() + 66.4.dp / 1.15f),
             )
 
-            val verticalScroll = rememberScrollState()
-
             Box(
                 modifier = Modifier
                     .padding(paddingValues)
@@ -423,7 +421,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                     HorizontalPager(
                         state = pagerState,
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.Top // Чтобы контент не прыгал по центру
+                        verticalAlignment = Alignment.Top
                     ) { pageIndex ->
                         val statusForPage = sortedStatuses[pageIndex]
 
@@ -437,7 +435,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                     LaunchedEffect(Unit) {
                                         while (true) {
                                             progressPeriodSetting = pps_for_habit_statistic
-                                            delay(50)
+                                            delay(50.milliseconds)
                                         }
                                     }
                                 }
@@ -2138,7 +2136,7 @@ fun DistributionByDayOfTheWeekContent() {
                 )
             }
 
-            for (i in 0 until boxes.size) {
+            for (i in boxes.indices) {
                 val k = values[i].saveDiv(sumValues).floatValue(false)
 
                 Box(
@@ -2182,7 +2180,7 @@ fun DistributionByDayOfTheWeekContent() {
         val realValues = mutableListOf<BigDecimal>()
         val values = mutableListOf<BigDecimal>()
 
-        for (i in 0 until uncheckValues.size) {
+        for (i in uncheckValues.indices) {
             if (uncheckValues[i] != BigDecimal.ZERO) {
                 labels.add(uncheckLabels[i])
                 realValues.add(uncheckRealValues[i])

@@ -108,4 +108,11 @@ git clone https://github.com/Forge-of-Ovorldule/LevelUp-Soul.git
 
 ---
 
+### Используемые материалы
+В проекте используется шрифт **[JetBrains Mono](https://www.jetbrains.com/lp/mono/)**, разработанный компанией JetBrains.
+Шрифт распространяется под лицензией **[SIL Open Font License 1.1](https://scripts.sil.org/OFL)**.
+Copyright © 2020 JetBrains s.r.o.
+
+---
+
 <p align="center">Создано с 🧠 и 🔥 в 2025-2026 гг.</p>
