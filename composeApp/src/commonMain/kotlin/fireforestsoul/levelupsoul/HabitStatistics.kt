@@ -89,6 +89,7 @@ import kotlinx.datetime.DayOfWeek
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 var habit_statistics_and_edit_x = 0
 private var pps_for_habit_statistic = 0
@@ -381,8 +382,6 @@ fun HabitStatistics(viewModel: AppViewModel) {
                     .height(paddingValues.calculateTopPadding() + 66.4.dp / 1.15f),
             )
 
-            val verticalScroll = rememberScrollState()
-
             Box(
                 modifier = Modifier
                     .padding(paddingValues)
@@ -436,7 +435,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                     LaunchedEffect(Unit) {
                                         while (true) {
                                             progressPeriodSetting = pps_for_habit_statistic
-                                            delay(50)
+                                            delay(50.milliseconds)
                                         }
                                     }
                                 }
@@ -2137,7 +2136,7 @@ fun DistributionByDayOfTheWeekContent() {
                 )
             }
 
-            for (i in 0 until boxes.size) {
+            for (i in boxes.indices) {
                 val k = values[i].saveDiv(sumValues).floatValue(false)
 
                 Box(
@@ -2181,7 +2180,7 @@ fun DistributionByDayOfTheWeekContent() {
         val realValues = mutableListOf<BigDecimal>()
         val values = mutableListOf<BigDecimal>()
 
-        for (i in 0 until uncheckValues.size) {
+        for (i in uncheckValues.indices) {
             if (uncheckValues[i] != BigDecimal.ZERO) {
                 labels.add(uncheckLabels[i])
                 realValues.add(uncheckRealValues[i])
