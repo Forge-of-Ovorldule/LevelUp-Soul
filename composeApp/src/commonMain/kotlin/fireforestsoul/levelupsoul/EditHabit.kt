@@ -16,13 +16,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -513,7 +510,7 @@ fun EditHabit(viewModel: AppViewModel) {
                                 )
                             )
                             Text(
-                                text = if (changeLevel) ts_Change_level else ts_No_change_level,
+                                text = ts_Change_level,
                                 fontSize = 16.sp,
                                 color = UICT_see
                             )
@@ -529,7 +526,7 @@ fun EditHabit(viewModel: AppViewModel) {
                                 )
                             )
                             Text(
-                                text = if (changeNeedGoalWithLevel) ts_Change_goal_with_level else ts_No_change_goal_with_level,
+                                text = ts_Change_goal_with_level,
                                 fontSize = 16.sp,
                                 color = UICT_see
                             )
@@ -545,7 +542,7 @@ fun EditHabit(viewModel: AppViewModel) {
                                 )
                             )
                             Text(
-                                text = if (changeNeedDaysWithLevel) ts_Change_period_for_goal_with_level else ts_No_change_period_for_goal_with_level,
+                                text = ts_Change_period_for_goal_with_level,
                                 fontSize = 16.sp,
                                 color = UICT_see
                             )
