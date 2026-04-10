@@ -135,6 +135,7 @@ private fun saveSettingsProcess() {
     saveValue(soul_name, "soul_name")
     saveValue(sort_habit_statistics_sections_by_frequency_of_use, "sort_habit_statistics_sections_by_frequency_of_use")
     saveValue(withExponent, "withExponent")
+    saveValue(smart_sort, "smart_sort")
     language.saveLanguageProcess()
 }
 
@@ -220,6 +221,10 @@ fun loadAllValues() {
                 sort_habit_statistics_sections_by_frequency_of_use,
                 "sort_habit_statistics_sections_by_frequency_of_use"
             )
+
+            if (oldAppVersion >= 1002000000) {
+                smart_sort = loadValue(smart_sort, "smart_sort")
+            }
         }
     }
 }
@@ -230,7 +235,7 @@ expect fun deleteValue(name: String)
 
 private fun Habit.deleteHabitDays(habitIndex: Int) {
     deleteValue("habits-$habitIndex-habitDay-size")
-    for (y in 0 until this.habitDay.size) {
+    for (y in this.habitDay.indices) {
         deleteValue("habits-$habitIndex-habitDay-$y-today")
         deleteValue("habits-$habitIndex-habitDay-$y-totalOfAPeriod")
         deleteValue("habits-$habitIndex-habitDay-$y-correctly")

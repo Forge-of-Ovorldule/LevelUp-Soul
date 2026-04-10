@@ -496,6 +496,7 @@ fun SettingsDialog() {
             sort_habit_statistics_sections_by_frequency_of_use
         )
     }
+    var smartSort by remember { mutableStateOf(smart_sort) }
 
     if (showDialog) {
         AlertDialog(
@@ -634,6 +635,22 @@ fun SettingsDialog() {
                             color = UICT_see
                         )
                     }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = smartSort,
+                            onCheckedChange = { smartSort = it },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = UICT_no_see,
+                                uncheckedColor = UICT_no_see,
+                                checkmarkColor = UICT_see
+                            )
+                        )
+                        Text(
+                            text = ts_Smart_sort,
+                            fontSize = 16.sp,
+                            color = UICT_see
+                        )
+                    }
                 }
             },
             confirmButton = {
@@ -644,8 +661,9 @@ fun SettingsDialog() {
                         soul_color = soulColor
                         soul_color_type = typeOfColor
                         sort_habit_statistics_sections_by_frequency_of_use = sortHabitStatisticsSectionsByFrequencyOfUse
+                        smart_sort = smartSort
                         saveSettings()
-                        showDialog = false //it's use
+                        showDialog = false
                     },
                     colors = ButtonColors(
                         containerColor = UIC,

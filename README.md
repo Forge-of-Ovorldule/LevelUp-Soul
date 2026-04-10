@@ -5,7 +5,7 @@
   <p align="center">Инженерное решение для трекинга привычек, построенное на принципах внутренней дисциплины и точности данных</p>
   
   <div align="center">
-    <img src="https://img.shields.io/badge/version-1.1.5-blue" alt="Версия">
+    <img src="https://img.shields.io/badge/version-1.1.6-blue" alt="Версия">
     <img src="https://img.shields.io/badge/Kotlin-Multiplatform-purple?logo=kotlin" alt="KMP">
     <img src="https://img.shields.io/badge/UI-Compose%20Multiplatform-orange" alt="Compose">
     <img src="https://img.shields.io/badge/status-Production-brightgreen" alt="Статус">
@@ -87,18 +87,18 @@ git clone https://github.com/Forge-of-Ovorldule/LevelUp-Soul.git
 | --- | --- |
 | **Android** | [Скачать в RuStore](https://www.rustore.ru/catalog/app/fireforestsoul.levelupsoul) |
 | **Desktop / APK** | [GitHub Releases](https://github.com/Forge-of-Ovorldule/LevelUp-Soul/releases) |
-| **Web (Demo)** | [Открыть в браузере](https://forge-of-ovorldule.github.io/LevelUp-Soul-site/) |
+| **Web** | [Открыть в браузере](https://forge-of-ovorldule.github.io/LevelUp-Soul-site/) |
 
 ---
 
 ## 🛣 Roadmap
 
-* [x] v1.1.3 — Обновление сохранений и улучшение их стабильности.
 * [x] v1.1.4 — Исправление всех накопившихся багов.
 * [x] v1.1.5 — Дополнительное мини-обовление статистики привычек.
-* [ ] v1.1.6 — Исправление багов и улучшение стабильности.
-* [ ] v1.2.0 — Группы привычек.
-* [ ] v2.0.0 — Формирование единой экосистемы планирования.
+* [x] v1.1.6 — Исправление багов и улучшение стабильности.
+* [ ] v1.2.0 — Глобальное обновление дизайна и умная сортировка.
+* [ ] v1.2.1 — Глобальное обновление дизайна часть 2.
+* [ ] v1.2.2 — Глобальное обновление дизайна часть 3.
 
 ---
 
