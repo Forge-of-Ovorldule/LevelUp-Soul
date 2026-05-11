@@ -11,6 +11,7 @@ package fireforestsoul.levelupsoul
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,12 +20,14 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
-import org.jetbrains.compose.ui.tooling.preview.Preview
+
+var backgroundUp = UIC_black
+var backgroundDown = UIC_dark
 
 @Composable
-@Preview
 fun App(viewModel: AppViewModel) {
     val appStatus by viewModel.appStatus.collectAsState()
 
@@ -43,13 +46,19 @@ fun App(viewModel: AppViewModel) {
         else -> false
     }
 
+    val addAndroidPadding = when (appStatus) {
+        AppStatus.HABIT_STATISTICS -> false
+
+        else -> true
+    }
+
     val hazeState = rememberHazeState()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(UIC_dark)
-            .padding(WindowInsets.systemBars.asPaddingValues())
+            .padding(if (addAndroidPadding) WindowInsets.systemBars.asPaddingValues() else PaddingValues(0.dp))
             .hazeSource(hazeState)
     ) {
         when (appStatus) {
