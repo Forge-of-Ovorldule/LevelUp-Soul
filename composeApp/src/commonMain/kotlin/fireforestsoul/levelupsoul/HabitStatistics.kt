@@ -37,8 +37,11 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -138,9 +141,24 @@ fun HabitStatistics(viewModel: AppViewModel) {
         habitStatisticsStatus = sortedStatuses[pagerState.currentPage]
     }
 
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            Modifier.fillMaxWidth()
+                .fillMaxHeight(0.5f)
+                .background(backgroundUp)
+        )
+        Box(
+            Modifier.fillMaxSize()
+                .background(backgroundDown)
+        )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .padding(WindowInsets.systemBars.asPaddingValues())
             .background(Brush.verticalGradient(listOf(UIC_dark, UIC_black)))
     ) {
         Scaffold(
