@@ -6,7 +6,7 @@
 
 <p align="center">
   <div align="center">
-    <img src="https://img.shields.io/badge/version-1.1.5-blue" alt="Version">
+    <img src="https://img.shields.io/badge/version-1.1.6-blue" alt="Версия">
     <img src="https://img.shields.io/badge/Kotlin-Multiplatform-purple?logo=kotlin" alt="KMP">
     <img src="https://img.shields.io/badge/UI-Compose%20Multiplatform-orange" alt="Compose">
     <img src="https://img.shields.io/badge/status-Production-brightgreen" alt="Status">

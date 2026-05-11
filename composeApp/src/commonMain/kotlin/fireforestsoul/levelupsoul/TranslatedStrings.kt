@@ -118,6 +118,7 @@ var ts_Saturday = "Saturday"
 var ts_Sunday = "Sunday"
 var ts_Calculating_adaptive_color_habits = "Calculating adaptive color for habits"
 var ts_Sort_habit_statistics_sections_by_frequency_of_use = "Sort habit statistics sections by frequency of use"
+var ts_Smart_sort = "Smart sort"
 
 fun changeLanguage() {
     if (language == Languages.RU) {
@@ -231,6 +232,7 @@ fun changeLanguage() {
         ts_Calculating_adaptive_color_habits = "Вычисление адаптивных цветов привычек"
         ts_Sort_habit_statistics_sections_by_frequency_of_use =
             "Сортировать разделы статистики привычек по частоте использования"
+        ts_Smart_sort = "Умная сортировка"
     } else {
         ts_Edit = "Edit"
         ts_Cancel = "Cancel"
@@ -341,5 +343,6 @@ fun changeLanguage() {
         ts_Sunday = "Sunday"
         ts_Calculating_adaptive_color_habits = "Calculating adaptive color for habits"
         ts_Sort_habit_statistics_sections_by_frequency_of_use = "Sort habit statistics sections by frequency of use"
+        ts_Smart_sort = "Smart sort"
     }
 }

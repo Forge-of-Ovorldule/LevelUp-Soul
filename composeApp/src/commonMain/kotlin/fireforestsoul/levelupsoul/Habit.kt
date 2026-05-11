@@ -16,6 +16,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
+import kotlin.math.max
+import kotlin.math.min
 
 class Habit(
     var nameOfHabit: String = ts_New_habit,
@@ -91,7 +93,9 @@ class Habit(
                                 TypeOfGoalHabits.NO_MORE -> phantomNeedDays /= "0.8".toBigDecimal()
                             }
                             needDays =
-                                if (phantomNeedDays == phantomNeedDays.intValue(false).toBigDecimal()) phantomNeedDays.intValue(false) else phantomNeedDays.intValue(
+                                if (phantomNeedDays == phantomNeedDays.intValue(false)
+                                        .toBigDecimal()
+                                ) phantomNeedDays.intValue(false) else phantomNeedDays.intValue(
                                     false
                                 ) + 1
                         }
@@ -119,7 +123,9 @@ class Habit(
                                 TypeOfGoalHabits.NO_MORE -> phantomNeedDays *= "0.8".toBigDecimal()
                             }
                             needDays =
-                                if (phantomNeedDays == phantomNeedDays.intValue(false).toBigDecimal()) phantomNeedDays.intValue(false) else phantomNeedDays.intValue(
+                                if (phantomNeedDays == phantomNeedDays.intValue(false)
+                                        .toBigDecimal()
+                                ) phantomNeedDays.intValue(false) else phantomNeedDays.intValue(
                                     false
                                 ) + 1
                         }
@@ -209,6 +215,22 @@ class Habit(
 
 fun MutableList<Int>.sortSystem() {
     this.sortByDescending { if (habitStreaks(it).isNotEmpty()) habitStreaks(it)[0] else 0 }
-    this.sortByDescending { habits[it].level }
-    this.sortByDescending { progress(it) }
+    if (smart_sort) {
+        var maxLevel = Int.MIN_VALUE
+        var minLevel = Int.MAX_VALUE
+        for (habit in habits) {
+            maxLevel = max(habit.level, maxLevel)
+            minLevel = min(habit.level, minLevel)
+        }
+        if (maxLevel != minLevel)
+            this.sortByDescending {
+                val kLevel = (habits[it].level - minLevel).toFloat() / (maxLevel - minLevel).toFloat()
+                kLevel + progress(it)
+            }
+        else
+            this.sortByDescending { progress(it) }
+    } else {
+        this.sortByDescending { habits[it].level }
+        this.sortByDescending { progress(it) }
+    }
 }
