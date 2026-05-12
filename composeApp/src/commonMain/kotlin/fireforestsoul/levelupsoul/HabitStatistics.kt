@@ -414,7 +414,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box(
-                        modifier = Modifier.fillMaxWidth().height(66.4.dp / 1.15f),
+                        modifier = Modifier.fillMaxWidth().height(57.74.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -1036,12 +1036,26 @@ private fun LevelContent(
 
     @Composable
     fun DonutChart(isGood: Boolean) {
+        val sizeDp = 150.dp
+        val strokeWidthDp = 16.67.dp
+
         Box(
-            modifier = Modifier.size(180.dp / 1.15f),
+            modifier = Modifier.size(sizeDp),
             contentAlignment = Alignment.Center
         ) {
             Canvas(modifier = Modifier.fillMaxSize()) {
-                val stroke = Stroke(width = (20.dp / 1.15f).toPx(), cap = StrokeCap.Round)
+                val strokeWidthPx = strokeWidthDp.toPx()
+                val stroke = Stroke(width = strokeWidthPx, cap = StrokeCap.Round)
+
+                val arcSize = Size(
+                    width = size.width - strokeWidthPx,
+                    height = size.height - strokeWidthPx
+                )
+
+                val topLeftOffset = Offset(
+                    x = strokeWidthPx / 2,
+                    y = strokeWidthPx / 2
+                )
 
                 drawArc(
                     color = if (isGood) seeColorByHabitAndStatisticsEditX.multiply(0.5f, 0.5f, 0.5f)
@@ -1055,8 +1069,9 @@ private fun LevelContent(
                     startAngle = -90f,
                     sweepAngle = 360f,
                     useCenter = false,
-                    style = stroke,
-                    size = Size(size.width, size.height)
+                    topLeft = topLeftOffset,
+                    size = arcSize,
+                    style = stroke
                 )
 
                 drawArc(
@@ -1065,18 +1080,21 @@ private fun LevelContent(
                     startAngle = -90f,
                     sweepAngle = 360f * habits[habit_statistics_and_edit_x].getToLevelUp(pps),
                     useCenter = false,
-                    style = stroke,
-                    size = Size(size.width, size.height)
+                    topLeft = topLeftOffset,
+                    size = arcSize,
+                    style = stroke
                 )
             }
             Text(
                 text = habits[habit_statistics_and_edit_x].level.toString(),
-                fontSize = 25.6.sp / 1.15f,
+                fontSize = 21.34.sp,
                 color = UICT_see,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 fontFamily = JetBrainsFont(),
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.ExtraBold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }
@@ -1111,10 +1129,10 @@ private fun LevelContent(
     }
 
     Column(
-        modifier = Modifier.padding(top = 22.dp / 1.15f)
+        modifier = Modifier.padding(top = 7.dp)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(42.8.dp / 1.15f)
+        verticalArrangement = Arrangement.spacedBy(32.67.dp)
     ) {
         val isNotBad = if (progress(habit_statistics_and_edit_x, pps) <= 0.2f) false else true
         val isNotGood = if (progress(habit_statistics_and_edit_x, pps) >= 0.8f) false else true
@@ -1136,9 +1154,17 @@ private fun LevelContent(
         }
         Column(
             modifier = Modifier.fillMaxWidth()
-                .padding(horizontal = 29.2.dp / 1.15f),
-            verticalArrangement = Arrangement.spacedBy(12.dp / 1.15f)
+                .padding(horizontal = 25.67.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Text(
+                text = ts_How_habit_parameters_will_change,
+                fontSize = 12.sp,
+                color = UICT_no_see,
+                fontFamily = JetBrainsFont(),
+                fontWeight = FontWeight.Normal
+            )
             paramElement(ts_Goal, isNotBad) { backgroundColor ->
                 if (habits[habit_statistics_and_edit_x].changeNeedGoalWithLevel && !(isNotBad && isNotGood)) {
                     Row {
@@ -1325,6 +1351,47 @@ private fun LevelContent(
                         overflow = TextOverflow.Ellipsis,
                         fontFamily = JetBrainsFont(),
                         fontWeight = FontWeight.Normal
+                    )
+                }
+            }
+        }
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = ts_Manual_change,
+                fontSize = 12.sp,
+                color = UICT_no_see,
+                fontFamily = JetBrainsFont(),
+                fontWeight = FontWeight.Normal
+            )
+            Row (
+                horizontalArrangement = Arrangement.spacedBy(24.67.dp)
+            ) {
+                Box(
+                    modifier = Modifier.size(69.dp, 40.dp)
+                        .background(UIC_green.copy(0.08f), RoundedCornerShape(20.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(Res.drawable.habit_statistic__level__up),
+                        contentDescription = ts_Level_up,
+                        colorFilter = ColorFilter.tint(UIC_green.copy(0.9f), BlendMode.Modulate),
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(69.dp, 40.dp)
+                        .background(UIC_red.copy(0.08f), RoundedCornerShape(20.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(Res.drawable.habit_statistic__level__down),
+                        contentDescription = ts_Level_down,
+                        colorFilter = ColorFilter.tint(UIC_red.copy(0.9f), BlendMode.Modulate),
+                        modifier = Modifier.size(25.dp)
                     )
                 }
             }
