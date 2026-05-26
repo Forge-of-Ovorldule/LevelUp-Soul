@@ -976,6 +976,11 @@ private fun ProgressContent(
     }
 }
 
+private enum class TypeOfParamElement {
+    GOAL,
+    PERIOD
+}
+
 @Composable
 private fun LevelContent(
     pps: Int,
@@ -1101,41 +1106,150 @@ private fun LevelContent(
 
     @Composable
     fun paramElement(
-        subtitle: String,
-        isNotBad: Boolean,
-        bottomFun: @Composable (backgroundColor: Color) -> Unit
+        type: TypeOfParamElement
     ) {
-        val backgroundColor =
-            if (!habits[habit_statistics_and_edit_x].changeLevel || isNotBad) UIC_dark.multiply(g = 2f)
-            else UIC_dark.multiply(r = 2f)
+        val currColor = if (habits[habit_statistics_and_edit_x].getToLevelUp(pps) < 0f) UIC_red else UIC_green
+        val isChange = if (abs(habits[habit_statistics_and_edit_x].getToLevelUp(pps)) > 0f) true else false
         Column(
             modifier = Modifier.fillMaxWidth()
-                .height(45.2.dp / 1.15f)
-                .background(backgroundColor, RoundedCornerShape(22.6.dp / 1.15f)),
+                .height(51.667.dp)
+                .background(currColor.copy(0.08f), RoundedCornerShape(25.167.dp))
+                .padding(horizontal = 25.167.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceAround
         ) {
             Text(
-                text = subtitle,
-                fontSize = 12.8.sp / 1.15f,
+                text = if (type == TypeOfParamElement.GOAL) ts_Goal else ts_Period,
+                fontSize = 10.67.sp,
                 color = UICT_no_see,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 fontFamily = JetBrainsFont(),
-                fontWeight = FontWeight.Thin
+                fontWeight = FontWeight.Thin,
             )
-            bottomFun(backgroundColor)
+            if (type == TypeOfParamElement.GOAL) {
+                if (habits[habit_statistics_and_edit_x].changeNeedGoalWithLevel && isChange) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = habits[habit_statistics_and_edit_x].needGoal.toBestString(),
+                            fontSize = 13.333.sp,
+                            color = UICT_see,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontFamily = JetBrainsFont(),
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(0.5f),
+                            textAlign = TextAlign.Right
+                        )
+                        Text(
+                            text = " → ",
+                            fontSize = 13.333.sp,
+                            color = currColor,
+                            fontFamily = JetBrainsFont(),
+                            fontWeight = FontWeight.Normal,
+                        )
+                        Text(
+                            text = habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(pps).toBestString(),
+                            fontSize = 13.333.sp,
+                            color = currColor,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontFamily = JetBrainsFont(),
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.weight(0.5f)
+                        )
+                    }
+                } else {
+                    Text(
+                        text = habits[habit_statistics_and_edit_x].needGoal.toBestString(),
+                        fontSize = 13.333.sp,
+                        color = UICT_see,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontFamily = JetBrainsFont(),
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
+            } else {
+                if (habits[habit_statistics_and_edit_x].changeNeedDaysWithLevel && isChange) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = habits[habit_statistics_and_edit_x].needDays.toString(),
+                            fontSize = 13.333.sp,
+                            color = UICT_see,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontFamily = JetBrainsFont(),
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(0.5f),
+                            textAlign = TextAlign.Right
+                        )
+                        Text(
+                            text = " → ",
+                            fontSize = 13.333.sp,
+                            color = currColor,
+                            fontFamily = JetBrainsFont(),
+                            fontWeight = FontWeight.Normal,
+                        )
+                        Row(
+                            modifier = Modifier.weight(0.5f),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(pps).toString(),
+                                fontSize = 13.333.sp,
+                                color = currColor,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                fontFamily = JetBrainsFont(),
+                                fontWeight = FontWeight.Bold,
+                            )
+                            Text(
+                                text = " (" + habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(pps)
+                                    .toString() + ")",
+                                fontSize = 13.333.sp,
+                                color = UICT_no_see,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                fontFamily = JetBrainsFont(),
+                                fontWeight = FontWeight.Thin,
+                            )
+                        }
+                    }
+                } else {
+                    Text(
+                        text = habits[habit_statistics_and_edit_x].needGoal.toBestString(),
+                        fontSize = 13.333.sp,
+                        color = UICT_see,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontFamily = JetBrainsFont(),
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
+            }
+            Text(
+                text = if (type == TypeOfParamElement.GOAL) habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension else ts_days,
+                fontSize = 10.67.sp,
+                color = UICT_no_see,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontFamily = JetBrainsFont(),
+                fontWeight = FontWeight.Thin,
+            )
         }
     }
 
     Column(
         modifier = Modifier.padding(top = 7.dp)
             .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(32.67.dp)
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val isNotBad = if (progress(habit_statistics_and_edit_x, pps) <= 0.2f) false else true
-        val isNotGood = if (progress(habit_statistics_and_edit_x, pps) >= 0.8f) false else true
         Box(
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -1152,209 +1266,17 @@ private fun LevelContent(
                 DonutChart(isNotBad)
             }
         }
+        Spacer(modifier = Modifier.height(32.333.dp))
         Column(
             modifier = Modifier.fillMaxWidth()
                 .padding(horizontal = 25.67.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(6.33.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                text = ts_How_habit_parameters_will_change,
-                fontSize = 12.sp,
-                color = UICT_no_see,
-                fontFamily = JetBrainsFont(),
-                fontWeight = FontWeight.Normal
-            )
-            paramElement(ts_Goal, isNotBad) { backgroundColor ->
-                if (habits[habit_statistics_and_edit_x].changeNeedGoalWithLevel && !(isNotBad && isNotGood)) {
-                    Row {
-                        Box(
-                            modifier = Modifier.weight(0.5f),
-                            contentAlignment = Alignment.CenterEnd
-                        ) {
-                            TextWithDeployableEllipsis(
-                                backgroundColor = backgroundColor,
-                                newStatusBarInfo = changeStatusBarInfo(
-                                    backgroundColor = UIC_dark,
-                                    downPanelSize = 48.67.dp,
-                                    isProcessed = false
-                                ),
-                                hazeState = null,
-                                contentBefore = {
-                                    Text(
-                                        text = habits[habit_statistics_and_edit_x].needGoal.toBestString() + " ",
-                                        fontSize = 16.sp / 1.15f,
-                                        color = UICT_see,
-                                        fontFamily = JetBrainsFont(),
-                                        fontWeight = FontWeight.Normal
-                                    )
-                                },
-                                text = habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension,
-                                contentAfter = {
-                                    Text(
-                                        text = " ",
-                                        fontSize = 16.sp / 1.15f,
-                                        color = UICT_see,
-                                        fontFamily = JetBrainsFont(),
-                                        fontWeight = FontWeight.Normal
-                                    )
-                                },
-                                fontSize = 16.sp / 1.15f,
-                                color = UICT_see,
-                                fontFamily = JetBrainsFont(),
-                                fontWeight = FontWeight.Normal
-                            )
-                        }
-                        Text(
-                            text = "->",
-                            fontSize = 16.sp / 1.15f,
-                            color = if (isNotBad) UIC_green else UIC_red,
-                            fontFamily = JetBrainsFont(),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Box(modifier = Modifier.weight(0.5f)) {
-                            TextWithDeployableEllipsis(
-                                backgroundColor = backgroundColor,
-                                newStatusBarInfo = changeStatusBarInfo(
-                                    backgroundColor = UIC_dark,
-                                    downPanelSize = 48.67.dp,
-                                    isProcessed = false
-                                ),
-                                hazeState = null,
-                                contentBefore = {
-                                    Text(
-                                        text = " " + habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(
-                                            pps
-                                        )
-                                            .toBestString() + " ",
-                                        fontSize = 16.sp / 1.15f,
-                                        color = if (isNotBad) UIC_green else UIC_red,
-                                        fontFamily = JetBrainsFont(),
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                },
-                                text = habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension,
-                                fontSize = 16.sp / 1.15f,
-                                color = if (isNotBad) UIC_green else UIC_red,
-                                fontFamily = JetBrainsFont(),
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                } else {
-                    TextWithDeployableEllipsis(
-                        backgroundColor = backgroundColor,
-                        newStatusBarInfo = changeStatusBarInfo(
-                            backgroundColor = UIC_dark,
-                            downPanelSize = 48.67.dp,
-                            isProcessed = false
-                        ),
-                        hazeState = null,
-                        contentBefore = {
-                            Text(
-                                text = habits[habit_statistics_and_edit_x].needGoal.toBestString() + " ",
-                                fontSize = 16.sp / 1.15f,
-                                color = UICT_see,
-                                fontFamily = JetBrainsFont(),
-                                fontWeight = FontWeight.Normal
-                            )
-                        },
-                        text = habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension,
-                        fontSize = 16.sp / 1.15f,
-                        color = UICT_see,
-                        fontFamily = JetBrainsFont(),
-                        fontWeight = FontWeight.Normal
-                    )
-                }
-            }
-            paramElement(ts_Period, isNotBad) {
-                if (habits[habit_statistics_and_edit_x].changeNeedDaysWithLevel && !(isNotBad && isNotGood)) {
-                    Row {
-                        Text(
-                            text = habits[habit_statistics_and_edit_x].needDays.toString(),
-                            fontSize = 16.sp / 1.15f,
-                            color = UICT_see,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontFamily = JetBrainsFont(),
-                            fontWeight = FontWeight.Normal
-                        )
-                        var phantomDays =
-                            (habits[habit_statistics_and_edit_x].phantomNeedDays - habits[habit_statistics_and_edit_x].phantomNeedDays.intValue(
-                                false
-                            ))
-                        if (phantomDays != BigDecimal.ZERO)
-                            Text(
-                                text = " (${habits[habit_statistics_and_edit_x].phantomNeedDays.toBestString()})",
-                                fontSize = 16.sp / 1.15f,
-                                color = UICT_no_see,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontFamily = JetBrainsFont(),
-                                fontWeight = FontWeight.Thin
-                            )
-                        Text(
-                            text = " $ts_days ",
-                            fontSize = 16.sp / 1.15f,
-                            color = UICT_see,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontFamily = JetBrainsFont(),
-                            fontWeight = FontWeight.Normal
-                        )
-                        Text(
-                            text = "-> " + habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(
-                                pps
-                            ).toString(),
-                            fontSize = 16.sp / 1.15f,
-                            color = if (isNotBad) UIC_green else UIC_red,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontFamily = JetBrainsFont(),
-                            fontWeight = FontWeight.Bold
-                        )
-                        phantomDays =
-                            (habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(pps) - habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(
-                                pps
-                            ).intValue(false))
-                        if (phantomDays != BigDecimal.ZERO)
-                            Text(
-                                text = " (${
-                                    habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(
-                                        pps
-                                    )
-                                        .toBestString()
-                                })",
-                                fontSize = 16.sp / 1.15f,
-                                color = UICT_no_see,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontFamily = JetBrainsFont(),
-                                fontWeight = FontWeight.Thin
-                            )
-                        Text(
-                            text = " $ts_days",
-                            fontSize = 16.sp / 1.15f,
-                            color = if (isNotBad) UIC_green else UIC_red,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontFamily = JetBrainsFont(),
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                } else {
-                    Text(
-                        text = habits[habit_statistics_and_edit_x].needDays.toString() + " " + ts_days,
-                        fontSize = 16.sp / 1.15f,
-                        color = UICT_see,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontFamily = JetBrainsFont(),
-                        fontWeight = FontWeight.Normal
-                    )
-                }
-            }
+            paramElement(TypeOfParamElement.GOAL)
+            paramElement(TypeOfParamElement.PERIOD)
         }
+        Spacer(modifier = Modifier.height(24.dp))
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -1367,7 +1289,7 @@ private fun LevelContent(
                 fontFamily = JetBrainsFont(),
                 fontWeight = FontWeight.Normal
             )
-            Row (
+            Row(
                 horizontalArrangement = Arrangement.spacedBy(24.67.dp)
             ) {
                 Box(
