@@ -983,6 +983,12 @@ private enum class TypeOfParamElement {
     PERIOD
 }
 
+private enum class ChangeLevel {
+    NO,
+    UP,
+    DOWN
+}
+
 @Composable
 private fun LevelContent(
     pps: Int,
@@ -1108,10 +1114,13 @@ private fun LevelContent(
 
     @Composable
     fun paramElement(
-        type: TypeOfParamElement
+        type: TypeOfParamElement,
+        change: ChangeLevel = ChangeLevel.NO
     ) {
-        val currColor = if (habits[habit_statistics_and_edit_x].getToLevelUp(pps) < 0f) UIC_red else UIC_green
-        val isChange = if (abs(habits[habit_statistics_and_edit_x].getToLevelUp(pps)) > 0f) true else false
+        val lvlUp =
+            !((habits[habit_statistics_and_edit_x].getToLevelUp(pps) < 0f && change == ChangeLevel.NO) || change == ChangeLevel.DOWN)
+        val currColor = if (lvlUp) UIC_green else UIC_red
+        val isChange = abs(habits[habit_statistics_and_edit_x].getToLevelUp(pps)) > 0f || change != ChangeLevel.NO
         Column(
             modifier = Modifier.fillMaxWidth()
                 .height(51.667.dp)
@@ -1153,7 +1162,8 @@ private fun LevelContent(
                             fontWeight = FontWeight.Normal,
                         )
                         Text(
-                            text = habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(pps).toBestString(),
+                            text = habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(pps, lvlUp)
+                                .toBestString(),
                             fontSize = 13.333.sp,
                             color = currColor,
                             maxLines = 1,
@@ -1202,7 +1212,8 @@ private fun LevelContent(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(pps).toString(),
+                                text = habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(pps, lvlUp)
+                                    .toString(),
                                 fontSize = 13.333.sp,
                                 color = currColor,
                                 maxLines = 1,
@@ -1211,7 +1222,10 @@ private fun LevelContent(
                                 fontWeight = FontWeight.Bold,
                             )
                             Text(
-                                text = " (" + habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(pps)
+                                text = " (" + habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(
+                                    pps,
+                                    lvlUp
+                                )
                                     .toString() + ")",
                                 fontSize = 13.333.sp,
                                 color = UICT_no_see,
@@ -1252,6 +1266,9 @@ private fun LevelContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val isNotBad = if (progress(habit_statistics_and_edit_x, pps) <= 0.2f) false else true
+        var isHoveredUp by remember { mutableStateOf(false) }
+        var isHoveredDown by remember { mutableStateOf(false) }
+
         Box(
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -1275,8 +1292,14 @@ private fun LevelContent(
             verticalArrangement = Arrangement.spacedBy(6.33.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            paramElement(TypeOfParamElement.GOAL)
-            paramElement(TypeOfParamElement.PERIOD)
+            paramElement(
+                TypeOfParamElement.GOAL,
+                if (isHoveredUp) ChangeLevel.UP else if (isHoveredDown) ChangeLevel.DOWN else ChangeLevel.NO
+            )
+            paramElement(
+                TypeOfParamElement.PERIOD,
+                if (isHoveredUp) ChangeLevel.UP else if (isHoveredDown) ChangeLevel.DOWN else ChangeLevel.NO
+            )
         }
         Spacer(modifier = Modifier.height(24.dp))
         Column(
@@ -1294,15 +1317,13 @@ private fun LevelContent(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(24.67.dp)
             ) {
-                var isHoveredUp by remember { mutableStateOf(false) }
-                var isHoveredDown by remember { mutableStateOf(false) }
                 Box(
                     modifier = Modifier.size(69.dp, 40.dp)
                         .background(UIC_green.copy(if (isHoveredUp) 0.9f else 0.08f), RoundedCornerShape(20.dp))
                         .clip(RoundedCornerShape(20.dp))
                         .pointerInput(Unit) {
                             awaitPointerEventScope {
-                                while(true) {
+                                while (true) {
                                     val event = awaitPointerEvent()
                                     when (event.type) {
                                         PointerEventType.Enter -> isHoveredUp = true
@@ -1316,7 +1337,10 @@ private fun LevelContent(
                     Image(
                         painter = painterResource(Res.drawable.habit_statistic__level__up),
                         contentDescription = ts_Level_up,
-                        colorFilter = ColorFilter.tint( if (isHoveredUp) UIC_dark else UIC_green.copy(0.9f), BlendMode.Modulate),
+                        colorFilter = ColorFilter.tint(
+                            if (isHoveredUp) UIC_dark else UIC_green.copy(0.9f),
+                            BlendMode.Modulate
+                        ),
                         modifier = Modifier.size(25.dp)
                     )
                 }
@@ -1326,7 +1350,7 @@ private fun LevelContent(
                         .clip(RoundedCornerShape(20.dp))
                         .pointerInput(Unit) {
                             awaitPointerEventScope {
-                                while(true) {
+                                while (true) {
                                     val event = awaitPointerEvent()
                                     when (event.type) {
                                         PointerEventType.Enter -> isHoveredDown = true
@@ -1340,7 +1364,10 @@ private fun LevelContent(
                     Image(
                         painter = painterResource(Res.drawable.habit_statistic__level__down),
                         contentDescription = ts_Level_down,
-                        colorFilter = ColorFilter.tint(if (isHoveredDown) UIC_dark else UIC_red.copy(0.9f), BlendMode.Modulate),
+                        colorFilter = ColorFilter.tint(
+                            if (isHoveredDown) UIC_dark else UIC_red.copy(0.9f),
+                            BlendMode.Modulate
+                        ),
                         modifier = Modifier.size(25.dp)
                     )
                 }

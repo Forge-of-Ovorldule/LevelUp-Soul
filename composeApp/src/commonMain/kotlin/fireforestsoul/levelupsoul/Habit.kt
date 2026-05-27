@@ -161,8 +161,10 @@ class Habit(
         return progress / 20f
     }
 
-    fun getNeedGoalWhenNewLevel(pps: Int = habitDay.size - 1): BigDecimal {
-        val isProgressUp = if (progress(this, pps) <= 0.2f) false else true
+    fun getNeedGoalWhenNewLevel(
+        pps: Int = habitDay.size - 1,
+        isProgressUp: Boolean = if (progress(this, pps) <= 0.2f) false else true
+    ): BigDecimal {
         if (changeNeedGoalWithLevel) {
             return if (isProgressUp) {
                 when (typeOfGoalHabits) {
@@ -179,8 +181,10 @@ class Habit(
         return needGoal
     }
 
-    fun getPhantomNeedDaysWhenNewLevel(pps: Int = habitDay.size - 1): BigDecimal {
-        val isProgressUp = if (progress(this, pps) <= 0.2f) false else true
+    fun getPhantomNeedDaysWhenNewLevel(
+        pps: Int = habitDay.size - 1,
+        isProgressUp: Boolean = if (progress(this, pps) <= 0.2f) false else true
+    ): BigDecimal {
         if (changeNeedDaysWithLevel) {
             return if (isProgressUp) {
                 when (typeOfGoalHabits) {
@@ -197,12 +201,19 @@ class Habit(
         return phantomNeedDays
     }
 
-    fun getNeedDaysWhenNewLevel(pps: Int = habitDay.size - 1): Int {
+    fun getNeedDaysWhenNewLevel(
+        pps: Int = habitDay.size - 1,
+        isProgressUp: Boolean = if (progress(this, pps) <= 0.2f) false else true
+    ): Int {
         if (changeNeedDaysWithLevel) {
-            return if (getPhantomNeedDaysWhenNewLevel(pps) - getPhantomNeedDaysWhenNewLevel(pps).intValue(false) != BigDecimal.ZERO)
-                getPhantomNeedDaysWhenNewLevel(pps).intValue(false) + 1
+            return if (getPhantomNeedDaysWhenNewLevel(pps, isProgressUp) - getPhantomNeedDaysWhenNewLevel(
+                    pps,
+                    isProgressUp
+                ).intValue(false) != BigDecimal.ZERO
+            )
+                getPhantomNeedDaysWhenNewLevel(pps, isProgressUp).intValue(false) + 1
             else
-                getPhantomNeedDaysWhenNewLevel(pps).intValue(false)
+                getPhantomNeedDaysWhenNewLevel(pps, isProgressUp).intValue(false)
         }
         return needDays
     }
