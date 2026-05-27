@@ -52,6 +52,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -462,8 +463,18 @@ fun HabitStatistics(viewModel: AppViewModel) {
 
                                 HabitStatisticsStatus.PROGRESS -> ProgressContent(progressPeriodSetting)
                                 HabitStatisticsStatus.LEVEL -> LevelContent(
-                                    progressPeriodSetting,
-                                )
+                                    progressPeriodSetting
+                                ) {
+                                    scope.launch {
+                                        calculateProgressiveColor(
+                                            index = habit_statistics_and_edit_x,
+                                            onColorUpdate = { newColor ->
+                                                seeColorByHabitAndStatisticsEditX = newColor
+                                            },
+                                            oldColor = seeColorByHabitAndStatisticsEditX
+                                        )
+                                    }
+                                }
 
                                 HabitStatisticsStatus.PROGRESS_GRAPH -> ProgressGraphContent(
                                     progressPeriodSetting
@@ -992,6 +1003,7 @@ private enum class ChangeLevel {
 @Composable
 private fun LevelContent(
     pps: Int,
+    onChangeLevel: () -> Unit
 ) {
     var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
 
@@ -1260,116 +1272,129 @@ private fun LevelContent(
         }
     }
 
-    Column(
-        modifier = Modifier.padding(top = 7.dp)
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        val isNotBad = if (progress(habit_statistics_and_edit_x, pps) <= 0.2f) false else true
-        var isHoveredUp by remember { mutableStateOf(false) }
-        var isHoveredDown by remember { mutableStateOf(false) }
-
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            CircleImage(isNotBad, 0.1666f, 20.dp / 1.15f, 49.2.dp / 1.15f)
-            CircleImage(isNotBad, 0.237f, 89.6.dp / 1.15f, 16.4.dp / 1.15f)
-            CircleImage(isNotBad, 0.1296f, 147.2.dp / 1.15f, 33.2.dp / 1.15f)
-            CircleImage(isNotBad, 0.8055f, 29.2.dp / 1.15f, 25.2.dp / 1.15f)
-            CircleImage(isNotBad, 0.9462f, 44.dp / 1.15f, 14.8.dp / 1.15f)
-            CircleImage(isNotBad, 0.8981f, 114.4.dp / 1.15f, 41.6.dp / 1.15f)
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                DonutChart(isNotBad)
-            }
-        }
-        Spacer(modifier = Modifier.height(32.333.dp))
+    var habitLevel by remember { mutableStateOf(habits[habit_statistics_and_edit_x].level) }
+    key(habitLevel) {
         Column(
-            modifier = Modifier.fillMaxWidth()
-                .padding(horizontal = 25.67.dp),
-            verticalArrangement = Arrangement.spacedBy(6.33.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            paramElement(
-                TypeOfParamElement.GOAL,
-                if (isHoveredUp) ChangeLevel.UP else if (isHoveredDown) ChangeLevel.DOWN else ChangeLevel.NO
-            )
-            paramElement(
-                TypeOfParamElement.PERIOD,
-                if (isHoveredUp) ChangeLevel.UP else if (isHoveredDown) ChangeLevel.DOWN else ChangeLevel.NO
-            )
-        }
-        Spacer(modifier = Modifier.height(24.dp))
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.padding(top = 7.dp)
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = ts_Manual_change,
-                fontSize = 12.sp,
-                color = UICT_no_see,
-                fontFamily = JetBrainsFont(),
-                fontWeight = FontWeight.Normal
-            )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(24.67.dp)
+            val isNotBad = if (progress(habit_statistics_and_edit_x, pps) <= 0.2f) false else true
+            var isHoveredUp by remember { mutableStateOf(false) }
+            var isHoveredDown by remember { mutableStateOf(false) }
+
+            Box(
+                modifier = Modifier.fillMaxWidth(),
             ) {
+                CircleImage(isNotBad, 0.1666f, 20.dp / 1.15f, 49.2.dp / 1.15f)
+                CircleImage(isNotBad, 0.237f, 89.6.dp / 1.15f, 16.4.dp / 1.15f)
+                CircleImage(isNotBad, 0.1296f, 147.2.dp / 1.15f, 33.2.dp / 1.15f)
+                CircleImage(isNotBad, 0.8055f, 29.2.dp / 1.15f, 25.2.dp / 1.15f)
+                CircleImage(isNotBad, 0.9462f, 44.dp / 1.15f, 14.8.dp / 1.15f)
+                CircleImage(isNotBad, 0.8981f, 114.4.dp / 1.15f, 41.6.dp / 1.15f)
                 Box(
-                    modifier = Modifier.size(69.dp, 40.dp)
-                        .background(UIC_green.copy(if (isHoveredUp) 0.9f else 0.08f), RoundedCornerShape(20.dp))
-                        .clip(RoundedCornerShape(20.dp))
-                        .pointerInput(Unit) {
-                            awaitPointerEventScope {
-                                while (true) {
-                                    val event = awaitPointerEvent()
-                                    when (event.type) {
-                                        PointerEventType.Enter -> isHoveredUp = true
-                                        PointerEventType.Exit -> isHoveredUp = false
-                                    }
-                                }
-                            }
-                        },
+                    modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = painterResource(Res.drawable.habit_statistic__level__up),
-                        contentDescription = ts_Level_up,
-                        colorFilter = ColorFilter.tint(
-                            if (isHoveredUp) UIC_dark else UIC_green.copy(0.9f),
-                            BlendMode.Modulate
-                        ),
-                        modifier = Modifier.size(25.dp)
-                    )
+                    DonutChart(isNotBad)
                 }
-                Box(
-                    modifier = Modifier.size(69.dp, 40.dp)
-                        .background(UIC_red.copy(if (isHoveredDown) 0.9f else 0.08f), RoundedCornerShape(20.dp))
-                        .clip(RoundedCornerShape(20.dp))
-                        .pointerInput(Unit) {
-                            awaitPointerEventScope {
-                                while (true) {
-                                    val event = awaitPointerEvent()
-                                    when (event.type) {
-                                        PointerEventType.Enter -> isHoveredDown = true
-                                        PointerEventType.Exit -> isHoveredDown = false
+            }
+            Spacer(modifier = Modifier.height(32.333.dp))
+            Column(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = 25.67.dp),
+                verticalArrangement = Arrangement.spacedBy(6.33.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                paramElement(
+                    TypeOfParamElement.GOAL,
+                    if (isHoveredUp) ChangeLevel.UP else if (isHoveredDown) ChangeLevel.DOWN else ChangeLevel.NO
+                )
+                paramElement(
+                    TypeOfParamElement.PERIOD,
+                    if (isHoveredUp) ChangeLevel.UP else if (isHoveredDown) ChangeLevel.DOWN else ChangeLevel.NO
+                )
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = ts_Manual_change,
+                    fontSize = 12.sp,
+                    color = UICT_no_see,
+                    fontFamily = JetBrainsFont(),
+                    fontWeight = FontWeight.Normal
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(24.67.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.size(69.dp, 40.dp)
+                            .background(UIC_green.copy(if (isHoveredUp) 0.9f else 0.08f), RoundedCornerShape(20.dp))
+                            .clip(RoundedCornerShape(20.dp))
+                            .clickable {
+                                habits[habit_statistics_and_edit_x].lvlUp()
+                                habitLevel++
+                                onChangeLevel()
+                            }
+                            .pointerInput(Unit) {
+                                awaitPointerEventScope {
+                                    while (true) {
+                                        val event = awaitPointerEvent()
+                                        when (event.type) {
+                                            PointerEventType.Enter -> isHoveredUp = true
+                                            PointerEventType.Exit -> isHoveredUp = false
+                                        }
                                     }
                                 }
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(Res.drawable.habit_statistic__level__up),
+                            contentDescription = ts_Level_up,
+                            colorFilter = ColorFilter.tint(
+                                if (isHoveredUp) UIC_dark else UIC_green.copy(0.9f),
+                                BlendMode.Modulate
+                            ),
+                            modifier = Modifier.size(25.dp)
+                        )
+                    }
+                    Box(
+                        modifier = Modifier.size(69.dp, 40.dp)
+                            .background(UIC_red.copy(if (isHoveredDown) 0.9f else 0.08f), RoundedCornerShape(20.dp))
+                            .clip(RoundedCornerShape(20.dp))
+                            .clickable {
+                                habits[habit_statistics_and_edit_x].lvlDown()
+                                habitLevel--
+                                onChangeLevel()
                             }
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(Res.drawable.habit_statistic__level__down),
-                        contentDescription = ts_Level_down,
-                        colorFilter = ColorFilter.tint(
-                            if (isHoveredDown) UIC_dark else UIC_red.copy(0.9f),
-                            BlendMode.Modulate
-                        ),
-                        modifier = Modifier.size(25.dp)
-                    )
+                            .pointerInput(Unit) {
+                                awaitPointerEventScope {
+                                    while (true) {
+                                        val event = awaitPointerEvent()
+                                        when (event.type) {
+                                            PointerEventType.Enter -> isHoveredDown = true
+                                            PointerEventType.Exit -> isHoveredDown = false
+                                        }
+                                    }
+                                }
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(Res.drawable.habit_statistic__level__down),
+                            contentDescription = ts_Level_down,
+                            colorFilter = ColorFilter.tint(
+                                if (isHoveredDown) UIC_dark else UIC_red.copy(0.9f),
+                                BlendMode.Modulate
+                            ),
+                            modifier = Modifier.size(25.dp)
+                        )
+                    }
                 }
             }
         }
