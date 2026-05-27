@@ -70,6 +70,8 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
@@ -1292,27 +1294,53 @@ private fun LevelContent(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(24.67.dp)
             ) {
+                var isHoveredUp by remember { mutableStateOf(false) }
+                var isHoveredDown by remember { mutableStateOf(false) }
                 Box(
                     modifier = Modifier.size(69.dp, 40.dp)
-                        .background(UIC_green.copy(0.08f), RoundedCornerShape(20.dp)),
+                        .background(UIC_green.copy(if (isHoveredUp) 0.9f else 0.08f), RoundedCornerShape(20.dp))
+                        .clip(RoundedCornerShape(20.dp))
+                        .pointerInput(Unit) {
+                            awaitPointerEventScope {
+                                while(true) {
+                                    val event = awaitPointerEvent()
+                                    when (event.type) {
+                                        PointerEventType.Enter -> isHoveredUp = true
+                                        PointerEventType.Exit -> isHoveredUp = false
+                                    }
+                                }
+                            }
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         painter = painterResource(Res.drawable.habit_statistic__level__up),
                         contentDescription = ts_Level_up,
-                        colorFilter = ColorFilter.tint(UIC_green.copy(0.9f), BlendMode.Modulate),
+                        colorFilter = ColorFilter.tint( if (isHoveredUp) UIC_dark else UIC_green.copy(0.9f), BlendMode.Modulate),
                         modifier = Modifier.size(25.dp)
                     )
                 }
                 Box(
                     modifier = Modifier.size(69.dp, 40.dp)
-                        .background(UIC_red.copy(0.08f), RoundedCornerShape(20.dp)),
+                        .background(UIC_red.copy(if (isHoveredDown) 0.9f else 0.08f), RoundedCornerShape(20.dp))
+                        .clip(RoundedCornerShape(20.dp))
+                        .pointerInput(Unit) {
+                            awaitPointerEventScope {
+                                while(true) {
+                                    val event = awaitPointerEvent()
+                                    when (event.type) {
+                                        PointerEventType.Enter -> isHoveredDown = true
+                                        PointerEventType.Exit -> isHoveredDown = false
+                                    }
+                                }
+                            }
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         painter = painterResource(Res.drawable.habit_statistic__level__down),
                         contentDescription = ts_Level_down,
-                        colorFilter = ColorFilter.tint(UIC_red.copy(0.9f), BlendMode.Modulate),
+                        colorFilter = ColorFilter.tint(if (isHoveredDown) UIC_dark else UIC_red.copy(0.9f), BlendMode.Modulate),
                         modifier = Modifier.size(25.dp)
                     )
                 }
