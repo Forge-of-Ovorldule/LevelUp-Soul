@@ -82,11 +82,10 @@
 
 ## 🛣 Roadmap
 
-* [x] **v1.1.3** — Save system update and stability improvements.
 * [x] **v1.1.4** — Fixed all accumulated bugs.
 * [x] **v1.1.5** — Additional mini-update for habit statistics.
-* [ ] **v1.1.6** — Bug fixes and stability improvements.
-* [ ] **v1.2.0** — Habit groups.
+* [x] **v1.1.6** — Bug fixes and stability improvements.
+* [ ] **v1.2.0** — Manual level change.
 * [ ] **v2.0.0** — Creation of a unified planning ecosystem.
 
 ---
