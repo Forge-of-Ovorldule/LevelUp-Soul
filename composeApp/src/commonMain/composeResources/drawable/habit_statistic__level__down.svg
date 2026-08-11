@@ -1,0 +1,28 @@
+<svg id="ehGw5H82J9d1" xmlns="http://www.w3.org/2000/svg"
+     viewBox="454.13 134.77 500 500" shape-rendering="geometricPrecision" text-rendering="geometricPrecision"
+>
+    <g transform="matrix(1.18 0 0 1.23 -125.260159 -107.332072)">
+        <g transform="matrix(-1 0 0 1 1405.75 0.000001)">
+            <rect width="122.613" height="77.007" rx="17" ry="17" transform="translate(499.892 506.079)" fill="#fff"
+                  stroke-width="0"/>
+            <rect width="119.623" height="159.995" rx="17" ry="17" transform="translate(644.187 423.091)" fill="#fff"
+                  stroke-width="0"/>
+            <rect width="119.623" height="245.226" rx="17" ry="17" transform="translate(786.239 337.86)" fill="#fff"
+                  stroke-width="0"/>
+        </g>
+        <g transform="matrix(-1 0 0 1 1378.66 0)">
+            <line x1="-40.773366" y1="36.578824" x2="67.291271" y2="-67.399301"
+                  transform="matrix(0.926426 0 0 0.968114 580.044 373.154)" fill="none" stroke="#fff" stroke-width="40"
+                  stroke-linecap="round"/>
+            <line x1="-25.239927" y1="-24.822529" x2="24.298341" y2="25.419804"
+                  transform="matrix(0.988442 0 0 1 669.014 333.903)" fill="none" stroke="#fff" stroke-width="40"
+                  stroke-linecap="round"/>
+            <line x1="-50.091966" y1="52.33489" x2="91.972951" y2="-76.043171"
+                  transform="matrix(0.988442 0 0 1 742.939 306.988)" fill="none" stroke="#fff" stroke-width="40"
+                  stroke-linecap="round"/>
+            <path d="M858.89101,192.39916l-20.03486,99.3729-81.20796-78.00238l101.24282-21.37052Z"
+                  transform="matrix(-1 0 0 -1 1344.56 657.89)" fill="#fff" stroke="#fff" stroke-width="20"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+    </g>
+</svg>

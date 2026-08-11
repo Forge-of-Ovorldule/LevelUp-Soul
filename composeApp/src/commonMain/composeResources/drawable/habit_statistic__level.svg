@@ -1,0 +1,18 @@
+<svg id="eWTf53sUgzB1" xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 500 500" shape-rendering="geometricPrecision" text-rendering="geometricPrecision"
+>
+    <g transform="matrix(2.079567 0 0 2.126526 -271.082782 -480.387439)">
+        <ellipse rx="126.277944" ry="127.42073" transform="matrix(0.873302 0 0 0.847532 250.572738 343.465077)"
+                 fill="none" stroke="#fff" stroke-width="20"/>
+        <path d="M185.351408,287.850488l-.466631,78.860584l47.596328.466631"
+              transform="matrix(0.741841 0 0 0.706235 42.77355 112.16316)" fill="none" stroke="#fff" stroke-width="20"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M185.351408,287.850488l-.466631,78.860584l47.596328.466631"
+              transform="matrix(0.741841 0 0 0.706235 152.357287 112.163161)" fill="none" stroke="#fff"
+              stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M215.237566,315.45325l27.600587,56.023655l24.918265-56.023656" transform="translate(0.000001 0.000001)"
+              fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse rx="5.8195" ry="6.38397" transform="matrix(1.27787 0 0 1.216314 317.384739 323.218162)" fill="#fff"
+                 stroke-width="0"/>
+    </g>
+</svg>

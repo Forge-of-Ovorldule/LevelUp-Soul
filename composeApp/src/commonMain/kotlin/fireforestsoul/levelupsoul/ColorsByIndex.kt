@@ -25,24 +25,25 @@ val listMutex = Mutex()
 
 suspend fun calculateProgressiveColor(
     index: Int,
-    onColorUpdate: (Color) -> Unit
+    onColorUpdate: (Color) -> Unit,
+    oldColor : Color = habits[index].colorGood
 ) {
     if (habits[index].typeOfColorHabits == TypeOfColorHabits.SELECTED) {
         onColorUpdate(habits[index].colorGood)
         return
     }
 
-    val kRed = habits[index].colorGood.red
+    val kRed = oldColor.red
     var kProgress = kRed
     var kLevel = kRed
     var kNeedDays = kRed
 
-    val kGreen = habits[index].colorGood.green
+    val kGreen = oldColor.green
     var kDays = kGreen
     var kNeedGoal = kGreen
     var kLevelChange = kGreen
 
-    val kBlue = habits[index].colorGood.blue
+    val kBlue = oldColor.blue
     var kStreak = kBlue
     var kTypeOfGoal = kBlue
 
