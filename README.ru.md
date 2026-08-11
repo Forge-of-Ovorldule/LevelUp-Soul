@@ -6,7 +6,7 @@
 
 <p align="center">
   <div align="center">
-    <img src="https://img.shields.io/badge/version-1.1.5-blue" alt="Версия">
+    <img src="https://img.shields.io/badge/version-1.1.6-blue" alt="Версия">
     <img src="https://img.shields.io/badge/Kotlin-Multiplatform-purple?logo=kotlin" alt="KMP">
     <img src="https://img.shields.io/badge/UI-Compose%20Multiplatform-orange" alt="Compose">
     <img src="https://img.shields.io/badge/status-Production-brightgreen" alt="Статус">
@@ -82,11 +82,10 @@
 
 ## 🛣 Roadmap
 
-* [x] **v1.1.3** — Обновление сохранений и улучшение их стабильности.
 * [x] **v1.1.4** — Исправление всех накопившихся багов.
 * [x] **v1.1.5** — Дополнительное мини-обовление статистики привычек.
-* [ ] **v1.1.6** — Исправление багов и улучшение стабильности.
-* [ ] **v1.2.0** — Группы привычек.
+* [x] **v1.1.6** — Исправление багов и улучшение стабильности.
+* [ ] **v1.2.0** — Ручное изменение уровня.
 * [ ] **v2.0.0** — Формирование единой экосистемы планирования.
 
 ---
