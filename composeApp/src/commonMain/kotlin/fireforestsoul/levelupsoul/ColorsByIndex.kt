@@ -21,12 +21,12 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 
-val listMutex = Mutex()
+val listMutex: Mutex = Mutex()
 
 suspend fun calculateProgressiveColor(
     index: Int,
     onColorUpdate: (Color) -> Unit,
-    oldColor : Color = habits[index].colorGood
+    oldColor: Color = habits[index].colorGood
 ) {
     if (habits[index].typeOfColorHabits == TypeOfColorHabits.SELECTED) {
         onColorUpdate(habits[index].colorGood)

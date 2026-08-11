@@ -70,7 +70,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(6.51.dp)
         ) {
-            for (x in 0 until habits.size) {
+            for (x in habits.indices) {
                 Box(
                     modifier = Modifier.fillMaxWidth()
                         .height(101.15.dp)
@@ -125,7 +125,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                 color = UICT_see,
                                 fontSize = 16.5.sp,
                                 fontWeight = FontWeight.W500,
-                                fontFamily = JetBrainsFont()
+                                fontFamily = jetBrainsFont()
                             )
 
                             var inputText by remember { mutableStateOf("") }
@@ -197,7 +197,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                             ts_You_failed,
                                     color = UICT_no_see,
                                     fontSize = 13.sp,
-                                    fontFamily = JetBrainsFont()
+                                    fontFamily = jetBrainsFont()
                                 )
                             }
                             if (showDialog) {

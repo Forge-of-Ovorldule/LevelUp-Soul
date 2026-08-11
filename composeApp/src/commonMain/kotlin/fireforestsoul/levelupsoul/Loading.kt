@@ -49,12 +49,12 @@ fun LoadingContent(viewModel: AppViewModel) {
     }
 }
 
-var loadIsGood = false
+var loadIsGood: Boolean = false
 
 private suspend fun loading(viewModel: AppViewModel) = withContext(Dispatchers.Default) {
     loadAllValues()
     changeLanguage()
-    for (i in 0 until habits.size) {
+    for (i in habits.indices) {
         habits[i].updateDate()
     }
     saveAllValues()

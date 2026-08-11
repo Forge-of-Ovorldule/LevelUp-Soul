@@ -30,9 +30,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlin.String
+import kotlin.time.Duration.Companion.milliseconds
 
-var statusBarInfo by mutableStateOf(StatusBarInfo())
-var updateTimerForStatusBar by mutableStateOf(false)
+var statusBarInfo: StatusBarInfo by mutableStateOf(StatusBarInfo())
+var updateTimerForStatusBar: Boolean by mutableStateOf(false)
 
 fun changeStatusBarInfo(
     text: String = "",
@@ -58,7 +59,7 @@ data class StatusBarInfo(
     var isProcessed: Boolean = false
 )
 
-var listProgressedStatusBar = mutableListOf<String>()
+var listProgressedStatusBar: MutableList<String> = mutableListOf()
 
 @Composable
 fun StatusBar(hazeState: HazeState) {
@@ -119,7 +120,7 @@ fun StatusBar(hazeState: HazeState) {
                     color = displayTextColor,
                     fontWeight = FontWeight.ExtraLight,
                     fontSize = 12.52.sp,
-                    fontFamily = JetBrainsFont(),
+                    fontFamily = jetBrainsFont(),
                     textAlign = TextAlign.Center
                 )
             }
@@ -143,7 +144,7 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
     while (true) {
         val currentText = mutex.withLock { workText }
 
-        if (!currentText.isNullOrEmpty()) { //!!! проверка на Null необходима
+        if (currentText.isNotEmpty()) { //!!! проверка на Null необходима
             val currentListSize = mutex.withLock { listProgressedStatusBar.size }
 
             if (currentListSize != startSize) {
@@ -153,7 +154,7 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
 
             if (statusBarTextNow.length < currentText.length) {
                 statusBarTextNow = currentText.take(statusBarTextNow.length + 1)
-                delay(75)
+                delay(75.milliseconds)
                 continue
             }
 
@@ -164,11 +165,11 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
                         statusBarTextNow = currentText + ".".repeat(addedEllipsis)
                         addedEllipsis++
                         if (addedEllipsis == 4) addedEllipsis = 0
-                        delay(400)
+                        delay(400.milliseconds)
                     }
                     addedEllipsis = 0
                 } else {
-                    delay(5000)
+                    delay(5000.milliseconds)
                 }
                 workText = ""
                 continue
@@ -179,7 +180,7 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
                     statusBarTextNow = statusBarTextNow.dropLast(1)
                 }
             }
-            delay(75)
+            delay(75.milliseconds)
             continue
         }
 
@@ -200,7 +201,7 @@ private suspend fun makeTextForStatusBar() = withContext(Dispatchers.Default) {
         if (statusBarTextNow.isNotEmpty()) {
             statusBarTextNow = statusBarTextNow.dropLast(1)
         }
-        delay(75)
+        delay(75.milliseconds)
     }
 }
 

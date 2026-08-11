@@ -58,10 +58,10 @@ import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.times
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.isoDayNumber
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 
@@ -269,8 +269,8 @@ fun DatePickerDialog(
     onConfirm: (LocalDate) -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    var day by remember { mutableStateOf(initialDate.dayOfMonth.toString()) }
-    var month by remember { mutableStateOf(initialDate.monthNumber.toString()) }
+    var day by remember { mutableStateOf(initialDate.day.toString()) }
+    var month by remember { mutableStateOf(initialDate.month.number.toString()) }
     var year by remember { mutableStateOf(initialDate.year.toString()) }
 
     IconButton(onClick = {
@@ -449,7 +449,7 @@ fun DatePickerDialog(
                         onClick = {
                             showDialog = false
                             onConfirm(
-                                Clock.System.now()
+                                kotlin.time.Clock.System.now()
                                     .toLocalDateTime(TimeZone.currentSystemDefault()).date
                             )
                         },
@@ -782,7 +782,7 @@ fun AnimatedLineChart(
     yMax: Float,
     ySteps: Int = 5,
     lineAndDotColor: Color = Color(0xFF3F51B5),
-    modifier: Modifier = Modifier
+    @Suppress("ModifierParameter") modifier: Modifier = Modifier
 ) {
     val animatedProgress = remember { Animatable(0f) }
 
@@ -933,7 +933,7 @@ fun SoulGrid(
     maxDays: Int,
     states: List<BigDecimal> = listTodayAll(maxDays, 1),
     colorBest: Color,
-    modifier: Modifier = Modifier
+    @Suppress("ModifierParameter") modifier: Modifier = Modifier
 ) {
     var oldestHabit = Habit()
     for (habit in habits) {
@@ -1030,7 +1030,7 @@ fun ValueSetVector(
         ) {
             Text(
                 text = subtitle,
-                fontFamily = JetBrainsFont(),
+                fontFamily = jetBrainsFont(),
                 fontWeight = FontWeight.Thin,
                 fontSize = 12.8.sp / 1.15f,
                 color = UICT_no_see,
@@ -1046,7 +1046,7 @@ fun ValueSetVector(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = TextStyle(
-                    fontFamily = JetBrainsFont(),
+                    fontFamily = jetBrainsFont(),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp / 1.15f,
                     color = if (isGreen) UIC_green else UICT_see,
@@ -1064,7 +1064,7 @@ fun ValueSetVector(
                             it()
                             Text(
                                 text = "/$maxValue",
-                                fontFamily = JetBrainsFont(),
+                                fontFamily = jetBrainsFont(),
                                 fontWeight = FontWeight.Thin,
                                 fontSize = 9.4.sp / 1.15f,
                                 color = UICT_no_see,
@@ -1073,7 +1073,7 @@ fun ValueSetVector(
                             )
                             Text(
                                 text = " $label" + " ".repeat(if (10 - stringValue.length > 0) 10 - stringValue.length else 0),
-                                fontFamily = JetBrainsFont(),
+                                fontFamily = jetBrainsFont(),
                                 fontWeight = if (labelIsBold) FontWeight.Bold else FontWeight.Normal,
                                 fontSize = 16.sp / 1.15f,
                                 color = if (isGreen) UIC_green else UICT_see,

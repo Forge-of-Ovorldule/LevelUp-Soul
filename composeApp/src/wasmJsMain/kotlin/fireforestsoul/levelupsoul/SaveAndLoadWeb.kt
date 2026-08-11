@@ -30,7 +30,7 @@ actual fun <T> loadValue(value: T, name: String): T {
 actual fun old1001000000LoadAllValues() {
     val oldAppVersion = localStorage.getItem("app_version")?.toLong() ?: return
     if (oldAppVersion < 1001001000) {
-        val habitsSize = localStorage.getItem("habits-size")?.toInt()!!
+        val habitsSize = localStorage.getItem("habits-size")?.toInt() ?: return
         habits = mutableListOf(Habit())
         for (x in 0 until habitsSize) {
             if (x > 0) habits.add(Habit())
@@ -44,8 +44,8 @@ actual fun old1001000000LoadAllValues() {
                     localStorage.getItem("habits-$x-typeOfGoalHabits").toString()
                 )
             )
-            habits[x].needGoal = localStorage.getItem("habits-$x-needGoal")?.toBigDecimal()!!
-            habits[x].needDays = localStorage.getItem("habits-$x-needDays")?.toInt()!!
+            habits[x].needGoal = (localStorage.getItem("habits-$x-needGoal")?.toBigDecimal() ?: return)
+            habits[x].needDays = (localStorage.getItem("habits-$x-needDays")?.toInt() ?: return)
 
             if (oldAppVersion >= 2000000) {
                 habits[x].typeOfColorHabits =
@@ -60,25 +60,26 @@ actual fun old1001000000LoadAllValues() {
                         localStorage.getItem("habits-$x-changeNeedDaysWithLevel").toBoolean()
                 }
             }
-            habits[x].startDate = localStorage.getItem("habits-$x-startDate")?.let { LocalDate.parse(it) }!!
+            habits[x].startDate = (localStorage.getItem("habits-$x-startDate")?.let { LocalDate.parse(it) } ?: return)
 
             if (oldAppVersion >= 1000000000) {
                 habits[x].lastLevelChangeDate =
-                    localStorage.getItem("habits-$x-lastLevelChangeDate")?.let { LocalDate.parse(it) }!!
-                habits[x].level = localStorage.getItem("habits-$x-level")?.toInt()!!
+                    (localStorage.getItem("habits-$x-lastLevelChangeDate")?.let { LocalDate.parse(it) } ?: return)
+                habits[x].level = (localStorage.getItem("habits-$x-level")?.toInt() ?: return)
 
                 if (oldAppVersion >= 1001000000) {
                     habits[x].iconChar = localStorage.getItem("habits-$x-iconChar").toString()
                 }
             }
 
-            val habitDaySize = localStorage.getItem("habits-$x-habitDay-size")?.toInt()!!
+            val habitDaySize = localStorage.getItem("habits-$x-habitDay-size")?.toInt() ?: return
             habits[x].habitDay = mutableListOf(HabitDay())
             for (y in 0 until habitDaySize) {
                 if (y > 0) habits[x].habitDay.add(HabitDay())
-                habits[x].habitDay[y].today = localStorage.getItem("habits-$x-habitDay-$y-today")?.toBigDecimal()!!
+                habits[x].habitDay[y].today = (localStorage.getItem("habits-$x-habitDay-$y-today")?.toBigDecimal()
+                    ?: return)
                 habits[x].habitDay[y].totalOfAPeriod =
-                    localStorage.getItem("habits-$x-habitDay-$y-totalOfAPeriod")?.toBigDecimal()!!
+                    (localStorage.getItem("habits-$x-habitDay-$y-totalOfAPeriod")?.toBigDecimal() ?: return)
                 habits[x].habitDay[y].correctly =
                     localStorage.getItem("habits-$x-habitDay-$y-correctly").toBoolean()
             }
@@ -90,9 +91,9 @@ actual fun old1001000000LoadAllValues() {
             soul_name = localStorage.getItem("soul_name").toString()
 
             if (oldAppVersion >= 1000000000) {
-                soul_level = localStorage.getItem("soul_level")?.toInt()!!
+                soul_level = (localStorage.getItem("soul_level")?.toInt() ?: return)
                 soul_last_level_change_date =
-                    localStorage.getItem("soul_last_level_change_date")?.let { LocalDate.parse(it) }!!
+                    (localStorage.getItem("soul_last_level_change_date")?.let { LocalDate.parse(it) } ?: return)
 
                 if (oldAppVersion >= 1000001000) {
                     language = enumValueOf<Languages>(localStorage.getItem("language").toString())

@@ -10,7 +10,7 @@
 package fireforestsoul.levelupsoul
 
 import androidx.compose.ui.graphics.Color
-import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -28,22 +28,23 @@ enum class AppStatus {
 
 const val app_version: Long = 1002000000 //version(001).002.000.000
 
-const val old1001000000_save_file_name = "LevelUp-Soul.FireForestSouls-saving"
-const val save_file_name = "levelup-soul-saving-by-forge-of-ovorldule"
+const val old1001000000_save_file_name: String = "LevelUp-Soul.FireForestSouls-saving"
+const val save_file_name: String = "levelup-soul-saving-by-forge-of-ovorldule"
 
 var habits: MutableList<Habit> = mutableListOf(
     Habit()
 )
 
-var soul_color_type = TypeOfColorHabits.ADAPTIVE
-var soul_color = Color(200, 200, 200)
-var soul_name = ts_Mr_Soul_Forest
-var soul_level = 0
-var soul_last_level_change_date = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+var soul_color_type: TypeOfColorHabits = TypeOfColorHabits.ADAPTIVE
+var soul_color: Color = Color(200, 200, 200)
+var soul_name: String = ts_Mr_Soul_Forest
+var soul_level: Int = 0
+var soul_last_level_change_date: LocalDate =
+    kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
 var language: Languages = Languages.EN
-var sort_habit_statistics_sections_by_frequency_of_use = false
+var sort_habit_statistics_sections_by_frequency_of_use: Boolean = false
 
-var backAppStatus = AppStatus.TABLE
+var backAppStatus: AppStatus = AppStatus.TABLE
 
-var smart_sort = false
+var smart_sort: Boolean = false

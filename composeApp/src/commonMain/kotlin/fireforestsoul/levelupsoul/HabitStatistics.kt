@@ -97,7 +97,7 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 
-var habit_statistics_and_edit_x = 0
+var habit_statistics_and_edit_x: Int = 0
 private var pps_for_habit_statistic = 0
 
 @Composable
@@ -198,7 +198,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                 fontSize = 60.sp / 1.15f,
                                 fontWeight = FontWeight.Black,
                                 modifier = Modifier.rotate(-28.79f),
-                                fontFamily = JetBrainsFont()
+                                fontFamily = jetBrainsFont()
                             )
                         }
                         Box(
@@ -213,7 +213,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                 fontSize = 51.2.sp / 1.15f,
                                 fontWeight = FontWeight.Black,
                                 modifier = Modifier.rotate(33.94f),
-                                fontFamily = JetBrainsFont()
+                                fontFamily = jetBrainsFont()
                             )
                         }
                         Box(
@@ -228,7 +228,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                 fontSize = 34.sp / 1.15f,
                                 fontWeight = FontWeight.Black,
                                 modifier = Modifier.rotate(-17.23f),
-                                fontFamily = JetBrainsFont()
+                                fontFamily = jetBrainsFont()
                             )
                         }
                     }
@@ -264,7 +264,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                     text = "«",
                                     color = UICT_see,
                                     fontWeight = FontWeight.ExtraBold,
-                                    fontFamily = JetBrainsFont(),
+                                    fontFamily = jetBrainsFont(),
                                     fontSize = 29.57.sp
                                 )
                             },
@@ -274,13 +274,13 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                     text = "»",
                                     color = UICT_see,
                                     fontWeight = FontWeight.ExtraBold,
-                                    fontFamily = JetBrainsFont(),
+                                    fontFamily = jetBrainsFont(),
                                     fontSize = 29.57.sp
                                 )
                             },
                             color = UICT_see,
                             fontWeight = FontWeight.ExtraBold,
-                            fontFamily = JetBrainsFont(),
+                            fontFamily = jetBrainsFont(),
                             fontSize = 29.57.sp
                         )
                         Text(
@@ -288,7 +288,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             color = UICT_no_see,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            fontFamily = JetBrainsFont(),
+                            fontFamily = jetBrainsFont(),
                             fontSize = 14.4.sp / 1.15f
                         )
                         Spacer(modifier = Modifier.height(57.6.dp / 1.15f))
@@ -319,7 +319,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                     ),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
-                                    fontFamily = JetBrainsFont(),
+                                    fontFamily = jetBrainsFont(),
                                     fontSize = 16.7.sp
                                 )
                             }
@@ -343,7 +343,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                     ),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
-                                    fontFamily = JetBrainsFont(),
+                                    fontFamily = jetBrainsFont(),
                                     fontSize = 16.7.sp
                                 )
                             }
@@ -431,7 +431,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                 HabitStatisticsStatus.PROGRESS_GRAPH -> ts_Progress_graph
                                 HabitStatisticsStatus.DISTRIBUTION_BY_DAY_OF_THE_WEEK -> ts_Distribution_by_day_of_the_week
                             },
-                            fontFamily = JetBrainsFont(),
+                            fontFamily = jetBrainsFont(),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             fontWeight = FontWeight.Medium,
@@ -504,7 +504,7 @@ enum class HabitStatisticsStatus {
     STREAKS
 }
 
-var listPointsOfHabitStatistic = mutableMapOf(
+var listPointsOfHabitStatistic: MutableMap<HabitStatisticsStatus, Float> = mutableMapOf(
     HabitStatisticsStatus.GOAL to 0f,
     HabitStatisticsStatus.PROGRESS to 0f,
     HabitStatisticsStatus.LEVEL to 0f,
@@ -609,7 +609,7 @@ private fun GoalContent(
             )
             Text(
                 text = smallText,
-                fontFamily = JetBrainsFont(),
+                fontFamily = jetBrainsFont(),
                 fontWeight = FontWeight.ExtraLight,
                 fontSize = 12.8.sp / 1.15f,
                 color = UICT_no_see,
@@ -693,7 +693,7 @@ private fun GoalContent(
                     ),
                     hazeState = null,
                     text = text,
-                    fontFamily = JetBrainsFont(),
+                    fontFamily = jetBrainsFont(),
                     fontWeight = FontWeight.Medium,
                     fontSize = 16.7.sp,
                     color = UICT_see
@@ -702,7 +702,7 @@ private fun GoalContent(
                 else
                     Text(
                         text = smallText,
-                        fontFamily = JetBrainsFont(),
+                        fontFamily = jetBrainsFont(),
                         fontWeight = FontWeight.ExtraLight,
                         fontSize = 12.8.sp / 1.15f,
                         color = UICT_no_see,
@@ -800,7 +800,7 @@ private fun ProgressContent(
                     color = UICT_no_see,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    fontFamily = JetBrainsFont()
+                    fontFamily = jetBrainsFont()
                 )
             }
             Box(
@@ -837,7 +837,7 @@ private fun ProgressContent(
                             color = UICT_no_see,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            fontFamily = JetBrainsFont()
+                            fontFamily = jetBrainsFont()
                         )
                     }
                     if (isPlusProgress) {
@@ -845,7 +845,7 @@ private fun ProgressContent(
                             text = (if (progress >= 0) "+" else "") + "${(progress * 100).toInt()}%",
                             fontSize = 14.4.sp / 1.15f,
                             fontWeight = FontWeight.ExtraBold,
-                            fontFamily = JetBrainsFont(),
+                            fontFamily = jetBrainsFont(),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             color = if (progress >= 0) UIC_green else UIC_red
@@ -855,7 +855,7 @@ private fun ProgressContent(
                             text = "${(progress * 100).toInt()}%",
                             fontSize = 25.6.sp / 1.15f,
                             fontWeight = FontWeight.ExtraBold,
-                            fontFamily = JetBrainsFont(),
+                            fontFamily = jetBrainsFont(),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             color = UICT_see
@@ -868,7 +868,7 @@ private fun ProgressContent(
                             color = Color.Transparent,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            fontFamily = JetBrainsFont()
+                            fontFamily = jetBrainsFont()
                         )
                     }
                 }
@@ -880,7 +880,7 @@ private fun ProgressContent(
                     color = UICT_no_see,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    fontFamily = JetBrainsFont()
+                    fontFamily = jetBrainsFont()
                 )
             }
         }
@@ -910,7 +910,6 @@ private fun ProgressContent(
                 DonutChart(
                     progress = progress,
                     strokeWidth = 8.7.dp,
-                    isBottomLabel = true,
                     trackColor = if (progress >= 0f) seeColorByHabitAndStatisticsEditX.multiply(
                         0.5f,
                         0.5f,
@@ -928,7 +927,6 @@ private fun ProgressContent(
                 DonutChart(
                     progress = progress,
                     strokeWidth = 8.7.dp,
-                    isBottomLabel = true,
                     trackColor = if (progress >= 0f) seeColorByHabitAndStatisticsEditX.multiply(
                         0.5f,
                         0.5f,
@@ -1116,7 +1114,7 @@ private fun LevelContent(
                 color = UICT_see,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                fontFamily = JetBrainsFont(),
+                fontFamily = jetBrainsFont(),
                 fontWeight = FontWeight.ExtraBold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
@@ -1147,7 +1145,7 @@ private fun LevelContent(
                 color = UICT_no_see,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                fontFamily = JetBrainsFont(),
+                fontFamily = jetBrainsFont(),
                 fontWeight = FontWeight.Thin,
             )
             if (type == TypeOfParamElement.GOAL) {
@@ -1161,7 +1159,7 @@ private fun LevelContent(
                             color = UICT_see,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            fontFamily = JetBrainsFont(),
+                            fontFamily = jetBrainsFont(),
                             fontWeight = FontWeight.Normal,
                             modifier = Modifier.weight(0.5f),
                             textAlign = TextAlign.Right
@@ -1170,7 +1168,7 @@ private fun LevelContent(
                             text = " → ",
                             fontSize = 13.333.sp,
                             color = currColor,
-                            fontFamily = JetBrainsFont(),
+                            fontFamily = jetBrainsFont(),
                             fontWeight = FontWeight.Normal,
                         )
                         Text(
@@ -1180,7 +1178,7 @@ private fun LevelContent(
                             color = currColor,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            fontFamily = JetBrainsFont(),
+                            fontFamily = jetBrainsFont(),
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.weight(0.5f)
                         )
@@ -1192,7 +1190,7 @@ private fun LevelContent(
                         color = UICT_see,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        fontFamily = JetBrainsFont(),
+                        fontFamily = jetBrainsFont(),
                         fontWeight = FontWeight.Normal,
                     )
                 }
@@ -1207,7 +1205,7 @@ private fun LevelContent(
                             color = UICT_see,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            fontFamily = JetBrainsFont(),
+                            fontFamily = jetBrainsFont(),
                             fontWeight = FontWeight.Normal,
                             modifier = Modifier.weight(0.5f),
                             textAlign = TextAlign.Right
@@ -1216,7 +1214,7 @@ private fun LevelContent(
                             text = " → ",
                             fontSize = 13.333.sp,
                             color = currColor,
-                            fontFamily = JetBrainsFont(),
+                            fontFamily = jetBrainsFont(),
                             fontWeight = FontWeight.Normal,
                         )
                         Row(
@@ -1230,7 +1228,7 @@ private fun LevelContent(
                                 color = currColor,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                fontFamily = JetBrainsFont(),
+                                fontFamily = jetBrainsFont(),
                                 fontWeight = FontWeight.Bold,
                             )
                             Text(
@@ -1243,7 +1241,7 @@ private fun LevelContent(
                                 color = UICT_no_see,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                fontFamily = JetBrainsFont(),
+                                fontFamily = jetBrainsFont(),
                                 fontWeight = FontWeight.Thin,
                             )
                         }
@@ -1255,7 +1253,7 @@ private fun LevelContent(
                         color = UICT_see,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        fontFamily = JetBrainsFont(),
+                        fontFamily = jetBrainsFont(),
                         fontWeight = FontWeight.Normal,
                     )
                 }
@@ -1266,7 +1264,7 @@ private fun LevelContent(
                 color = UICT_no_see,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                fontFamily = JetBrainsFont(),
+                fontFamily = jetBrainsFont(),
                 fontWeight = FontWeight.Thin,
             )
         }
@@ -1325,7 +1323,7 @@ private fun LevelContent(
                     text = ts_Manual_change,
                     fontSize = 12.sp,
                     color = UICT_no_see,
-                    fontFamily = JetBrainsFont(),
+                    fontFamily = jetBrainsFont(),
                     fontWeight = FontWeight.Normal
                 )
                 Row(
@@ -1453,7 +1451,7 @@ private fun ProgressGraphContent(
                     color = UICT_see,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    fontFamily = JetBrainsFont(),
+                    fontFamily = jetBrainsFont(),
                     fontWeight = FontWeight.ExtraBold
                 )
             }
@@ -1474,7 +1472,7 @@ private fun ProgressGraphContent(
                     color = UICT_no_see,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    fontFamily = JetBrainsFont(),
+                    fontFamily = jetBrainsFont(),
                     fontWeight = FontWeight.Thin
                 )
             }
@@ -1762,7 +1760,7 @@ private fun BarChartContent() {
                             text = AnnotatedString(label),
                             style = TextStyle(
                                 fontSize = 9.74.sp,
-                                fontFamily = JetBrainsFont(),
+                                fontFamily = jetBrainsFont(),
                                 fontWeight = FontWeight.Thin,
                                 color = Color.Unspecified
                             ),
@@ -1786,7 +1784,7 @@ private fun BarChartContent() {
                                 textAlign = TextAlign.Center,
                                 color = UICT_see,
                                 fontSize = 9.74.sp,
-                                fontFamily = JetBrainsFont(),
+                                fontFamily = jetBrainsFont(),
                                 fontWeight = FontWeight.Thin,
                                 maxLines = 1
                             )
@@ -1798,7 +1796,7 @@ private fun BarChartContent() {
                                 text = AnnotatedString(dateLabel),
                                 style = TextStyle(
                                     fontSize = 9.74.sp,
-                                    fontFamily = JetBrainsFont(),
+                                    fontFamily = jetBrainsFont(),
                                     fontWeight = FontWeight.Light,
                                     color = UICT_see
                                 ),
@@ -1818,7 +1816,7 @@ private fun BarChartContent() {
                                     textAlign = TextAlign.Center,
                                     color = UICT_see,
                                     fontSize = 10.sp / 1.15f,
-                                    fontFamily = JetBrainsFont(),
+                                    fontFamily = jetBrainsFont(),
                                     fontWeight = FontWeight.Light,
                                     maxLines = 1
                                 )
@@ -1881,7 +1879,6 @@ fun CalendarContent() {
             DayOfWeek.FRIDAY -> 4
             DayOfWeek.SATURDAY -> 5
             DayOfWeek.SUNDAY -> 6
-            else -> 0
         },
         labels: List<Int> = listDaysNumbers(habit_statistics_and_edit_x),
         goods: List<Boolean> = listDaysBoolean(habit_statistics_and_edit_x),
@@ -1923,7 +1920,7 @@ fun CalendarContent() {
                                             UICT_see
                                         ),
                                         maxLines = 1,
-                                        fontFamily = JetBrainsFont(),
+                                        fontFamily = jetBrainsFont(),
                                         fontWeight = FontWeight.ExtraLight
                                     )
                                 }
@@ -1993,7 +1990,7 @@ fun StreaksContent() {
                             UICT_see
                         ),
                         fontSize = 12.8.sp / 1.15f,
-                        fontFamily = JetBrainsFont(),
+                        fontFamily = jetBrainsFont(),
                         fontWeight = FontWeight.Thin,
                         maxLines = 1
                     )
@@ -2141,8 +2138,7 @@ fun DistributionByDayOfTheWeekContent() {
                         height
                     ),
                     values = values.subList(2, values.size),
-                    spacing = spacing,
-                    horizontal = true
+                    spacing = spacing
                 )
             }
         }
@@ -2176,7 +2172,7 @@ fun DistributionByDayOfTheWeekContent() {
                         UICT_see
                     ),
                     fontSize = 12.8.sp / 1.15f,
-                    fontFamily = JetBrainsFont(),
+                    fontFamily = jetBrainsFont(),
                     fontWeight = FontWeight.Normal,
                     textAlign = TextAlign.Center
                 )
@@ -2187,7 +2183,7 @@ fun DistributionByDayOfTheWeekContent() {
                         UICT_see
                     ),
                     fontSize = 16.sp / 1.15f,
-                    fontFamily = JetBrainsFont(),
+                    fontFamily = jetBrainsFont(),
                     fontWeight = FontWeight.ExtraBold,
                     textAlign = TextAlign.Center
                 )
@@ -2198,7 +2194,7 @@ fun DistributionByDayOfTheWeekContent() {
                         UICT_see
                     ),
                     fontSize = 12.8.sp / 1.15f,
-                    fontFamily = JetBrainsFont(),
+                    fontFamily = jetBrainsFont(),
                     fontWeight = FontWeight.Normal,
                     textAlign = TextAlign.Center
                 )
@@ -2251,10 +2247,10 @@ fun DistributionByDayOfTheWeekContent() {
         var uncheckValues = mutableListOf<BigDecimal>()
         var minValue: BigDecimal = Double.MAX_VALUE.toBigDecimal()
 
-        for (i in habitDistributionByDayOfTheWeekContent(habit_statistics_and_edit_x)) {
-            uncheckLabels.add(i.dayOfWeek)
-            uncheckRealValues.add(i.value)
-            minValue = minOf(minValue, i.value)
+        for ((dayOfWeek, value) in habitDistributionByDayOfTheWeekContent(habit_statistics_and_edit_x)) {
+            uncheckLabels.add(dayOfWeek)
+            uncheckRealValues.add(value)
+            minValue = minOf(minValue, value)
         }
 
         if (minValue < 0) {

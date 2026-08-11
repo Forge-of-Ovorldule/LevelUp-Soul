@@ -24,7 +24,7 @@ fun progress(
     var correctly = 0f
     var correctlyDays = 0
     for (indexY in (endIndex - pps + 1)..(endIndex)) {
-        if (indexY in 0..<habits[index].habitDay.size) {
+        if (indexY in habits[index].habitDay.indices) {
             if (habits[index].habitDay[indexY].correctly)
                 correctly++
             correctlyDays++
@@ -52,7 +52,7 @@ fun progress(
     var correctly = 0f
     var correctlyDays = 0
     for (indexY in (startIndex - pps + 1)..(startIndex)) {
-        if (indexY in 0..<habit.habitDay.size) {
+        if (indexY in habit.habitDay.indices) {
             if (habit.habitDay[indexY].correctly)
                 correctly++
             correctlyDays++
@@ -67,11 +67,11 @@ fun progressAll(
     endIndex: Int = maxDays - 1
 ): Float {
     var correctly = 0f
-    for (x in 0 until habits.size) {
+    for ((x, element) in habits.withIndex()) {
         correctly += progress(
             x,
-            if (pps >= maxDays) habits[x].habitDay.size else pps,
-            habits[x].habitDay.size - maxDays + endIndex
+            if (pps >= maxDays) element.habitDay.size else pps,
+            element.habitDay.size - maxDays + endIndex
         )
     }
     return correctly / (if (habits.isNotEmpty()) habits.size else 1)
@@ -171,7 +171,7 @@ fun listTodayAll(
 ): List<BigDecimal> {
     var add0 = 0.toBigDecimal()
     for (z in 0 until step) {
-        for (index in 0 until habits.size) {
+        for (index in habits.indices) {
             if (z < habits[index].habitDay.size)
                 add0 += if (habits[index].habitDay[z].correctly) 1 else 0
         }
@@ -181,7 +181,7 @@ fun listTodayAll(
     while (y < maxDays) {
         var add = 0.toBigDecimal()
         for (z in y until (y + step)) {
-            for (index in 0 until habits.size) {
+            for (index in habits.indices) {
                 val z0 = habits[index].habitDay.size - maxDays + z
                 if (z0 < habits[index].habitDay.size && z0 >= 0)
                     add += if (habits[index].habitDay[z0].correctly) 1 else 0
@@ -200,7 +200,7 @@ fun listTodayDates(
 ): List<String> {
     fun LocalDate.formatter(): String {
         return if (step < 7) this.dayOfWeek.toString().take(3)
-        else if (step < 30) this.dayOfMonth.toString()
+        else if (step < 30) day.toString()
         else if (step < 365) this.month.toString().take(3)
         else this.year.toString()
     }
@@ -226,7 +226,7 @@ fun listTodayDatesAll(
 ): List<String> {
     fun formatter(localDate: LocalDate): String {
         return if (step < 7) localDate.dayOfWeek.toString().take(3)
-        else if (step < 30) localDate.dayOfMonth.toString()
+        else if (step < 30) localDate.day.toString()
         else if (step < 365) localDate.month.toString().take(3)
         else localDate.year.toString()
     }
@@ -248,9 +248,9 @@ fun listTodayDatesAll(
 fun listDaysNumbers(
     index: Int
 ): List<Int> {
-    val list = mutableListOf(habits[index].startDate.dayOfMonth)
+    val list = mutableListOf(habits[index].startDate.day)
     for (y in 1 until habits[index].habitDay.size) {
-        list.add(habits[index].startDate.plus(y, DateTimeUnit.DAY).dayOfMonth)
+        list.add(habits[index].startDate.plus(y, DateTimeUnit.DAY).day)
     }
     return list
 }
@@ -258,9 +258,9 @@ fun listDaysNumbers(
 fun listDaysNumbers(
     habit: Habit
 ): List<Int> {
-    val list = mutableListOf(habit.startDate.dayOfMonth)
+    val list = mutableListOf(habit.startDate.day)
     for (y in 1 until habit.habitDay.size) {
-        list.add(habit.startDate.plus(y, DateTimeUnit.DAY).dayOfMonth)
+        list.add(habit.startDate.plus(y, DateTimeUnit.DAY).day)
     }
     return list
 }
@@ -327,7 +327,7 @@ fun habitDistributionByDayOfTheWeekContent(
     var saturday = BigDecimal.ZERO
     var sunday = BigDecimal.ZERO
 
-    for (i in 0 until habits[habitIndex].habitDay.size) {
+    for (i in habits[habitIndex].habitDay.indices) {
         val day = habits[habitIndex].startDate.plus(i, DateTimeUnit.DAY).dayOfWeek
         when (day) {
             DayOfWeek.MONDAY -> monday += habits[habitIndex].habitDay[i].today
@@ -337,7 +337,6 @@ fun habitDistributionByDayOfTheWeekContent(
             DayOfWeek.FRIDAY -> friday += habits[habitIndex].habitDay[i].today
             DayOfWeek.SATURDAY -> saturday += habits[habitIndex].habitDay[i].today
             DayOfWeek.SUNDAY -> sunday += habits[habitIndex].habitDay[i].today
-            else -> {}
         }
     }
 

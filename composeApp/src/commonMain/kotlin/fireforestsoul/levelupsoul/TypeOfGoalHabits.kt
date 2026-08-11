@@ -9,12 +9,12 @@
 
 package fireforestsoul.levelupsoul
 
-enum class TypeOfGoalHabits(val char: Char) {
-    NO_MORE('<'),
-    AT_LEAST('>'),
+enum class TypeOfGoalHabits {
+    NO_MORE,
+    AT_LEAST,
 }
 
-enum class Old3000000TypeOfGoalHabits() {
+enum class Old3000000TypeOfGoalHabits {
     NO_MORE,
     NOT_LITTLE
 }

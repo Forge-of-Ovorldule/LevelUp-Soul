@@ -26,7 +26,7 @@ fun setupSaveOnClose() {
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
     setupSaveOnClose()
-    ComposeViewport(document.body!!) {
+    ComposeViewport(document.body ?: return) {
         val viewModel = remember { AppViewModel() }
         App(viewModel)
     }

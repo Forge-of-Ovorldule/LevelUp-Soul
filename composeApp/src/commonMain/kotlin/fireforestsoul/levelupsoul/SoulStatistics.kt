@@ -42,7 +42,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
@@ -278,7 +277,7 @@ fun SoulStatisticsContent() {
             /**
              * Level changed
              */
-            if (Clock.System.now()
+            if (kotlin.time.Clock.System.now()
                     .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays() - soul_last_level_change_date.toEpochDays() >= 20
             ) {
                 var goodProgress = 0
@@ -293,7 +292,7 @@ fun SoulStatisticsContent() {
                     if (goodProgress == 20) {
                         soul_level++
                         soul_last_level_change_date =
-                            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+                            kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
                     }
                 } else if (progressAll(maxDays) <= 0.2) {
                     for (x in (maxDays - 20) until maxDays) {
@@ -306,7 +305,7 @@ fun SoulStatisticsContent() {
                     if (goodProgress == 20) {
                         soul_level--
                         soul_last_level_change_date =
-                            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+                            kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
                     }
                 }
             }
@@ -341,10 +340,10 @@ fun SoulStatisticsContent() {
 
                     goodProgress = 0f
                     if (progressAll(maxDays) >= 0.8) {
-                        for (x in (maxDays - (Clock.System.now()
+                        for (x in (maxDays - (kotlin.time.Clock.System.now()
                             .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays() - soul_last_level_change_date.toEpochDays())) until maxDays) {
                             if (x >= 0) {
-                                if (progressAll(maxDays, endIndex = x) >= 0.8) {
+                                if (progressAll(maxDays, endIndex = x.toInt()) >= 0.8) {
                                     goodProgress++
                                 } else {
                                     goodProgress = 0f
@@ -353,10 +352,10 @@ fun SoulStatisticsContent() {
                         }
                         progressUp = true
                     } else if (progressAll(maxDays) <= 0.2) {
-                        for (x in (maxDays - (Clock.System.now()
+                        for (x in (maxDays - (kotlin.time.Clock.System.now()
                             .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays() - soul_last_level_change_date.toEpochDays())) until maxDays) {
                             if (x >= 0) {
-                                if (progressAll(maxDays, endIndex = x) <= 0.2) {
+                                if (progressAll(maxDays, endIndex = x.toInt()) <= 0.2) {
                                     goodProgress++
                                 } else {
                                     goodProgress = 0f

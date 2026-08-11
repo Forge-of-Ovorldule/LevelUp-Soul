@@ -47,7 +47,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -109,7 +108,7 @@ fun TableContent(
                     modifier = Modifier.size(firstCellSizeX, firstCellSizeY),
                     contentAlignment = Alignment.Center
                 ) {}
-                for (y in 0 until habits.size) {
+                for (y in habits.indices) {
                     var seeColor by remember { mutableStateOf(soul_color) }
                     var noSeeColor by remember {
                         mutableStateOf(
@@ -186,7 +185,7 @@ fun TableContent(
                                     text = habits[sortedHabits[y]].nameOfHabit,
                                     color = seeColor,
                                     fontWeight = FontWeight.Normal,
-                                    fontFamily = JetBrainsFont(),
+                                    fontFamily = jetBrainsFont(),
                                     fontSize = firstSellFontSize / 1.15f
                                 )
                                 val needOrCanMore =
@@ -233,7 +232,7 @@ fun TableContent(
                                     text = (countdownDate.minus(
                                         x,
                                         DateTimeUnit.DAY
-                                    )).dayOfMonth.toString(),
+                                    )).day.toString(),
                                     color = UICT_no_see,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = dataSellFontSize
@@ -251,7 +250,7 @@ fun TableContent(
                         }
                     }
                     //results
-                    for (y in 0 until habits.size) {
+                    for (y in habits.indices) {
                         var seeColor by remember { mutableStateOf(soul_color) }
                         var noSeeColor by remember {
                             mutableStateOf(
@@ -289,12 +288,12 @@ fun TableContent(
                                 horizontalArrangement = Arrangement.spacedBy(spacedCell),
                             ) {
                                 for (x in 0 until min(
-                                    maxDays + countdownDate.toEpochDays() - Clock.System.now()
+                                    maxDays + countdownDate.toEpochDays() - kotlin.time.Clock.System.now()
                                         .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays(),
-                                    max(maxCellX, 10)
+                                    max(maxCellX, 10).toLong()
                                 )) {
                                     val xIndex =
-                                        habits[sortedHabits[y]].habitDay.size - 1 - x + (countdownDate.toEpochDays() - Clock.System.now()
+                                        habits[sortedHabits[y]].habitDay.size - 1 - x + (countdownDate.toEpochDays() - kotlin.time.Clock.System.now()
                                             .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays())
                                     if (xIndex >= 0) {
                                         Box(
@@ -308,8 +307,8 @@ fun TableContent(
                                                 var showDialog by remember { mutableStateOf(false) }
 
                                                 Text(
-                                                    text = habits[sortedHabits[y]].habitDay[xIndex].today.toBestString(),
-                                                    color = if (habits[sortedHabits[y]].habitDay[xIndex].correctly
+                                                    text = habits[sortedHabits[y]].habitDay[xIndex.toInt()].today.toBestString(),
+                                                    color = if (habits[sortedHabits[y]].habitDay[xIndex.toInt()].correctly
                                                     ) seeColor else noSeeColor,
                                                     fontWeight = FontWeight.Normal,
                                                     fontSize = firstSellFontSize,
@@ -328,7 +327,7 @@ fun TableContent(
                                                                     xIndex, DateTimeUnit.DAY
                                                                 )
                                                             Text(
-                                                                text = "$ts_Do_you_want_to_set_a_value_for ${dateToSet.month} ${dateToSet.dayOfMonth}, ${dateToSet.year} $ts_for_habit ${habits[sortedHabits[y]].nameOfHabit}?",
+                                                                text = "$ts_Do_you_want_to_set_a_value_for ${dateToSet.month} ${dateToSet.day}, ${dateToSet.year} $ts_for_habit ${habits[sortedHabits[y]].nameOfHabit}?",
                                                                 fontWeight = FontWeight.Normal,
                                                                 fontSize = 16.sp,
                                                                 color = UICT_see
@@ -340,7 +339,7 @@ fun TableContent(
                                                                 onValueChange = { inputText = it },
                                                                 label = {
                                                                     Text(
-                                                                        "$ts_Old: ${habits[sortedHabits[y]].habitDay[xIndex].today.toBestString()}",
+                                                                        "$ts_Old: ${habits[sortedHabits[y]].habitDay[xIndex.toInt()].today.toBestString()}",
                                                                         fontSize = 12.sp,
                                                                         fontWeight = FontWeight.Normal,
                                                                         color = UICT_no_see
@@ -392,7 +391,7 @@ fun TableContent(
                                                                     val value =
                                                                         inputText.toDoubleOrNull()
                                                                     if (value != null) {
-                                                                        habits[sortedHabits[y]].habitDay[xIndex].today =
+                                                                        habits[sortedHabits[y]].habitDay[xIndex.toInt()].today =
                                                                             inputText.toBigDecimal()
                                                                         habits[sortedHabits[y]].saveHabitDays(
                                                                             sortedHabits[y]

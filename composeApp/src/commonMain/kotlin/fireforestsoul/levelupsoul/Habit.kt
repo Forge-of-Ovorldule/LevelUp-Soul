@@ -11,7 +11,6 @@ package fireforestsoul.levelupsoul
 
 import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -33,24 +32,24 @@ class Habit(
     var iconChar: String = ""
 ) {
 
-    var startDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    var startDate: LocalDate = kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     var lastLevelChangeDate: LocalDate = startDate
     var level: Int = 0
     var habitDay: MutableList<HabitDay> = MutableList(1) { HabitDay(0.toBigDecimal()) }
-    var phantomNeedDays = needDays.toBigDecimal()
+    var phantomNeedDays: BigDecimal = needDays.toBigDecimal()
 
     fun updateDate() {
-        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-        val addDays: Int = (today.toEpochDays() - startDate.toEpochDays() - habitDay.size + 1)
+        val today = kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val addDays: Long = (today.toEpochDays() - startDate.toEpochDays() - habitDay.size + 1)
 
         if (addDays > 0) {
-            habitDay.addAll(List(addDays) { HabitDay(0.toBigDecimal()) })
+            habitDay.addAll(List(addDays.toInt()) { HabitDay(0.toBigDecimal()) })
         }
 
         update()
     }
 
-    fun updateHabitDay(index: Int) {
+    private fun updateHabitDay(index: Int) {
         habitDay[index].totalOfAPeriod = 0.toBigDecimal()
         for (i in (index - needDays + 1)..index) {
             if (i >= 0)
@@ -76,8 +75,8 @@ class Habit(
         }
     }
 
-    fun changeLvl() {
-        if (Clock.System.now()
+    private fun changeLvl() {
+        if (kotlin.time.Clock.System.now()
                 .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays() - lastLevelChangeDate.toEpochDays() >= 20
         ) {
             var goodProgress = 0
@@ -109,7 +108,7 @@ class Habit(
 
     fun lvlUp() {
         level++
-        lastLevelChangeDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        lastLevelChangeDate = kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
         if (changeNeedDaysWithLevel) {
             when (typeOfGoalHabits) {
                 TypeOfGoalHabits.AT_LEAST -> phantomNeedDays *= "0.8".toBigDecimal()
@@ -132,7 +131,7 @@ class Habit(
 
     fun lvlDown() {
         level--
-        lastLevelChangeDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        lastLevelChangeDate = kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
         if (changeNeedDaysWithLevel) {
             when (typeOfGoalHabits) {
                 TypeOfGoalHabits.AT_LEAST -> phantomNeedDays /= 0.8
@@ -157,7 +156,7 @@ class Habit(
         var end = habitDay.size - 20
         end = if (end < 0) 0 else end
         end =
-            if (end < lastLevelChangeDate.toEpochDays() - startDate.toEpochDays()) lastLevelChangeDate.toEpochDays() - startDate.toEpochDays() else end
+            (if (end < lastLevelChangeDate.toEpochDays() - startDate.toEpochDays()) lastLevelChangeDate.toEpochDays() - startDate.toEpochDays() else end).toInt()
 
         var progress = 0f
         val isProgressUp = if (progress(this, pps) <= 0.2f) false else true

@@ -68,10 +68,10 @@ fun Habit.saveHabitDays(habitIndex: Int) {
 
 private fun Habit.saveHabitDaysProcess(habitIndex: Int) {
     saveValue(this.habitDay.size, "habits-$habitIndex-habitDay-size")
-    for (y in 0 until this.habitDay.size) {
-        saveValue(this.habitDay[y].today, "habits-$habitIndex-habitDay-$y-today")
-        saveValue(this.habitDay[y].totalOfAPeriod, "habits-$habitIndex-habitDay-$y-totalOfAPeriod")
-        saveValue(this.habitDay[y].correctly, "habits-$habitIndex-habitDay-$y-correctly")
+    for ((y, element) in this.habitDay.withIndex()) {
+        saveValue(element.today, "habits-$habitIndex-habitDay-$y-today")
+        saveValue(element.totalOfAPeriod, "habits-$habitIndex-habitDay-$y-totalOfAPeriod")
+        saveValue(element.correctly, "habits-$habitIndex-habitDay-$y-correctly")
     }
 }
 
@@ -108,8 +108,8 @@ fun MutableList<Habit>.save() {
 
 private fun MutableList<Habit>.saveProcess() {
     saveValue(this.size, "habits-size")
-    for (x in 0 until this.size) {
-        this[x].saveProcess(x)
+    for ((x, element) in this.withIndex()) {
+        element.saveProcess(x)
     }
 }
 

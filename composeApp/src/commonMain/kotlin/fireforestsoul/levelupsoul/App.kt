@@ -20,12 +20,13 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 
-var backgroundUp = UIC_black
-var backgroundDown = UIC_dark
+var backgroundUp: Color = UIC_black
+var backgroundDown: Color = UIC_dark
 
 @Composable
 fun App(viewModel: AppViewModel) {

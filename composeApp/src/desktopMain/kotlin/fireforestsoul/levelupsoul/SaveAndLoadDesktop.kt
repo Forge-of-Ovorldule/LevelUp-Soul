@@ -59,7 +59,7 @@ actual fun old1001000000LoadAllValues() {
             if (oldAppVersion > 0) {
                 var index = 1
 
-                val habitsSize = input.getOrNull(index)?.toInt()!!
+                val habitsSize = input.getOrNull(index)?.toInt() ?: return
                 index++
                 habits = mutableListOf(Habit())
                 for (x in 0 until habitsSize) {
@@ -80,9 +80,9 @@ actual fun old1001000000LoadAllValues() {
                         )
                         index++
                     }
-                    habits[x].needGoal = input.getOrNull(index)?.toBigDecimal()!!
+                    habits[x].needGoal = (input.getOrNull(index)?.toBigDecimal() ?: return)
                     index++
-                    habits[x].needDays = input.getOrNull(index)?.toInt()!!
+                    habits[x].needDays = (input.getOrNull(index)?.toInt() ?: return)
                     index++
                     if (oldAppVersion >= 2000000) {
                         habits[x].typeOfColorHabits =
@@ -101,7 +101,7 @@ actual fun old1001000000LoadAllValues() {
                         }
                     }
                     habits[x].startDate =
-                        input.getOrNull(index)?.let { LocalDate.parse(it) }!!
+                        (input.getOrNull(index)?.let { LocalDate.parse(it) } ?: return)
                     index++
                     if (oldAppVersion < 1000000000) {
                         /** lastDate */
@@ -109,9 +109,9 @@ actual fun old1001000000LoadAllValues() {
                     }
 
                     if (oldAppVersion >= 1000000000) {
-                        habits[x].lastLevelChangeDate = input.getOrNull(index)?.let { LocalDate.parse(it) }!!
+                        habits[x].lastLevelChangeDate = (input.getOrNull(index)?.let { LocalDate.parse(it) } ?: return)
                         index++
-                        habits[x].level = input.getOrNull(index)?.toInt()!!
+                        habits[x].level = (input.getOrNull(index)?.toInt() ?: return)
                         index++
 
                         if (oldAppVersion >= 1001000000) {
@@ -121,17 +121,17 @@ actual fun old1001000000LoadAllValues() {
 
                     }
 
-                    val habitDaySize = input.getOrNull(index)?.toInt()!!
+                    val habitDaySize = input.getOrNull(index)?.toInt() ?: return
                     index++
                     habits[x].habitDay = mutableListOf(HabitDay())
                     for (y in 0 until habitDaySize) {
                         if (y > 0) habits[x].habitDay.add(HabitDay())
 
                         habits[x].habitDay[y].today =
-                            input.getOrNull(index)?.toBigDecimal()!!
+                            (input.getOrNull(index)?.toBigDecimal() ?: return)
                         index++
                         habits[x].habitDay[y].totalOfAPeriod =
-                            input.getOrNull(index)?.toBigDecimal()!!
+                            (input.getOrNull(index)?.toBigDecimal() ?: return)
                         index++
                         habits[x].habitDay[y].correctly =
                             input.getOrNull(index).toBoolean()
@@ -148,9 +148,9 @@ actual fun old1001000000LoadAllValues() {
                     index++
 
                     if (oldAppVersion >= 1000000000) {
-                        soul_level = input.getOrNull(index)?.toInt()!!
+                        soul_level = (input.getOrNull(index)?.toInt() ?: return)
                         index++
-                        soul_last_level_change_date = input.getOrNull(index)?.let { LocalDate.parse(it) }!!
+                        soul_last_level_change_date = (input.getOrNull(index)?.let { LocalDate.parse(it) } ?: return)
                         index++
 
                         if (oldAppVersion >= 1000001000) {

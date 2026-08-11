@@ -128,7 +128,8 @@ fun CreateHabit(viewModel: AppViewModel) {
                                 if (needGoal.toDoubleOrNull() != null) needGoal.toBigDecimal() else habit.needGoal
                             habit.nameOfUnitsOfDimension = nameOfUnitsOfDimension
                             habit.needDays =
-                                (if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else habit.needDays)!!
+                                ((if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else habit.needDays)
+                                    ?: return@clickable)
                             habit.changeLevel = changeLevel
                             habit.changeNeedGoalWithLevel = changeNeedGoalWithLevel
                             habit.changeNeedDaysWithLevel = changeNeedDaysWithLevel

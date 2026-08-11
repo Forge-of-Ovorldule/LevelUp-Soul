@@ -126,9 +126,12 @@ fun EditHabit(viewModel: AppViewModel) {
                             habits[habit_statistics_and_edit_x].needGoal =
                                 if (needGoal.toDoubleOrNull() != null) needGoal.toBigDecimal() else habits[habit_statistics_and_edit_x].needGoal
                             habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension = nameOfUnitsOfDimension
-                            if (habits[habit_statistics_and_edit_x].needDays != (if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else habits[habit_statistics_and_edit_x].needDays)!!) {
+                            if (habits[habit_statistics_and_edit_x].needDays != ((if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else habits[habit_statistics_and_edit_x].needDays)
+                                    ?: return@clickable)
+                            ) {
                                 habits[habit_statistics_and_edit_x].needDays =
-                                    (if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else habits[habit_statistics_and_edit_x].needDays)!!
+                                    ((if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else habits[habit_statistics_and_edit_x].needDays)
+                                        ?: return@clickable)
                                 habits[habit_statistics_and_edit_x].phantomNeedDays =
                                     habits[habit_statistics_and_edit_x].needDays.toBigDecimal()
                             }

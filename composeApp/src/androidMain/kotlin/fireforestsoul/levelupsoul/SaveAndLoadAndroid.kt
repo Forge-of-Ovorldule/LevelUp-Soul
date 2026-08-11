@@ -43,7 +43,7 @@ actual fun saveValue(value: Any, name: String) {
 
 actual fun <T> loadValue(value: T, name: String): T {
     val serialized =
-        context!!.getSharedPreferences(save_file_name, Context.MODE_PRIVATE).getString(name, null)
+        (context ?: return value).getSharedPreferences(save_file_name, Context.MODE_PRIVATE).getString(name, null)
             ?: return value
 
     return serialized.loadedElementToVal(value)
@@ -70,7 +70,7 @@ actual fun old1001000000LoadAllValues() {
                     old1001000000_prefs.getString(
                         "habits-$x-typeOfGoalHabits",
                         "AT_LEAST"
-                    )!!
+                    ) ?: return
                 )
             } else {
                 habits[x].typeOfGoalHabits = toTypeOfGoalHabits(
@@ -78,7 +78,7 @@ actual fun old1001000000LoadAllValues() {
                         old1001000000_prefs.getString(
                             "habits-$x-typeOfGoalHabits",
                             "NOT_LITTLE"
-                        )!!
+                        ) ?: return
                     )
                 )
             }
@@ -94,7 +94,7 @@ actual fun old1001000000LoadAllValues() {
                         old1001000000_prefs.getString(
                             "habits-$x-typeOfColorHabits",
                             "ADAPTIVE"
-                        )!!
+                        ) ?: return
                     )
                 habits[x].colorGood = Color(
                     old1001000000_prefs.getString("habits-$x-colorGood", "ff000000")
@@ -125,9 +125,9 @@ actual fun old1001000000LoadAllValues() {
 
             if (oldAppVersion >= 1000000000) {
                 habits[x].lastLevelChangeDate =
-                    old1001000000_prefs.getString("habits-$x-lastLevelChangeDate", "2025-01-01")
-                        ?.let { LocalDate.parse(it) }!!
-                habits[x].level = old1001000000_prefs.getString("habits-$x-level", "0")?.toInt()!!
+                    (old1001000000_prefs.getString("habits-$x-lastLevelChangeDate", "2025-01-01")
+                        ?.let { LocalDate.parse(it) } ?: return)
+                habits[x].level = (old1001000000_prefs.getString("habits-$x-level", "0")?.toInt() ?: return)
 
                 if (oldAppVersion >= 1001000000) {
                     habits[x].iconChar =
@@ -165,10 +165,10 @@ actual fun old1001000000LoadAllValues() {
             soul_name = old1001000000_prefs.getString("soul_name", "Mr. Soul Forest").toString()
 
             if (oldAppVersion >= 1000000000) {
-                soul_level = old1001000000_prefs.getString("soul_level", "0")?.toInt()!!
+                soul_level = (old1001000000_prefs.getString("soul_level", "0")?.toInt() ?: return)
                 soul_last_level_change_date =
-                    old1001000000_prefs.getString("soul_last_level_change_date", "2025-01-01")
-                        ?.let { LocalDate.parse(it) }!!
+                    (old1001000000_prefs.getString("soul_last_level_change_date", "2025-01-01")
+                        ?.let { LocalDate.parse(it) } ?: return)
 
                 if (oldAppVersion >= 1000001000) {
                     language =
