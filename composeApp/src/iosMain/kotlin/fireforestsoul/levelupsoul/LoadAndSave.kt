@@ -9,9 +9,7 @@ actual fun saveValue() {
 }
 
 actual fun old1001000000LoadAllValues() {
-    val oldAppVersion =
-        if (userDefaults.objectForKey("app_version") != null) userDefaults.integerForKey("app_version") else app_version
-//    if (oldAppVersion) {
+    //    if (oldAppVersion) {
 //        loading old type
 //    }
 }
