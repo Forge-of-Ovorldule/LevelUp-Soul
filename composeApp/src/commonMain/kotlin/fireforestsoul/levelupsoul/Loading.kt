@@ -52,12 +52,16 @@ fun LoadingContent(viewModel: AppViewModel) {
 var loadIsGood: Boolean = false
 
 private suspend fun loading(viewModel: AppViewModel) = withContext(Dispatchers.Default) {
-    loadAllValues()
+    LocalSaveManager.data
     changeLanguage()
-    for (i in habits.indices) {
-        habits[i].updateDate()
+    for (i in LocalSaveManager.data.habits.indices) {
+        LocalSaveManager.data.habits[i].updateDate()
     }
-    saveAllValues()
+    LocalSaveManager.save()
+
+    AppVersionSaveManager.data.appVersion = app_version
+    AppVersionSaveManager.save()
+
     loadIsGood = true
-    viewModel.setStatus(backAppStatus)
+    viewModel.setStatus(LocalSaveManager.data.backAppStatus)
 }

@@ -66,10 +66,10 @@ fun TableContent(
     horizontalScroll: ScrollState,
     countdownDate: LocalDate,
 ) {
-    val sortedHabits = MutableList(habits.size) { it }
+    val sortedHabits = MutableList(LocalSaveManager.data.habits.size) { it }
     sortedHabits.sortSystem()
 
-    backAppStatus = AppStatus.TABLE_UPDATER
+    LocalSaveManager.data.backAppStatus = AppStatus.TABLE_UPDATER
 
     val firstCellSizeX = 200.dp
     val firstCellSizeY = 40.dp
@@ -81,7 +81,7 @@ fun TableContent(
     val firstSellSmallFontSize = 9.sp
     val dataSellFontSize = 11.sp
     var maxDays = 0
-    for (habit in habits) {
+    for (habit in LocalSaveManager.data.habits) {
         maxDays = max(habit.habitDay.size, maxDays)
     }
 
@@ -108,8 +108,8 @@ fun TableContent(
                     modifier = Modifier.size(firstCellSizeX, firstCellSizeY),
                     contentAlignment = Alignment.Center
                 ) {}
-                for (y in habits.indices) {
-                    var seeColor by remember { mutableStateOf(soul_color) }
+                for (y in LocalSaveManager.data.habits.indices) {
+                    var seeColor by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
                     var noSeeColor by remember {
                         mutableStateOf(
                             seeColor.multiply(
@@ -165,7 +165,7 @@ fun TableContent(
                                     strokeWidth = 3.5.dp
                                 )
                                 Text(
-                                    text = "${habits[sortedHabits[y]].level}",
+                                    text = "${LocalSaveManager.data.habits[sortedHabits[y]].level}",
                                     fontSize = 11.sp,
                                     color = seeColor
                                 )
@@ -182,17 +182,17 @@ fun TableContent(
                                         isProcessed = false
                                     ),
                                     hazeState = null,
-                                    text = habits[sortedHabits[y]].nameOfHabit,
+                                    text = LocalSaveManager.data.habits[sortedHabits[y]].nameOfHabit,
                                     color = seeColor,
                                     fontWeight = FontWeight.Normal,
                                     fontFamily = jetBrainsFont(),
                                     fontSize = firstSellFontSize / 1.15f
                                 )
                                 val needOrCanMore =
-                                    habits[sortedHabits[y]].needGoal - habits[sortedHabits[y]].habitDay[habits[sortedHabits[y]].habitDay.size - 1].totalOfAPeriod
+                                    LocalSaveManager.data.habits[sortedHabits[y]].numericalGoal - LocalSaveManager.data.habits[sortedHabits[y]].habitDay[LocalSaveManager.data.habits[sortedHabits[y]].habitDay.size - 1].totalOfAPeriod
                                 if (needOrCanMore > BigDecimal.ZERO) {
                                     Text(
-                                        text = if (habits[sortedHabits[y]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST)
+                                        text = if (LocalSaveManager.data.habits[sortedHabits[y]].typeOfGoal == TypeOfGoalHabit.AT_LEAST)
                                             "$ts_Need ${needOrCanMore.toBestString()} $ts_more"
                                         else "$ts_You_can_have ${needOrCanMore.toBestString()} $ts_more",
                                         color = noSeeColor,
@@ -250,8 +250,8 @@ fun TableContent(
                         }
                     }
                     //results
-                    for (y in habits.indices) {
-                        var seeColor by remember { mutableStateOf(soul_color) }
+                    for (y in LocalSaveManager.data.habits.indices) {
+                        var seeColor by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
                         var noSeeColor by remember {
                             mutableStateOf(
                                 seeColor.multiply(
@@ -293,7 +293,7 @@ fun TableContent(
                                     max(maxCellX, 10).toLong()
                                 )) {
                                     val xIndex =
-                                        habits[sortedHabits[y]].habitDay.size - 1 - x + (countdownDate.toEpochDays() - kotlin.time.Clock.System.now()
+                                        LocalSaveManager.data.habits[sortedHabits[y]].habitDay.size - 1 - x + (countdownDate.toEpochDays() - kotlin.time.Clock.System.now()
                                             .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays())
                                     if (xIndex >= 0) {
                                         Box(
@@ -302,13 +302,13 @@ fun TableContent(
                                                 .height(firstCellSizeY * 7 / 16),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            if (xIndex < habits[sortedHabits[y]].habitDay.size) {
+                                            if (xIndex < LocalSaveManager.data.habits[sortedHabits[y]].habitDay.size) {
                                                 var inputText by remember { mutableStateOf("") }
                                                 var showDialog by remember { mutableStateOf(false) }
 
                                                 Text(
-                                                    text = habits[sortedHabits[y]].habitDay[xIndex.toInt()].today.toBestString(),
-                                                    color = if (habits[sortedHabits[y]].habitDay[xIndex.toInt()].correctly
+                                                    text = LocalSaveManager.data.habits[sortedHabits[y]].habitDay[xIndex.toInt()].today.toBestString(),
+                                                    color = if (LocalSaveManager.data.habits[sortedHabits[y]].habitDay[xIndex.toInt()].correctly
                                                     ) seeColor else noSeeColor,
                                                     fontWeight = FontWeight.Normal,
                                                     fontSize = firstSellFontSize,
@@ -323,11 +323,11 @@ fun TableContent(
                                                         onDismissRequest = { showDialog = false },
                                                         title = {
                                                             val dateToSet =
-                                                                habits[sortedHabits[y]].startDate.plus(
+                                                                LocalSaveManager.data.habits[sortedHabits[y]].startDate.plus(
                                                                     xIndex, DateTimeUnit.DAY
                                                                 )
                                                             Text(
-                                                                text = "$ts_Do_you_want_to_set_a_value_for ${dateToSet.month} ${dateToSet.day}, ${dateToSet.year} $ts_for_habit ${habits[sortedHabits[y]].nameOfHabit}?",
+                                                                text = "$ts_Do_you_want_to_set_a_value_for ${dateToSet.month} ${dateToSet.day}, ${dateToSet.year} $ts_for_habit ${LocalSaveManager.data.habits[sortedHabits[y]].nameOfHabit}?",
                                                                 fontWeight = FontWeight.Normal,
                                                                 fontSize = 16.sp,
                                                                 color = UICT_see
@@ -339,7 +339,7 @@ fun TableContent(
                                                                 onValueChange = { inputText = it },
                                                                 label = {
                                                                     Text(
-                                                                        "$ts_Old: ${habits[sortedHabits[y]].habitDay[xIndex.toInt()].today.toBestString()}",
+                                                                        "$ts_Old: ${LocalSaveManager.data.habits[sortedHabits[y]].habitDay[xIndex.toInt()].today.toBestString()}",
                                                                         fontSize = 12.sp,
                                                                         fontWeight = FontWeight.Normal,
                                                                         color = UICT_no_see
@@ -391,12 +391,10 @@ fun TableContent(
                                                                     val value =
                                                                         inputText.toDoubleOrNull()
                                                                     if (value != null) {
-                                                                        habits[sortedHabits[y]].habitDay[xIndex.toInt()].today =
+                                                                        LocalSaveManager.data.habits[sortedHabits[y]].habitDay[xIndex.toInt()].today =
                                                                             inputText.toBigDecimal()
-                                                                        habits[sortedHabits[y]].saveHabitDays(
-                                                                            sortedHabits[y]
-                                                                        )
-                                                                        habits[sortedHabits[y]].update(
+                                                                        LocalSaveManager.save()
+                                                                        LocalSaveManager.data.habits[sortedHabits[y]].update(
                                                                             sortedHabits
                                                                         )
                                                                     }
@@ -416,7 +414,7 @@ fun TableContent(
                                 modifier = Modifier.padding(spacedCell * 2)
                             ) {
                                 Text(
-                                    text = habits[sortedHabits[y]].nameOfUnitsOfDimension,
+                                    text = LocalSaveManager.data.habits[sortedHabits[y]].nameOfUnitsOfDimension,
                                     color = noSeeColor,
                                     fontWeight = FontWeight.Normal,
                                     fontSize = firstSellSmallFontSize

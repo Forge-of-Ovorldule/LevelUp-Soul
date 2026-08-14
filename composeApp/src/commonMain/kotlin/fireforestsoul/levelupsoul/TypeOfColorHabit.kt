@@ -9,7 +9,10 @@
 
 package fireforestsoul.levelupsoul
 
-enum class TypeOfColorHabits {
+import kotlinx.serialization.Serializable
+
+@Serializable
+enum class TypeOfColorHabit {
     ADAPTIVE,
     SELECTED
 }

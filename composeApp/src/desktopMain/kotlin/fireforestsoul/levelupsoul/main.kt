@@ -18,7 +18,7 @@ fun main(): Unit = application {
     Window(
         onCloseRequest = {
             if (loadIsGood)
-                saveAllValues()
+                LocalSaveManager.save()
             exitApplication()
         },
         title = "LevelUp-Soul",

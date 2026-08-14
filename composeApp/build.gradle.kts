@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -56,23 +57,27 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx.v1120)
-            implementation(compose.preview)
+            implementation(libs.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.json)
             implementation(libs.kotlinx.serialization.json)
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.runtime)
+            implementation(libs.foundation)
+            implementation(libs.material3)
+            implementation(libs.ui)
+            implementation(libs.components.resources)
+            implementation(libs.ui.tooling.preview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.datetime)
             implementation(libs.bignum)
+            implementation(libs.bignum.serialization.kotlinx)
             implementation(libs.haze)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.okio)
+            implementation(libs.kotlinx.coroutines.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -94,8 +99,8 @@ if (keystoreFile.exists()) {
     FileInputStream(keystoreFile).use { keystoreProperties.load(it) }
 }
 
-val appVersionCode: Int = 10
-val appVersionName: String = "1.2.0"
+val appVersionCode: Int = 11
+val appVersionName: String = "1.3.0"
 
 android {
     namespace = "fireforestsoul.levelupsoul"
@@ -185,7 +190,7 @@ compose.desktop {
             )
 
             packageName = "LevelUpSoul"
-            packageVersion = "1.2.0"
+            packageVersion = appVersionName
 
             linux {
                 iconFile.set(project.file("src/desktopMain/resources/app_icon.png"))

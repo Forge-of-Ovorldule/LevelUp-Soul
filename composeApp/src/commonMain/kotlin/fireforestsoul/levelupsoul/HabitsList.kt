@@ -55,8 +55,8 @@ import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 
 @Composable
 fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel) {
-    backAppStatus = AppStatus.HABITS_LIST_UPDATER
-    val sortedHabits = MutableList(habits.size) { it }
+    LocalSaveManager.data.backAppStatus = AppStatus.HABITS_LIST_UPDATER
+    val sortedHabits = MutableList(LocalSaveManager.data.habits.size) { it }
     sortedHabits.sortSystem()
 
     Box(
@@ -70,7 +70,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(6.51.dp)
         ) {
-            for (x in habits.indices) {
+            for (x in LocalSaveManager.data.habits.indices) {
                 Box(
                     modifier = Modifier.fillMaxWidth()
                         .height(101.15.dp)
@@ -86,7 +86,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                         verticalAlignment = Alignment.Top,
                         horizontalArrangement = Arrangement.spacedBy(12.26.dp)
                     ) {
-                        var seeColorByX by remember { mutableStateOf(soul_color) }
+                        var seeColorByX by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
 
                         LaunchedEffect(sortedHabits[x], progress(sortedHabits[x])) {
                             calculateProgressiveColor(
@@ -98,7 +98,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                         }
 
                         Text(
-                            text = habits[sortedHabits[x]].iconChar,
+                            text = LocalSaveManager.data.habits[sortedHabits[x]].icon,
                             textAlign = TextAlign.Center,
                             color = seeColorByX,
                             modifier = Modifier.size(57.47.dp),
@@ -121,7 +121,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                     isProcessed = false
                                 ),
                                 hazeState = null,
-                                text = habits[sortedHabits[x]].nameOfHabit,
+                                text = LocalSaveManager.data.habits[sortedHabits[x]].nameOfHabit,
                                 color = UICT_see,
                                 fontSize = 16.5.sp,
                                 fontWeight = FontWeight.W500,
@@ -141,7 +141,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                 verticalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "$ts_Completed ${habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today.toBestString()} ${habits[sortedHabits[x]].nameOfUnitsOfDimension}",
+                                    text = "$ts_Completed ${LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].today.toBestString()} ${LocalSaveManager.data.habits[sortedHabits[x]].nameOfUnitsOfDimension}",
                                     color = UICT_no_see,
                                     fontSize = 13.sp,
                                     maxLines = 1,
@@ -152,25 +152,25 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                     modifier = Modifier.fillMaxWidth()
                                         .height(5.75.dp)
                                         .background(
-                                            if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST) UIC_light
+                                            if (LocalSaveManager.data.habits[sortedHabits[x]].typeOfGoal == TypeOfGoalHabit.AT_LEAST) UIC_light
                                             else seeColorByX,
                                             RoundedCornerShape(2.88.dp)
                                         )
                                         .shadow(5.dp)
                                 ) {
                                     val needToday =
-                                        habits[sortedHabits[x]].needGoal - habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod + habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today
+                                        LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal - LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod + LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].today
                                     Box(
                                         modifier = Modifier.fillMaxHeight()
                                             .background(
-                                                if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST) seeColorByX
+                                                if (LocalSaveManager.data.habits[sortedHabits[x]].typeOfGoal == TypeOfGoalHabit.AT_LEAST) seeColorByX
                                                 else UIC_light,
                                                 RoundedCornerShape(2.88.dp)
                                             )
                                             .width(
-                                                if (habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod < habits[sortedHabits[x]].needGoal)
+                                                if (LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod < LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal)
                                                     maxWidth * (1.toBigDecimal()
-                                                        .saveDiv(if (needToday != BigDecimal.ZERO) needToday else BigDecimal.ONE) * habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today).toString()
+                                                        .saveDiv(if (needToday != BigDecimal.ZERO) needToday else BigDecimal.ONE) * LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].today).toString()
                                                         .toFloat()
                                                 else
                                                     maxWidth
@@ -185,14 +185,14 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                         isProcessed = false
                                     ),
                                     hazeState = null,
-                                    text = if (habits[sortedHabits[x]].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST)
-                                        if (habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod < habits[sortedHabits[x]].needGoal)
-                                            "$ts_You_need ${(habits[sortedHabits[x]].needGoal - habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod).toBestString()} ${habits[sortedHabits[x]].nameOfUnitsOfDimension} $ts_more"
+                                    text = if (LocalSaveManager.data.habits[sortedHabits[x]].typeOfGoal == TypeOfGoalHabit.AT_LEAST)
+                                        if (LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod < LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal)
+                                            "$ts_You_need ${(LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal - LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod).toBestString()} ${LocalSaveManager.data.habits[sortedHabits[x]].nameOfUnitsOfDimension} $ts_more"
                                         else
                                             ts_Its_all_done
                                     else
-                                        if (habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod <= habits[sortedHabits[x]].needGoal)
-                                            "$ts_You_can_have ${(habits[sortedHabits[x]].needGoal - habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod).toBestString()} ${habits[sortedHabits[x]].nameOfUnitsOfDimension} $ts_more"
+                                        if (LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod <= LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal)
+                                            "$ts_You_can_have ${(LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal - LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod).toBestString()} ${LocalSaveManager.data.habits[sortedHabits[x]].nameOfUnitsOfDimension} $ts_more"
                                         else
                                             ts_You_failed,
                                     color = UICT_no_see,
@@ -218,7 +218,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                     onDismissRequest = { showDialog = false },
                                     title = {
                                         Text(
-                                            text = "$ts_Do_you_want_to_set_a_value_for \"${habits[sortedHabits[x]].nameOfHabit}\"?",
+                                            text = "$ts_Do_you_want_to_set_a_value_for \"${LocalSaveManager.data.habits[sortedHabits[x]].nameOfHabit}\"?",
                                             fontWeight = FontWeight.Normal,
                                             fontSize = 16.sp,
                                             color = UICT_see
@@ -230,7 +230,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                             onValueChange = { inputText = it },
                                             label = {
                                                 Text(
-                                                    "$ts_Old: ${habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today.toBestString()}",
+                                                    "$ts_Old: ${LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].today.toBestString()}",
                                                     fontSize = 12.sp,
                                                     fontWeight = FontWeight.Normal,
                                                     color = UICT_no_see
@@ -268,12 +268,10 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                             modifier = Modifier.clickable {
                                                 val value = inputText.toDoubleOrNull()
                                                 if (value != null) {
-                                                    habits[sortedHabits[x]].habitDay[habits[sortedHabits[x]].habitDay.size - 1].today =
+                                                    LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].today =
                                                         inputText.toBigDecimal()
-                                                    habits[sortedHabits[x]].saveHabitDays(
-                                                        sortedHabits[x]
-                                                    )
-                                                    habits[sortedHabits[x]].update(sortedHabits)
+                                                    LocalSaveManager.save()
+                                                    LocalSaveManager.data.habits[sortedHabits[x]].update(sortedHabits)
                                                 }
                                                 showDialog = false
                                                 viewModel.setStatus(AppStatus.HABITS_LIST_UPDATER)

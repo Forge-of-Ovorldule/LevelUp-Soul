@@ -24,6 +24,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        SaveStorageProvider.init(this)
+
         initStorage(applicationContext)
 
         enableEdgeToEdge(
@@ -42,7 +44,7 @@ class MainActivity : ComponentActivity() {
                     AppStatus.HABITS_LIST -> viewModel.setStatus(AppStatus.TABLE)
                     AppStatus.EDIT_HABIT -> viewModel.setStatus(AppStatus.HABIT_STATISTICS)
                     else -> {
-                        viewModel.setStatus(backAppStatus)
+                        viewModel.setStatus(LocalSaveManager.data.backAppStatus)
                     }
                 }
             }
@@ -51,19 +53,19 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         if (loadIsGood)
-            saveAllValues()
+            LocalSaveManager.save()
         super.onStop()
     }
 
     override fun onDestroy() {
         if (loadIsGood)
-            saveAllValues()
+            LocalSaveManager.save()
         super.onDestroy()
     }
 
     override fun onPause() {
         if (loadIsGood)
-            saveAllValues()
+            LocalSaveManager.save()
         super.onPause()
     }
 }

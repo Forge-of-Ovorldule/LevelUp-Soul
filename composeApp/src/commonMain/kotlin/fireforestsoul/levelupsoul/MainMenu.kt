@@ -81,7 +81,7 @@ fun MainMenuContent(
                         )
                         if ("Android" !in getPlatform().name) {
                             IconButton(onClick = {
-                                saveAllValues()
+                                LocalSaveManager.save()
                                 export()
                             }) {
                                 Image(
@@ -92,7 +92,7 @@ fun MainMenuContent(
                                 )
                             }
                             IconButton(onClick = {
-                                saveAllValues()
+                                LocalSaveManager.save()
                                 import {
                                     viewModel.setStatus(AppStatus.LOADING)
                                 }
@@ -127,7 +127,7 @@ fun MainMenuContent(
 
                         Box {
                             Text(
-                                language.name,
+                                LocalSaveManager.data.language.name,
                                 fontSize = 16.sp,
                                 color = averageColor(listOf(UICT_see, getSoulRealColor())),
                                 modifier = Modifier
@@ -146,10 +146,9 @@ fun MainMenuContent(
                                 Languages.entries.forEach { mode ->
                                     DropdownMenuItem(
                                         onClick = {
-                                            language = mode
-                                            language.saveLanguage()
+                                            LocalSaveManager.data.language = mode
+                                            LocalSaveManager.save()
                                             expanded0 = false
-                                            saveAllValues()
                                             viewModel.setStatus(AppStatus.LOADING)
                                         },
                                         text = {

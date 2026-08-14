@@ -9,19 +9,12 @@
 
 package fireforestsoul.levelupsoul
 
-import kotlinx.serialization.Serializable
+import fireforestsoul.levelupsoul.OldSaveSystem.loadedElementToVal
+import kotlinx.browser.localStorage
 
-@Serializable
-enum class AppStatus {
-    LOADING,
-    TABLE,
-    CREATE_HABIT,
-    HABIT_STATISTICS,
-    EDIT_HABIT,
-    TABLE_UPDATER,
-    SOUL_STATISTICS,
-    HABITS_LIST,
-    HABITS_LIST_UPDATER
+actual object HelpOldSaveSystem {
+    actual fun <T> loadValue(value: T, name: String): T {
+        val serialized = localStorage.getItem(name) ?: return value
+        return serialized.loadedElementToVal(value)
+    }
 }
-
-const val app_version: Int = 1003000 //version(001).002.000.000

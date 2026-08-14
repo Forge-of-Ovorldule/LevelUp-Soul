@@ -57,17 +57,17 @@ fun EditHabit(viewModel: AppViewModel) {
     var expanded0 by remember { mutableStateOf(false) }
     var expanded1 by remember { mutableStateOf(false) }
 
-    var nameOfHabit by remember { mutableStateOf(habits[habit_statistics_and_edit_x].nameOfHabit) }
-    var icon by remember { mutableStateOf(habits[habit_statistics_and_edit_x].iconChar) }
-    var typeOfColorHabits by remember { mutableStateOf(habits[habit_statistics_and_edit_x].typeOfColorHabits) }
-    var colorGood by remember { mutableStateOf(habits[habit_statistics_and_edit_x].colorGood) }
-    var typeOfGoalHabits by remember { mutableStateOf(habits[habit_statistics_and_edit_x].typeOfGoalHabits) }
-    var needGoal by remember { mutableStateOf(habits[habit_statistics_and_edit_x].needGoal.toBestString()) }
-    var nameOfUnitsOfDimension by remember { mutableStateOf(habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension) }
-    var needDays by remember { mutableStateOf(habits[habit_statistics_and_edit_x].needDays.toString()) }
-    var changeLevel by remember { mutableStateOf(habits[habit_statistics_and_edit_x].changeLevel) }
-    var changeNeedGoalWithLevel by remember { mutableStateOf(habits[habit_statistics_and_edit_x].changeNeedGoalWithLevel) }
-    var changeNeedDaysWithLevel by remember { mutableStateOf(habits[habit_statistics_and_edit_x].changeNeedDaysWithLevel) }
+    var nameOfHabit by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].nameOfHabit) }
+    var icon by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].icon) }
+    var typeOfColorHabits by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].typeOfColor) }
+    var colorGood by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].color) }
+    var typeOfGoalHabits by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].typeOfGoal) }
+    var needGoal by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].numericalGoal.toBestString()) }
+    var nameOfUnitsOfDimension by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension) }
+    var needDays by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].periodForGoalCompletion.toString()) }
+    var changeLevel by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].changeLevel) }
+    var changeNeedGoalWithLevel by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].changeNumericalGoalWithLevel) }
+    var changeNeedDaysWithLevel by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].changePeriodForGoalCompletionWithLevel) }
 
     val spaceX = 4.dp
     val spaceY = 4.dp
@@ -88,7 +88,7 @@ fun EditHabit(viewModel: AppViewModel) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = ts_Edit + " \"${habits[habit_statistics_and_edit_x].nameOfHabit}\"",
+                        text = ts_Edit + " \"${LocalSaveManager.data.habits[habit_statistics_and_edit_x].nameOfHabit}\"",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = UICT_see,
@@ -119,28 +119,31 @@ fun EditHabit(viewModel: AppViewModel) {
                         fontSize = 16.sp,
                         color = Color(150, 200, 150),
                         modifier = Modifier.clickable {
-                            habits[habit_statistics_and_edit_x].nameOfHabit = nameOfHabit
-                            habits[habit_statistics_and_edit_x].typeOfColorHabits = typeOfColorHabits
-                            habits[habit_statistics_and_edit_x].colorGood = colorGood
-                            habits[habit_statistics_and_edit_x].typeOfGoalHabits = typeOfGoalHabits
-                            habits[habit_statistics_and_edit_x].needGoal =
-                                if (needGoal.toDoubleOrNull() != null) needGoal.toBigDecimal() else habits[habit_statistics_and_edit_x].needGoal
-                            habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension = nameOfUnitsOfDimension
-                            if (habits[habit_statistics_and_edit_x].needDays != ((if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else habits[habit_statistics_and_edit_x].needDays)
+                            LocalSaveManager.data.habits[habit_statistics_and_edit_x].nameOfHabit = nameOfHabit
+                            LocalSaveManager.data.habits[habit_statistics_and_edit_x].typeOfColor = typeOfColorHabits
+                            LocalSaveManager.data.habits[habit_statistics_and_edit_x].color = colorGood
+                            LocalSaveManager.data.habits[habit_statistics_and_edit_x].typeOfGoal = typeOfGoalHabits
+                            LocalSaveManager.data.habits[habit_statistics_and_edit_x].numericalGoal =
+                                if (needGoal.toDoubleOrNull() != null) needGoal.toBigDecimal() else LocalSaveManager.data.habits[habit_statistics_and_edit_x].numericalGoal
+                            LocalSaveManager.data.habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension =
+                                nameOfUnitsOfDimension
+                            if (LocalSaveManager.data.habits[habit_statistics_and_edit_x].periodForGoalCompletion != ((if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else LocalSaveManager.data.habits[habit_statistics_and_edit_x].periodForGoalCompletion)
                                     ?: return@clickable)
                             ) {
-                                habits[habit_statistics_and_edit_x].needDays =
-                                    ((if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else habits[habit_statistics_and_edit_x].needDays)
+                                LocalSaveManager.data.habits[habit_statistics_and_edit_x].periodForGoalCompletion =
+                                    ((if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else LocalSaveManager.data.habits[habit_statistics_and_edit_x].periodForGoalCompletion)
                                         ?: return@clickable)
-                                habits[habit_statistics_and_edit_x].phantomNeedDays =
-                                    habits[habit_statistics_and_edit_x].needDays.toBigDecimal()
+                                LocalSaveManager.data.habits[habit_statistics_and_edit_x].phantomPeriodForGoalCompletionWithLevel =
+                                    LocalSaveManager.data.habits[habit_statistics_and_edit_x].periodForGoalCompletion.toBigDecimal()
                             }
-                            habits[habit_statistics_and_edit_x].changeLevel = changeLevel
-                            habits[habit_statistics_and_edit_x].changeNeedGoalWithLevel = changeNeedGoalWithLevel
-                            habits[habit_statistics_and_edit_x].changeNeedDaysWithLevel = changeNeedDaysWithLevel
-                            habits[habit_statistics_and_edit_x].iconChar = icon
-                            habits[habit_statistics_and_edit_x].update()
-                            habits[habit_statistics_and_edit_x].save(habit_statistics_and_edit_x)
+                            LocalSaveManager.data.habits[habit_statistics_and_edit_x].changeLevel = changeLevel
+                            LocalSaveManager.data.habits[habit_statistics_and_edit_x].changeNumericalGoalWithLevel =
+                                changeNeedGoalWithLevel
+                            LocalSaveManager.data.habits[habit_statistics_and_edit_x].changePeriodForGoalCompletionWithLevel =
+                                changeNeedDaysWithLevel
+                            LocalSaveManager.data.habits[habit_statistics_and_edit_x].icon = icon
+                            LocalSaveManager.data.habits[habit_statistics_and_edit_x].update()
+                            LocalSaveManager.save()
                             viewModel.setStatus(AppStatus.HABIT_STATISTICS)
                         }
                     )
@@ -174,7 +177,7 @@ fun EditHabit(viewModel: AppViewModel) {
                             onValueChange = { nameOfHabit = it },
                             label = {
                                 Text(
-                                    "$ts_Old: ${habits[habit_statistics_and_edit_x].nameOfHabit}",
+                                    "$ts_Old: ${LocalSaveManager.data.habits[habit_statistics_and_edit_x].nameOfHabit}",
                                     fontSize = 12.sp,
                                     color = UICT_no_see
                                 )
@@ -215,7 +218,7 @@ fun EditHabit(viewModel: AppViewModel) {
                             onValueChange = { icon = it },
                             label = {
                                 Text(
-                                    habits[habit_statistics_and_edit_x].iconChar,
+                                    LocalSaveManager.data.habits[habit_statistics_and_edit_x].icon,
                                     fontSize = 12.sp,
                                     color = UICT_no_see
                                 )
@@ -273,7 +276,7 @@ fun EditHabit(viewModel: AppViewModel) {
                                 onDismissRequest = { expanded0 = false },
                                 modifier = Modifier.background(UIC_extra_dark)
                             ) {
-                                TypeOfColorHabits.entries.forEach { mode ->
+                                TypeOfColorHabit.entries.forEach { mode ->
                                     DropdownMenuItem(
                                         onClick = {
                                             typeOfColorHabits = mode
@@ -346,7 +349,7 @@ fun EditHabit(viewModel: AppViewModel) {
                                     onDismissRequest = { expanded1 = false },
                                     modifier = Modifier.background(UIC_extra_dark)
                                 ) {
-                                    TypeOfGoalHabits.entries.forEach { mode ->
+                                    TypeOfGoalHabit.entries.forEach { mode ->
                                         DropdownMenuItem(
                                             onClick = {
                                                 typeOfGoalHabits = mode
@@ -379,7 +382,7 @@ fun EditHabit(viewModel: AppViewModel) {
                                 onValueChange = { needGoal = it },
                                 label = {
                                     Text(
-                                        "$ts_Old: ${habits[habit_statistics_and_edit_x].needGoal.toBestString()}",
+                                        "$ts_Old: ${LocalSaveManager.data.habits[habit_statistics_and_edit_x].numericalGoal.toBestString()}",
                                         fontSize = 12.sp,
                                         color = UICT_no_see
                                     )
@@ -409,7 +412,7 @@ fun EditHabit(viewModel: AppViewModel) {
                                 onValueChange = { nameOfUnitsOfDimension = it },
                                 label = {
                                     Text(
-                                        "$ts_Old: ${habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension}",
+                                        "$ts_Old: ${LocalSaveManager.data.habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension}",
                                         fontSize = 12.sp,
                                         color = UICT_no_see
                                     )
@@ -450,7 +453,7 @@ fun EditHabit(viewModel: AppViewModel) {
                                 onValueChange = { needDays = it },
                                 label = {
                                     Text(
-                                        "$ts_Old: ${habits[habit_statistics_and_edit_x].needDays}",
+                                        "$ts_Old: ${LocalSaveManager.data.habits[habit_statistics_and_edit_x].periodForGoalCompletion}",
                                         fontSize = 12.sp,
                                         color = UICT_no_see
                                     )
@@ -554,11 +557,10 @@ fun EditHabit(viewModel: AppViewModel) {
 
                     //Delete
                     DeleteHabitConfirm(habit_statistics_and_edit_x) {
-                        habits[habit_statistics_and_edit_x].delete(habit_statistics_and_edit_x)
-                        habits.removeAt(habit_statistics_and_edit_x)
-                        habits.save()
+                        LocalSaveManager.data.habits.removeAt(habit_statistics_and_edit_x)
+                        LocalSaveManager.save()
                         habit_statistics_and_edit_x = 0
-                        viewModel.setStatus(backAppStatus)
+                        viewModel.setStatus(LocalSaveManager.data.backAppStatus)
                     }
                 }
             }

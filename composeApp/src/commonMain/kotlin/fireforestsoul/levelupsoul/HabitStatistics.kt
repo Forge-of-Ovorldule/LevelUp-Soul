@@ -102,7 +102,7 @@ private var pps_for_habit_statistic = 0
 
 @Composable
 fun HabitStatistics(viewModel: AppViewModel) {
-    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
         calculateProgressiveColor(
@@ -113,22 +113,23 @@ fun HabitStatistics(viewModel: AppViewModel) {
         )
     }
 
-    var startStatus = listPointsOfHabitStatistic.maxBy { it.value }.key
-    if (startStatus == HabitStatisticsStatus.LEVEL && !habits[habit_statistics_and_edit_x].changeLevel) startStatus =
+    var startStatus = LocalSaveManager.data.listPointsOfHabitStatistic.maxBy { it.value }.key
+    if (startStatus == HabitStatisticsStatus.LEVEL && !LocalSaveManager.data.habits[habit_statistics_and_edit_x].changeLevel) startStatus =
         HabitStatisticsStatus.GOAL
-    listPointsOfHabitStatistic[startStatus] = listPointsOfHabitStatistic.getValue(startStatus) + 0.25f
+    LocalSaveManager.data.listPointsOfHabitStatistic[startStatus] =
+        LocalSaveManager.data.listPointsOfHabitStatistic.getValue(startStatus) + 0.25f
 
-    var habitStatisticsStatus by remember { mutableStateOf(if (sort_habit_statistics_sections_by_frequency_of_use) startStatus else HabitStatisticsStatus.GOAL) }
-    var progressPeriodSetting by remember { mutableStateOf(habits[habit_statistics_and_edit_x].habitDay.size) }
+    var habitStatisticsStatus by remember { mutableStateOf(if (LocalSaveManager.data.sortHabitStatisticsSectionsByFrequencyOfUse) startStatus else HabitStatisticsStatus.GOAL) }
+    var progressPeriodSetting by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size) }
     pps_for_habit_statistic = progressPeriodSetting
 
     val sortedStatuses = remember {
         val filtered = HabitStatisticsStatus.entries.filter {
-            it != HabitStatisticsStatus.LEVEL || habits[habit_statistics_and_edit_x].changeLevel
+            it != HabitStatisticsStatus.LEVEL || LocalSaveManager.data.habits[habit_statistics_and_edit_x].changeLevel
         }
 
-        if (sort_habit_statistics_sections_by_frequency_of_use) {
-            filtered.sortedByDescending { listPointsOfHabitStatistic[it] ?: 0f }
+        if (LocalSaveManager.data.sortHabitStatisticsSectionsByFrequencyOfUse) {
+            filtered.sortedByDescending { LocalSaveManager.data.listPointsOfHabitStatistic[it] ?: 0f }
         } else {
             filtered
         }
@@ -193,7 +194,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             )
                         ) {
                             Text(
-                                text = habits[habit_statistics_and_edit_x].iconChar,
+                                text = LocalSaveManager.data.habits[habit_statistics_and_edit_x].icon,
                                 color = seeColorByHabitAndStatisticsEditX,
                                 fontSize = 60.sp / 1.15f,
                                 fontWeight = FontWeight.Black,
@@ -208,7 +209,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             )
                         ) {
                             Text(
-                                text = habits[habit_statistics_and_edit_x].iconChar,
+                                text = LocalSaveManager.data.habits[habit_statistics_and_edit_x].icon,
                                 color = seeColorByHabitAndStatisticsEditX,
                                 fontSize = 51.2.sp / 1.15f,
                                 fontWeight = FontWeight.Black,
@@ -223,7 +224,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                             )
                         ) {
                             Text(
-                                text = habits[habit_statistics_and_edit_x].iconChar,
+                                text = LocalSaveManager.data.habits[habit_statistics_and_edit_x].icon,
                                 color = seeColorByHabitAndStatisticsEditX,
                                 fontSize = 34.sp / 1.15f,
                                 fontWeight = FontWeight.Black,
@@ -234,7 +235,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                     }
 
                     IconButton(
-                        { viewModel.setStatus(backAppStatus) },
+                        { viewModel.setStatus(LocalSaveManager.data.backAppStatus) },
                         modifier = Modifier.padding(14.dp / 1.15f, 12.dp / 1.15f)
                     ) {
                         Image(
@@ -268,7 +269,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                     fontSize = 29.57.sp
                                 )
                             },
-                            text = habits[habit_statistics_and_edit_x].nameOfHabit,
+                            text = LocalSaveManager.data.habits[habit_statistics_and_edit_x].nameOfHabit,
                             contentAfter = {
                                 Text(
                                     text = "»",
@@ -381,8 +382,8 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                     pagerState.animateScrollToPage(index)
                                 }
 
-                                val currentPoints = listPointsOfHabitStatistic[status] ?: 0f
-                                listPointsOfHabitStatistic[status] = currentPoints + 1f
+                                val currentPoints = LocalSaveManager.data.listPointsOfHabitStatistic[status] ?: 0f
+                                LocalSaveManager.data.listPointsOfHabitStatistic[status] = currentPoints + 1f
                             }
                         }
                     }
@@ -504,17 +505,6 @@ enum class HabitStatisticsStatus {
     STREAKS
 }
 
-var listPointsOfHabitStatistic: MutableMap<HabitStatisticsStatus, Float> = mutableMapOf(
-    HabitStatisticsStatus.GOAL to 0f,
-    HabitStatisticsStatus.PROGRESS to 0f,
-    HabitStatisticsStatus.LEVEL to 0f,
-    HabitStatisticsStatus.PROGRESS_GRAPH to 0f,
-    HabitStatisticsStatus.BAR_CHART to 0f,
-    HabitStatisticsStatus.CALENDAR to 0f,
-    HabitStatisticsStatus.DISTRIBUTION_BY_DAY_OF_THE_WEEK to 0f,
-    HabitStatisticsStatus.STREAKS to 0f
-)
-
 @Composable
 private fun getStatusIcon(status: HabitStatisticsStatus) = when (status) {
     HabitStatisticsStatus.GOAL -> painterResource(Res.drawable.habit_statistic__goal)
@@ -547,7 +537,7 @@ private fun HabitStatisticsStatusIcon(
     contentDescription: String,
     onClick: () -> Unit
 ) {
-    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
         calculateProgressiveColor(
@@ -722,20 +712,20 @@ private fun GoalContent(
         GoalParamItem(
             painterResource(Res.drawable.habit_statistic__goal__type_of_goal),
             ts_Type_of_goal,
-            if (habits[habit_statistics_and_edit_x].typeOfGoalHabits == TypeOfGoalHabits.AT_LEAST) ts_At_least
+            if (LocalSaveManager.data.habits[habit_statistics_and_edit_x].typeOfGoal == TypeOfGoalHabit.AT_LEAST) ts_At_least
             else ts_No_more,
             ts_type
         )
         GoalParamItem(
             painterResource(Res.drawable.habit_statistic__goal__need_goal),
             ts_Needed_for_the_goal,
-            habits[habit_statistics_and_edit_x].needGoal.toBestString() + " " + habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension,
+            LocalSaveManager.data.habits[habit_statistics_and_edit_x].numericalGoal.toBestString() + " " + LocalSaveManager.data.habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension,
             ts_goal
         )
         GoalParamItem(
             painterResource(Res.drawable.habit_statistic__goal__period),
             ts_Period,
-            habits[habit_statistics_and_edit_x].needDays.toString() + " " + ts_days,
+            LocalSaveManager.data.habits[habit_statistics_and_edit_x].numericalGoal.toString() + " " + ts_days,
             ts_period
         )
         GoalParamItem(
@@ -747,14 +737,14 @@ private fun GoalContent(
         )
         ValueSetVector(
             pps,
-            habits[habit_statistics_and_edit_x].habitDay.size,
+            LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size,
             "$ts_PPS (0 $ts_for_full_time):",
             ts_days
         ) {
             pps_for_habit_statistic =
-                it.toIntOrNull() ?: habits[habit_statistics_and_edit_x].habitDay.size
+                it.toIntOrNull() ?: LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size
             if (pps_for_habit_statistic <= 0) pps_for_habit_statistic =
-                habits[habit_statistics_and_edit_x].habitDay.size
+                LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size
         }
     }
 }
@@ -763,7 +753,7 @@ private fun GoalContent(
 private fun ProgressContent(
     pps: Int
 ) {
-    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
         calculateProgressiveColor(
@@ -1003,7 +993,7 @@ private fun LevelContent(
     pps: Int,
     onChangeLevel: () -> Unit
 ) {
-    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
         calculateProgressiveColor(
@@ -1101,7 +1091,7 @@ private fun LevelContent(
                     color = if (isGood) seeColorByHabitAndStatisticsEditX
                     else reversNoBiggerColor(seeColorByHabitAndStatisticsEditX),
                     startAngle = -90f,
-                    sweepAngle = 360f * habits[habit_statistics_and_edit_x].getToLevelUp(pps),
+                    sweepAngle = 360f * LocalSaveManager.data.habits[habit_statistics_and_edit_x].getToLevelUp(pps),
                     useCenter = false,
                     topLeft = topLeftOffset,
                     size = arcSize,
@@ -1109,7 +1099,7 @@ private fun LevelContent(
                 )
             }
             Text(
-                text = habits[habit_statistics_and_edit_x].level.toString(),
+                text = LocalSaveManager.data.habits[habit_statistics_and_edit_x].level.toString(),
                 fontSize = 21.34.sp,
                 color = UICT_see,
                 maxLines = 1,
@@ -1128,9 +1118,10 @@ private fun LevelContent(
         change: ChangeLevel = ChangeLevel.NO
     ) {
         val lvlUp =
-            !((habits[habit_statistics_and_edit_x].getToLevelUp(pps) < 0f && change == ChangeLevel.NO) || change == ChangeLevel.DOWN)
+            !((LocalSaveManager.data.habits[habit_statistics_and_edit_x].getToLevelUp(pps) < 0f && change == ChangeLevel.NO) || change == ChangeLevel.DOWN)
         val currColor = if (lvlUp) UIC_green else UIC_red
-        val isChange = abs(habits[habit_statistics_and_edit_x].getToLevelUp(pps)) > 0f || change != ChangeLevel.NO
+        val isChange =
+            abs(LocalSaveManager.data.habits[habit_statistics_and_edit_x].getToLevelUp(pps)) > 0f || change != ChangeLevel.NO
         Column(
             modifier = Modifier.fillMaxWidth()
                 .height(51.667.dp)
@@ -1149,12 +1140,12 @@ private fun LevelContent(
                 fontWeight = FontWeight.Thin,
             )
             if (type == TypeOfParamElement.GOAL) {
-                if (habits[habit_statistics_and_edit_x].changeNeedGoalWithLevel && isChange) {
+                if (LocalSaveManager.data.habits[habit_statistics_and_edit_x].changeNumericalGoalWithLevel && isChange) {
                     Row(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = habits[habit_statistics_and_edit_x].needGoal.toBestString(),
+                            text = LocalSaveManager.data.habits[habit_statistics_and_edit_x].numericalGoal.toBestString(),
                             fontSize = 13.333.sp,
                             color = UICT_see,
                             maxLines = 1,
@@ -1172,7 +1163,10 @@ private fun LevelContent(
                             fontWeight = FontWeight.Normal,
                         )
                         Text(
-                            text = habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(pps, lvlUp)
+                            text = LocalSaveManager.data.habits[habit_statistics_and_edit_x].getNeedGoalWhenNewLevel(
+                                pps,
+                                lvlUp
+                            )
                                 .toBestString(),
                             fontSize = 13.333.sp,
                             color = currColor,
@@ -1185,7 +1179,7 @@ private fun LevelContent(
                     }
                 } else {
                     Text(
-                        text = habits[habit_statistics_and_edit_x].needGoal.toBestString(),
+                        text = LocalSaveManager.data.habits[habit_statistics_and_edit_x].numericalGoal.toBestString(),
                         fontSize = 13.333.sp,
                         color = UICT_see,
                         maxLines = 1,
@@ -1195,12 +1189,12 @@ private fun LevelContent(
                     )
                 }
             } else {
-                if (habits[habit_statistics_and_edit_x].changeNeedDaysWithLevel && isChange) {
+                if (LocalSaveManager.data.habits[habit_statistics_and_edit_x].changePeriodForGoalCompletionWithLevel && isChange) {
                     Row(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = habits[habit_statistics_and_edit_x].needDays.toString(),
+                            text = LocalSaveManager.data.habits[habit_statistics_and_edit_x].periodForGoalCompletion.toString(),
                             fontSize = 13.333.sp,
                             color = UICT_see,
                             maxLines = 1,
@@ -1222,7 +1216,10 @@ private fun LevelContent(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(pps, lvlUp)
+                                text = LocalSaveManager.data.habits[habit_statistics_and_edit_x].getNeedDaysWhenNewLevel(
+                                    pps,
+                                    lvlUp
+                                )
                                     .toString(),
                                 fontSize = 13.333.sp,
                                 color = currColor,
@@ -1232,7 +1229,7 @@ private fun LevelContent(
                                 fontWeight = FontWeight.Bold,
                             )
                             Text(
-                                text = " (" + habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(
+                                text = " (" + LocalSaveManager.data.habits[habit_statistics_and_edit_x].getPhantomNeedDaysWhenNewLevel(
                                     pps,
                                     lvlUp
                                 )
@@ -1248,7 +1245,7 @@ private fun LevelContent(
                     }
                 } else {
                     Text(
-                        text = habits[habit_statistics_and_edit_x].needGoal.toBestString(),
+                        text = LocalSaveManager.data.habits[habit_statistics_and_edit_x].numericalGoal.toBestString(),
                         fontSize = 13.333.sp,
                         color = UICT_see,
                         maxLines = 1,
@@ -1259,7 +1256,7 @@ private fun LevelContent(
                 }
             }
             Text(
-                text = if (type == TypeOfParamElement.GOAL) habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension else ts_days,
+                text = if (type == TypeOfParamElement.GOAL) LocalSaveManager.data.habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension else ts_days,
                 fontSize = 10.67.sp,
                 color = UICT_no_see,
                 maxLines = 1,
@@ -1270,7 +1267,7 @@ private fun LevelContent(
         }
     }
 
-    var habitLevel by remember { mutableStateOf(habits[habit_statistics_and_edit_x].level) }
+    var habitLevel by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].level) }
     key(habitLevel) {
         Column(
             modifier = Modifier.padding(top = 7.dp)
@@ -1334,7 +1331,7 @@ private fun LevelContent(
                             .background(UIC_green.copy(if (isHoveredUp) 0.9f else 0.08f), RoundedCornerShape(20.dp))
                             .clip(RoundedCornerShape(20.dp))
                             .clickable {
-                                habits[habit_statistics_and_edit_x].lvlUp()
+                                LocalSaveManager.data.habits[habit_statistics_and_edit_x].lvlUp()
                                 habitLevel++
                                 onChangeLevel()
                             }
@@ -1366,7 +1363,7 @@ private fun LevelContent(
                             .background(UIC_red.copy(if (isHoveredDown) 0.9f else 0.08f), RoundedCornerShape(20.dp))
                             .clip(RoundedCornerShape(20.dp))
                             .clickable {
-                                habits[habit_statistics_and_edit_x].lvlDown()
+                                LocalSaveManager.data.habits[habit_statistics_and_edit_x].lvlDown()
                                 habitLevel--
                                 onChangeLevel()
                             }
@@ -1403,7 +1400,7 @@ private fun LevelContent(
 private fun ProgressGraphContent(
     pps: Int
 ) {
-    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
         calculateProgressiveColor(
@@ -1581,7 +1578,7 @@ private fun ProgressGraphContent(
         }
     }
 
-    var period by remember { mutableStateOf(habits[habit_statistics_and_edit_x].habitDay.size) }
+    var period by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size) }
     var step by remember { mutableStateOf(1) }
 
     Column(
@@ -1598,16 +1595,16 @@ private fun ProgressGraphContent(
             SelectSmooth()
             ValueSetVector(
                 period,
-                habits[habit_statistics_and_edit_x].habitDay.size,
+                LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size,
                 "$ts_Period (0 $ts_For_all_time)",
                 ts_days
             ) {
-                period = it.toIntOrNull() ?: habits[habit_statistics_and_edit_x].habitDay.size
+                period = it.toIntOrNull() ?: LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size
                 if (period < 2) period = 2
             }
             ValueSetVector(
                 step,
-                habits[habit_statistics_and_edit_x].habitDay.size,
+                LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size,
                 ts_Step,
                 ts_days
             ) {
@@ -1620,7 +1617,7 @@ private fun ProgressGraphContent(
 
 @Composable
 private fun BarChartContent() {
-    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
         calculateProgressiveColor(
@@ -1845,7 +1842,7 @@ private fun BarChartContent() {
         }
         ValueSetVector(
             step,
-            habits[habit_statistics_and_edit_x].habitDay.size,
+            LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size,
             ts_Step,
             ts_days
         ) {
@@ -1857,7 +1854,7 @@ private fun BarChartContent() {
 
 @Composable
 fun CalendarContent() {
-    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
         calculateProgressiveColor(
@@ -1871,7 +1868,7 @@ fun CalendarContent() {
 
     @Composable
     fun HabitGrid(
-        startDay: Int = when (habits[habit_statistics_and_edit_x].startDate.dayOfWeek) {
+        startDay: Int = when (LocalSaveManager.data.habits[habit_statistics_and_edit_x].startDate.dayOfWeek) {
             DayOfWeek.MONDAY -> 0
             DayOfWeek.TUESDAY -> 1
             DayOfWeek.WEDNESDAY -> 2
@@ -1949,7 +1946,7 @@ fun CalendarContent() {
 
 @Composable
 fun StreaksContent() {
-    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
         calculateProgressiveColor(
@@ -2002,7 +1999,7 @@ fun StreaksContent() {
 
 @Composable
 fun DistributionByDayOfTheWeekContent() {
-    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(soul_color) }
+    var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
         calculateProgressiveColor(
@@ -2188,7 +2185,7 @@ fun DistributionByDayOfTheWeekContent() {
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = "${realValues[index].toBestString()} ${habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension}",
+                    text = "${realValues[index].toBestString()} ${LocalSaveManager.data.habits[habit_statistics_and_edit_x].nameOfUnitsOfDimension}",
                     color = checkBackgroundBright(
                         seeColorByHabitAndStatisticsEditX.multiply(k, k, k),
                         UICT_see

@@ -125,7 +125,7 @@ var ts_Level_up: String = "Level up"
 var ts_Level_down: String = "Level down"
 
 fun changeLanguage() {
-    if (language == Languages.RU) {
+    if (LocalSaveManager.data.language == Languages.RU) {
         ts_Edit = "Редактировать"
         ts_Cancel = "Отмена"
         ts_Confirm = "Подтвердить"

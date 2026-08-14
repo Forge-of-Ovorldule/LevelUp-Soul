@@ -233,7 +233,7 @@ fun DeleteHabitConfirm(index: Int, onDeleteConfirmed: () -> Unit) {
             },
             text = {
                 Text(
-                    text = "$ts_Are_you_sure_you_want_to_remove_the <${habits[index].nameOfHabit}>",
+                    text = "$ts_Are_you_sure_you_want_to_remove_the <${LocalSaveManager.data.habits[index].nameOfHabit}>",
                     fontSize = 16.sp,
                     color = UICT_see,
                 )
@@ -487,16 +487,16 @@ fun SettingsDialog() {
         )
     }
 
-    var typeOfColor by remember { mutableStateOf(soul_color_type) }
-    var exponent by remember { mutableStateOf(withExponent) }
-    var soulName by remember { mutableStateOf(soul_name) }
-    var soulColor by remember { mutableStateOf(soul_color) }
+    var typeOfColor by remember { mutableStateOf(LocalSaveManager.data.soulColorType) }
+    var exponent by remember { mutableStateOf(LocalSaveManager.data.withExponent) }
+    var soulName by remember { mutableStateOf(LocalSaveManager.data.soulName) }
+    var soulColor by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
     var sortHabitStatisticsSectionsByFrequencyOfUse by remember {
         mutableStateOf(
-            sort_habit_statistics_sections_by_frequency_of_use
+            LocalSaveManager.data.sortHabitStatisticsSectionsByFrequencyOfUse
         )
     }
-    var smartSort by remember { mutableStateOf(smart_sort) }
+    var smartSort by remember { mutableStateOf(LocalSaveManager.data.smartSort) }
 
     if (showDialog) {
         AlertDialog(
@@ -585,7 +585,7 @@ fun SettingsDialog() {
                                 onDismissRequest = { expanded = false },
                                 modifier = Modifier.background(Color.Black)
                             ) {
-                                TypeOfColorHabits.entries.forEach { mode ->
+                                TypeOfColorHabit.entries.forEach { mode ->
                                     DropdownMenuItem(
                                         onClick = {
                                             typeOfColor = mode
@@ -656,13 +656,14 @@ fun SettingsDialog() {
             confirmButton = {
                 Button(
                     onClick = {
-                        withExponent = exponent
-                        soul_name = soulName
-                        soul_color = soulColor
-                        soul_color_type = typeOfColor
-                        sort_habit_statistics_sections_by_frequency_of_use = sortHabitStatisticsSectionsByFrequencyOfUse
-                        smart_sort = smartSort
-                        saveSettings()
+                        LocalSaveManager.data.withExponent = exponent
+                        LocalSaveManager.data.soulName = soulName
+                        LocalSaveManager.data.soulColor = soulColor
+                        LocalSaveManager.data.soulColorType = typeOfColor
+                        LocalSaveManager.data.sortHabitStatisticsSectionsByFrequencyOfUse =
+                            sortHabitStatisticsSectionsByFrequencyOfUse
+                        LocalSaveManager.data.smartSort = smartSort
+                        LocalSaveManager.save()
                         showDialog = false
                     },
                     colors = ButtonColors(
@@ -936,7 +937,7 @@ fun SoulGrid(
     @Suppress("ModifierParameter") modifier: Modifier = Modifier
 ) {
     var oldestHabit = Habit()
-    for (habit in habits) {
+    for (habit in LocalSaveManager.data.habits) {
         if (habit.startDate.toEpochDays() < oldestHabit.startDate.toEpochDays()) oldestHabit = habit
     }
     val values: List<Int> = listDaysNumbers(oldestHabit)
@@ -970,11 +971,11 @@ fun SoulGrid(
                         } else {
                             val (value, state) = cell
                             val color = Color(
-                                ((colorBest.red * state).saveDiv(if (habits.isNotEmpty()) habits.size else 1)).toString()
+                                ((colorBest.red * state).saveDiv(if (LocalSaveManager.data.habits.isNotEmpty()) LocalSaveManager.data.habits.size else 1)).toString()
                                     .toFloat(),
-                                ((colorBest.green * state).saveDiv(if (habits.isNotEmpty()) habits.size else 1)).toString()
+                                ((colorBest.green * state).saveDiv(if (LocalSaveManager.data.habits.isNotEmpty()) LocalSaveManager.data.habits.size else 1)).toString()
                                     .toFloat(),
-                                ((colorBest.blue * state).saveDiv(if (habits.isNotEmpty()) habits.size else 1)).toString()
+                                ((colorBest.blue * state).saveDiv(if (LocalSaveManager.data.habits.isNotEmpty()) LocalSaveManager.data.habits.size else 1)).toString()
                                     .toFloat()
                             )
                             Box(
