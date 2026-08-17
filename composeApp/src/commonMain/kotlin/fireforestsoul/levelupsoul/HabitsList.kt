@@ -159,7 +159,9 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                         .shadow(5.dp)
                                 ) {
                                     val needToday =
-                                        LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal - LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod + LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].today
+                                        LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal - LocalSaveManager.data.habits[sortedHabits[x]].totalOfAPeriod(
+                                            LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1
+                                        ) + LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].today
                                     Box(
                                         modifier = Modifier.fillMaxHeight()
                                             .background(
@@ -168,7 +170,10 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                                 RoundedCornerShape(2.88.dp)
                                             )
                                             .width(
-                                                if (LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod < LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal)
+                                                if (LocalSaveManager.data.habits[sortedHabits[x]].totalOfAPeriod(
+                                                        LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1
+                                                    ) < LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal
+                                                )
                                                     maxWidth * (1.toBigDecimal()
                                                         .saveDiv(if (needToday != BigDecimal.ZERO) needToday else BigDecimal.ONE) * LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].today).toString()
                                                         .toFloat()
@@ -186,13 +191,27 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                     ),
                                     hazeState = null,
                                     text = if (LocalSaveManager.data.habits[sortedHabits[x]].typeOfGoal == TypeOfGoalHabit.AT_LEAST)
-                                        if (LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod < LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal)
-                                            "$ts_You_need ${(LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal - LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod).toBestString()} ${LocalSaveManager.data.habits[sortedHabits[x]].nameOfUnitsOfDimension} $ts_more"
+                                        if (LocalSaveManager.data.habits[sortedHabits[x]].totalOfAPeriod(
+                                                LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1
+                                            ) < LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal
+                                        )
+                                            "$ts_You_need ${
+                                                (LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal - LocalSaveManager.data.habits[sortedHabits[x]].totalOfAPeriod(
+                                                    LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1
+                                                )).toBestString()
+                                            } ${LocalSaveManager.data.habits[sortedHabits[x]].nameOfUnitsOfDimension} $ts_more"
                                         else
                                             ts_Its_all_done
                                     else
-                                        if (LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod <= LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal)
-                                            "$ts_You_can_have ${(LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal - LocalSaveManager.data.habits[sortedHabits[x]].habitDay[LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1].totalOfAPeriod).toBestString()} ${LocalSaveManager.data.habits[sortedHabits[x]].nameOfUnitsOfDimension} $ts_more"
+                                        if (LocalSaveManager.data.habits[sortedHabits[x]].totalOfAPeriod(
+                                                LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1
+                                            ) <= LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal
+                                        )
+                                            "$ts_You_can_have ${
+                                                (LocalSaveManager.data.habits[sortedHabits[x]].numericalGoal - LocalSaveManager.data.habits[sortedHabits[x]].totalOfAPeriod(
+                                                    LocalSaveManager.data.habits[sortedHabits[x]].habitDay.size - 1
+                                                )).toBestString()
+                                            } ${LocalSaveManager.data.habits[sortedHabits[x]].nameOfUnitsOfDimension} $ts_more"
                                         else
                                             ts_You_failed,
                                     color = UICT_no_see,

@@ -11,11 +11,9 @@ package fireforestsoul.levelupsoul
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 
 @Serializable
 class HabitDay(@Serializable(with = BigDecimalAsStringSerializer::class) var today: BigDecimal = 0.0.toBigDecimal()) {
-    @Serializable(with = BigDecimalAsStringSerializer::class) var totalOfAPeriod: BigDecimal = 0.toBigDecimal()
     var correctly: Boolean = false
 }

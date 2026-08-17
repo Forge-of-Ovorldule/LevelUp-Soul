@@ -17,14 +17,3 @@ enum class TypeOfGoalHabit {
     AT_LEAST,
 }
 
-enum class Old3000000TypeOfGoalHabits {
-    NO_MORE,
-    NOT_LITTLE
-}
-
-fun toTypeOfGoalHabits(old3000000TypeOfGoalHabits: Old3000000TypeOfGoalHabits): TypeOfGoalHabit {
-    return when (old3000000TypeOfGoalHabits) {
-        Old3000000TypeOfGoalHabits.NO_MORE -> TypeOfGoalHabit.NO_MORE
-        Old3000000TypeOfGoalHabits.NOT_LITTLE -> TypeOfGoalHabit.AT_LEAST
-    }
-}

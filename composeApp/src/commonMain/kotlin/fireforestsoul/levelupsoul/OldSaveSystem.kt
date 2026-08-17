@@ -16,13 +16,79 @@ import fireforestsoul.levelupsoul.HelpOldSaveSystem.loadValue
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlin.collections.forEach
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 
 expect object HelpOldSaveSystem {
     fun <T> loadValue(value: T, name: String): T
 }
 
 object OldSaveSystem {
+    @Serializable
+    class OldHabit(
+        var nameOfHabit: String = ts_New_habit,
+        var nameOfUnitsOfDimension: String = ts_km,
+        var typeOfGoal: TypeOfGoalHabit = TypeOfGoalHabit.AT_LEAST,
+        @Serializable(with = BigDecimalAsStringSerializer::class) var numericalGoal: BigDecimal = BigDecimal.ONE,
+        var periodForGoalCompletion: Int = 1,
+        var typeOfColor: TypeOfColorHabit = TypeOfColorHabit.SELECTED,
+        @Contextual var color: Color = UICT_see,
+        var changeLevel: Boolean = true,
+        var changeNumericalGoalWithLevel: Boolean = false,
+        var changePeriodForGoalCompletionWithLevel: Boolean = false,
+        var icon: String = ""
+    ) {
+
+        var startDate: LocalDate = dateNow()
+        var lastLevelChangeDate: LocalDate = startDate
+        var level: Int = 0
+        var habitDay: MutableList<OldHabitDay> = MutableList(1) { OldHabitDay(0.toBigDecimal()) }
+
+        @Serializable(with = BigDecimalAsStringSerializer::class)
+        var phantomPeriodForGoalCompletionWithLevel: BigDecimal = periodForGoalCompletion.toBigDecimal()
+
+        fun toHabit(): Habit {
+            val habit = Habit()
+            habit.nameOfHabit = nameOfHabit
+            habit.nameOfUnitsOfDimension = nameOfUnitsOfDimension
+            habit.numericalGoal = numericalGoal
+            habit.typeOfGoal = typeOfGoal
+            habit.periodForGoalCompletion = periodForGoalCompletion
+            habit.changeLevel = changeLevel
+            habit.typeOfColor = typeOfColor
+            habit.color = color
+            habit.changeLevel = changeLevel
+            habit.changeNumericalGoalWithLevel = changeNumericalGoalWithLevel
+            habit.changePeriodForGoalCompletionWithLevel = changePeriodForGoalCompletionWithLevel
+            habit.icon = icon
+            habit.startDate = startDate
+            habit.lastLevelChangeDate = lastLevelChangeDate
+            habit.level = level
+            habit.habitDay = habitDay.map { it.toHabitDay() }.toMutableList()
+            habit.phantomPeriodForGoalCompletionWithLevel = phantomPeriodForGoalCompletionWithLevel
+            return habit
+        }
+
+        fun loadNeedDays(value: Int) {
+            periodForGoalCompletion = value
+            phantomPeriodForGoalCompletionWithLevel = value.toBigDecimal()
+        }
+    }
+
+    @Serializable
+    class OldHabitDay(@Serializable(with = BigDecimalAsStringSerializer::class) var today: BigDecimal = 0.0.toBigDecimal()) {
+        @Serializable(with = BigDecimalAsStringSerializer::class)
+        var totalOfAPeriod: BigDecimal = 0.toBigDecimal()
+        var correctly: Boolean = false
+
+        fun toHabitDay(): HabitDay {
+            val habitDay = HabitDay()
+            habitDay.correctly = correctly
+            habitDay.today = today
+            return habitDay
+        }
+    }
+
     fun <T> String.loadedElementToVal(value: T): T {
         val element = this
         return when (value) {
@@ -42,8 +108,8 @@ object OldSaveSystem {
         } as T
     }
 
-    private var habits_: MutableList<Habit> = mutableListOf(
-        Habit()
+    private var habits_: MutableList<OldHabit> = mutableListOf(
+        OldHabit()
     )
     private var soul_color_type_: TypeOfColorHabit = TypeOfColorHabit.ADAPTIVE
     private var soul_color_: Color = Color(200, 200, 200)
@@ -73,7 +139,7 @@ object OldSaveSystem {
         if (oldAppVersion > 1001000000) {
             oldAppVersion = loadValue(-1, "app_version")
             val habitsSize = loadValue(habits_.size, "habits-size")
-            habits_ = mutableListOf(Habit())
+            habits_ = mutableListOf(OldHabit())
             for (x in 0 until habitsSize) {
                 habits_[x].nameOfHabit = loadValue(habits_[x].nameOfHabit, "habits-$x-nameOfHabit")
                 habits_[x].nameOfUnitsOfDimension =
@@ -98,7 +164,7 @@ object OldSaveSystem {
                         loadValue(habits_[x].phantomPeriodForGoalCompletionWithLevel, "habits-$x-phantomNeedDays")
                 }
                 val habitDaySize = loadValue(habits_[x].habitDay.size, "habits-$x-habitDay-size")
-                habits_[x].habitDay = mutableListOf(HabitDay())
+                habits_[x].habitDay = mutableListOf(OldHabitDay())
                 for (y in 0 until habitDaySize) {
                     habits_[x].habitDay[y].today =
                         loadValue(habits_[x].habitDay[y].today, "habits-$x-habitDay-$y-today")
@@ -106,9 +172,9 @@ object OldSaveSystem {
                         loadValue(habits_[x].habitDay[y].totalOfAPeriod, "habits-$x-habitDay-$y-totalOfAPeriod")
                     habits_[x].habitDay[y].correctly =
                         loadValue(habits_[x].habitDay[y].correctly, "habits-$x-habitDay-$y-correctly")
-                    if (y != habitDaySize - 1) habits_[x].habitDay.add(HabitDay())
+                    if (y != habitDaySize - 1) habits_[x].habitDay.add(OldHabitDay())
                 }
-                if (x != habitsSize - 1) habits_.add(Habit())
+                if (x != habitsSize - 1) habits_.add(OldHabit())
             }
             soul_color_type_ = loadValue(soul_color_type_, "soul_color_type")
             soul_color_ = loadValue(soul_color_, "soul_color")
@@ -141,7 +207,7 @@ object OldSaveSystem {
         loadAllValues()
         val data = LocalData()
         if (oldAppVersion >= 1001000000) {
-            data.habits = habits_
+            data.habits = habits_.map { it.toHabit() }.toMutableList()
             data.soulColorType = soul_color_type_
             data.soulColor = soul_color_
             data.soulName = soul_name_

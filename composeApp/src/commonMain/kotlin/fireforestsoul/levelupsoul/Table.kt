@@ -189,7 +189,9 @@ fun TableContent(
                                     fontSize = firstSellFontSize / 1.15f
                                 )
                                 val needOrCanMore =
-                                    LocalSaveManager.data.habits[sortedHabits[y]].numericalGoal - LocalSaveManager.data.habits[sortedHabits[y]].habitDay[LocalSaveManager.data.habits[sortedHabits[y]].habitDay.size - 1].totalOfAPeriod
+                                    LocalSaveManager.data.habits[sortedHabits[y]].numericalGoal - LocalSaveManager.data.habits[sortedHabits[y]].totalOfAPeriod(
+                                        LocalSaveManager.data.habits[sortedHabits[y]].habitDay.size - 1
+                                    )
                                 if (needOrCanMore > BigDecimal.ZERO) {
                                     Text(
                                         text = if (LocalSaveManager.data.habits[sortedHabits[y]].typeOfGoal == TypeOfGoalHabit.AT_LEAST)

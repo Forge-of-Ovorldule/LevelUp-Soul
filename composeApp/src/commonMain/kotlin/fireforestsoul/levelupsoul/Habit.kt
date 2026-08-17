@@ -11,8 +11,6 @@ package fireforestsoul.levelupsoul
 
 import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.serialization.Contextual
@@ -35,7 +33,7 @@ class Habit(
     var icon: String = ""
 ) {
 
-    var startDate: LocalDate = kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    var startDate: LocalDate = dateNow()
     var lastLevelChangeDate: LocalDate = startDate
     var level: Int = 0
     var habitDay: MutableList<HabitDay> = MutableList(1) { HabitDay(0.toBigDecimal()) }
@@ -44,7 +42,7 @@ class Habit(
     var phantomPeriodForGoalCompletionWithLevel: BigDecimal = periodForGoalCompletion.toBigDecimal()
 
     fun updateDate() {
-        val today = kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val today = dateNow()
         val addDays: Long = (today.toEpochDays() - startDate.toEpochDays() - habitDay.size + 1)
 
         if (addDays > 0) {
@@ -54,22 +52,19 @@ class Habit(
         update()
     }
 
-    private fun updateHabitDay(index: Int) {
-        habitDay[index].totalOfAPeriod = 0.toBigDecimal()
-        for (i in (index - periodForGoalCompletion + 1)..index) {
-            if (i >= 0)
-                habitDay[index].totalOfAPeriod += habitDay[i].today
+    fun totalOfAPeriod(toId: Int): BigDecimal {
+        var sum = BigDecimal.ZERO
+        for (i in max(0, toId - periodForGoalCompletion + 1)..toId) {
+            sum += habitDay[i].today
         }
-        when (typeOfGoal) {
-            TypeOfGoalHabit.NO_MORE -> habitDay[index].correctly = (habitDay[index].totalOfAPeriod <= numericalGoal)
-            TypeOfGoalHabit.AT_LEAST -> habitDay[index].correctly = (habitDay[index].totalOfAPeriod >= numericalGoal)
-        }
+        return sum
+    }
+
+    private fun updateHabitDay() {
     }
 
     fun update(sortedHabits: MutableList<Int> = mutableListOf()) {
-        for (i in habitDay.indices) {
-            updateHabitDay(i)
-        }
+        updateHabitDay()
 
         if (sortedHabits.isNotEmpty()) {
             sortedHabits.sortSystem()
@@ -81,8 +76,7 @@ class Habit(
     }
 
     private fun changeLvl() {
-        if (kotlin.time.Clock.System.now()
-                .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays() - lastLevelChangeDate.toEpochDays() >= 20
+        if (dateNow().toEpochDays() - lastLevelChangeDate.toEpochDays() >= 20
         ) {
             var goodProgress = 0
             if (progress(this) >= 0.8) {
@@ -113,7 +107,7 @@ class Habit(
 
     fun lvlUp() {
         level++
-        lastLevelChangeDate = kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        lastLevelChangeDate = dateNow()
         if (changePeriodForGoalCompletionWithLevel) {
             when (typeOfGoal) {
                 TypeOfGoalHabit.AT_LEAST -> phantomPeriodForGoalCompletionWithLevel *= "0.8".toBigDecimal()
@@ -136,7 +130,7 @@ class Habit(
 
     fun lvlDown() {
         level--
-        lastLevelChangeDate = kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        lastLevelChangeDate = dateNow()
         if (changePeriodForGoalCompletionWithLevel) {
             when (typeOfGoal) {
                 TypeOfGoalHabit.AT_LEAST -> phantomPeriodForGoalCompletionWithLevel /= 0.8
@@ -232,11 +226,6 @@ class Habit(
                 getPhantomNeedDaysWhenNewLevel(pps, isProgressUp).intValue(false)
         }
         return periodForGoalCompletion
-    }
-
-    fun loadNeedDays(value: Int) {
-        periodForGoalCompletion = value
-        phantomPeriodForGoalCompletionWithLevel = value.toBigDecimal()
     }
 }
 
