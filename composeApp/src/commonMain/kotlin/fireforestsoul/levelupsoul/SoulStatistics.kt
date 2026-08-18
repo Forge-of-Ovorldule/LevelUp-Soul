@@ -344,6 +344,7 @@ fun SoulStatisticsContent() {
                             }
                         }
                         progressUp = true
+                    } else if (progressAll(maxDays) <= 0.2) {
                         for (day in LocalSaveManager.data.soulLastLevelChangeDate.plusDays(1)..dateNow()) {
                             if (progressAll(maxDays, toDate = day) <= 0.2) {
                                 goodProgress++
@@ -351,7 +352,6 @@ fun SoulStatisticsContent() {
                                 goodProgress = 0f
                             }
                         }
-                    } else if (progressAll(maxDays) <= 0.2) {
                         progressUp = false
                     }
 

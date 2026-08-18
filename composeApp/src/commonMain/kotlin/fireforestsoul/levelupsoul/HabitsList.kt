@@ -289,12 +289,12 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                             modifier = Modifier.clickable {
                                                 val value = inputText.toDoubleOrNull()
                                                 if (value != null) {
-                                                    LocalSaveManager.data.habits[sortedHabits[x]].habitDay[dateNow()] =
-                                                        HabitDay(
-                                                            inputText.toBigDecimal()
-                                                        )
-                                                    LocalSaveManager.save()
+                                                    LocalSaveManager.data.habits[sortedHabits[x]].setDayValue(
+                                                        dateNow(),
+                                                        inputText.toBigDecimal()
+                                                    )
                                                     LocalSaveManager.data.habits[sortedHabits[x]].update(sortedHabits)
+                                                    LocalSaveManager.save()
                                                 }
                                                 showDialog = false
                                                 viewModel.setStatus(AppStatus.HABITS_LIST_UPDATER)

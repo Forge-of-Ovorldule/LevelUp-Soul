@@ -76,11 +76,13 @@ suspend fun calculateProgressiveColor(
             var maxDays = Int.MIN_VALUE
             var minDays = Int.MAX_VALUE
             for (habit in LocalSaveManager.data.habits) {
-                maxDays = max(habit.habitDay.size, maxDays)
-                minDays = min(habit.habitDay.size, minDays)
+                maxDays = max(habit.totalDays(), maxDays)
+                minDays = min(habit.totalDays(), minDays)
             }
             kDays =
-                if (maxDays == minDays) 1f else (LocalSaveManager.data.habits[index].habitDay.size - minDays).toFloat() / (if (maxDays - minDays == 0) 1f else (maxDays - minDays).toFloat())
+                if (maxDays == minDays) 1f
+                else (LocalSaveManager.data.habits[index].totalDays() - minDays).toFloat() /
+                        (if (maxDays - minDays == 0) 1f else (maxDays - minDays).toFloat())
 
             emitCurrentColor()
             yield()
@@ -169,7 +171,7 @@ suspend fun calculateProgressiveColor(
 fun getSeeSoulColor(): Color {
     var maxDays = 0
     for (habit in LocalSaveManager.data.habits) {
-        maxDays = max(habit.habitDay.size, maxDays)
+        maxDays = max(habit.totalDays(), maxDays)
     }
     return if (LocalSaveManager.data.soulColorType == TypeOfColorHabit.SELECTED) LocalSaveManager.data.soulColor
     else Color(

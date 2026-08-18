@@ -279,7 +279,7 @@ fun TableContent(
                                             .height(firstCellSizeY * 7 / 16),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        if (xDay < dateNow()) {
+                                        if (xDay <= dateNow()) {
                                             var inputText by remember { mutableStateOf("") }
                                             var showDialog by remember { mutableStateOf(false) }
 
@@ -367,12 +367,14 @@ fun TableContent(
                                                                 val value =
                                                                     inputText.toDoubleOrNull()
                                                                 if (value != null) {
-                                                                    LocalSaveManager.data.habits[sortedHabits[y]].habitDay[xDay] =
-                                                                        HabitDay(inputText.toBigDecimal())
-                                                                    LocalSaveManager.save()
+                                                                    LocalSaveManager.data.habits[sortedHabits[y]].setDayValue(
+                                                                        xDay,
+                                                                        inputText.toBigDecimal()
+                                                                    )
                                                                     LocalSaveManager.data.habits[sortedHabits[y]].update(
                                                                         sortedHabits
                                                                     )
+                                                                    LocalSaveManager.save()
                                                                 }
                                                                 showDialog = false
                                                                 viewModel.setStatus(AppStatus.TABLE_UPDATER)

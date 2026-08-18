@@ -14,6 +14,7 @@ import kotlinx.datetime.LocalDate
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.daysUntil
 import kotlinx.datetime.downTo
 import kotlinx.datetime.minus
 import kotlinx.serialization.Contextual
@@ -44,8 +45,14 @@ class Habit(
     var phantomPeriodForGoalCompletionWithLevel: BigDecimal = periodForGoalCompletion.toBigDecimal()
 
     fun clearOfDefaults() {
-        habitDay.entries.removeAll {
-            it.value == BigDecimal.ZERO
+        habitDay.entries.removeAll { it.value.today == BigDecimal.ZERO }
+    }
+
+    fun setDayValue(date: LocalDate, value: BigDecimal) {
+        if (value == BigDecimal.ZERO) {
+            habitDay.remove(date)
+        } else {
+            habitDay[date] = HabitDay(value)
         }
     }
 
@@ -76,7 +83,7 @@ class Habit(
 
     private fun minDate(): LocalDate = habitDay.keys.minOrNull() ?: dateNow()
     fun startDate(): LocalDate = minDate()
-    fun totalDays(): Int = dateNow().minus(startDate()).days + 1
+    fun totalDays(): Int = startDate().daysUntil(dateNow()) + 1
 
     private fun changeLvl() {
         if (dateNow().toEpochDays() - lastLevelChangeDate.toEpochDays() >= 20
@@ -166,7 +173,7 @@ class Habit(
                 else return progress.toFloat() / 20f
             }
         }
-        return 1f
+        return progress.toFloat() / 20f
     }
 
     fun getNeedGoalWhenNewLevel(

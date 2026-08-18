@@ -51,13 +51,13 @@ fun plusProgress(
     daysToCalculateAverage: Int = LocalSaveManager.data.habits[index].totalDays(),
     toDate: LocalDate = dateNow()
 ): Float {
-    if (index <= 0 || index >= LocalSaveManager.data.habits.size || period <= 0 || daysToCalculateAverage <= 0) return 0f
+    if (index < 0 || index >= LocalSaveManager.data.habits.size || period <= 0 || daysToCalculateAverage <= 0) return 0f
 
     return progress(index, daysToCalculateAverage, toDate) -
             progress(
                 index,
                 daysToCalculateAverage,
-                toDate.minusDays(period - 1)
+                toDate.minusDays(period)
             )
 }
 
@@ -73,7 +73,7 @@ fun plusProgressAll(
             progressAll(
                 maxDays,
                 days,
-                toDate.minusDays(period - 1)
+                toDate.minusDays(period)
             )
 }
 
@@ -128,7 +128,9 @@ fun listToday(
     step: Int,
     startDate: LocalDate = LocalSaveManager.data.habits[habitIndex].startDate()
 ): List<BigDecimal> {
-    if (habitIndex <= 0 || habitIndex >= LocalSaveManager.data.habits.size || step <= 0) return emptyList()
+    if (habitIndex < 0 || habitIndex >= LocalSaveManager.data.habits.size || step <= 0) {
+        return emptyList()
+    }
 
     val list = mutableListOf<BigDecimal>()
 
@@ -154,20 +156,22 @@ fun listTodayAll(
     if (maxDays <= 0 || step <= 0) return emptyList()
 
     val list = mutableListOf<BigDecimal>()
-
     var sum = BigDecimal.ZERO
-    val habits = LocalSaveManager.data.habits
 
+    val habits = LocalSaveManager.data.habits
     val startDate = dateNow().minusDays(maxDays - 1)
-    for ((i, day) in (dateNow() downTo startDate).withIndex()) {
-        habits.forEach { habit -> sum += if (habit.correctly(day)) BigDecimal.ONE else BigDecimal.ZERO }
-        if (i % step == 0 || day == startDate) {
+
+    for ((i, day) in (startDate..dateNow()).withIndex()) {
+        habits.forEach { habit ->
+            sum += if (habit.correctly(day)) BigDecimal.ONE else BigDecimal.ZERO
+        }
+
+        if ((i + 1) % step == 0 || day == dateNow()) {
             list.add(sum)
             sum = BigDecimal.ZERO
         }
     }
 
-    list.reverse()
     return list
 }
 

@@ -63,8 +63,9 @@ object OldSaveSystem {
             habit.icon = icon
             habit.lastLevelChangeDate = lastLevelChangeDate
             habit.level = level
-            habit.habitDay =
-                habitDay.mapIndexed { index, day -> startDate.plusDays(index) to day.toHabitDay() }.toMap(hashMapOf())
+            habitDay.forEachIndexed { index, day ->
+                habit.setDayValue(startDate.plusDays(index), day.today)
+            }
             habit.phantomPeriodForGoalCompletionWithLevel = phantomPeriodForGoalCompletionWithLevel
             return habit
         }
@@ -81,11 +82,6 @@ object OldSaveSystem {
         var totalOfAPeriod: BigDecimal = 0.toBigDecimal()
         var correctly: Boolean = false
 
-        fun toHabitDay(): HabitDay {
-            val habitDay = HabitDay()
-            habitDay.today = today
-            return habitDay
-        }
     }
 
     fun <T> String.loadedElementToVal(value: T): T {
