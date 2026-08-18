@@ -54,7 +54,7 @@ fun SoulStatisticsContent() {
 
     var maxDays = 0
     for (habit in LocalSaveManager.data.habits) {
-        maxDays = max(habit.habitDay.size, maxDays)
+        maxDays = max(habit.totalDays(), maxDays)
     }
     val seeColor = getSeeSoulColor()
     val noSeeColor = getNoSeeSoulColor()
@@ -282,11 +282,9 @@ fun SoulStatisticsContent() {
             ) {
                 var goodProgress = 0
                 if (progressAll(maxDays) >= 0.8) {
-                    for (x in (maxDays - 20) until maxDays) {
-                        if (x >= 0) {
-                            if (progressAll(maxDays, endIndex = x) >= 0.8) {
-                                goodProgress++
-                            }
+                    for (day in dateNow().minusDays(19)..dateNow()) {
+                        if (progressAll(maxDays, toDate = day) >= 0.8) {
+                            goodProgress++
                         }
                     }
                     if (goodProgress == 20) {
@@ -295,11 +293,9 @@ fun SoulStatisticsContent() {
                             kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
                     }
                 } else if (progressAll(maxDays) <= 0.2) {
-                    for (x in (maxDays - 20) until maxDays) {
-                        if (x >= 0) {
-                            if (progressAll(maxDays, endIndex = x) <= 0.2) {
-                                goodProgress++
-                            }
+                    for (day in dateNow().minusDays(19)..dateNow()) {
+                        if (progressAll(maxDays, toDate = day) <= 0.2) {
+                            goodProgress++
                         }
                     }
                     if (goodProgress == 20) {
@@ -340,28 +336,22 @@ fun SoulStatisticsContent() {
 
                     goodProgress = 0f
                     if (progressAll(maxDays) >= 0.8) {
-                        for (x in (maxDays - (kotlin.time.Clock.System.now()
-                            .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays() - LocalSaveManager.data.soulLastLevelChangeDate.toEpochDays())) until maxDays) {
-                            if (x >= 0) {
-                                if (progressAll(maxDays, endIndex = x.toInt()) >= 0.8) {
-                                    goodProgress++
-                                } else {
-                                    goodProgress = 0f
-                                }
+                        for (day in LocalSaveManager.data.soulLastLevelChangeDate.plusDays(1)..dateNow()) {
+                            if (progressAll(maxDays, toDate = day) >= 0.8) {
+                                goodProgress++
+                            } else {
+                                goodProgress = 0f
                             }
                         }
                         progressUp = true
-                    } else if (progressAll(maxDays) <= 0.2) {
-                        for (x in (maxDays - (kotlin.time.Clock.System.now()
-                            .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays() - LocalSaveManager.data.soulLastLevelChangeDate.toEpochDays())) until maxDays) {
-                            if (x >= 0) {
-                                if (progressAll(maxDays, endIndex = x.toInt()) <= 0.2) {
-                                    goodProgress++
-                                } else {
-                                    goodProgress = 0f
-                                }
+                        for (day in LocalSaveManager.data.soulLastLevelChangeDate.plusDays(1)..dateNow()) {
+                            if (progressAll(maxDays, toDate = day) <= 0.2) {
+                                goodProgress++
+                            } else {
+                                goodProgress = 0f
                             }
                         }
+                    } else if (progressAll(maxDays) <= 0.2) {
                         progressUp = false
                     }
 

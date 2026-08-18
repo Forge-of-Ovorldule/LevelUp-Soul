@@ -14,6 +14,4 @@ import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.serialization.Serializable
 
 @Serializable
-class HabitDay(@Serializable(with = BigDecimalAsStringSerializer::class) var today: BigDecimal = 0.0.toBigDecimal()) {
-    var correctly: Boolean = false
-}
+class HabitDay(@Serializable(with = BigDecimalAsStringSerializer::class) var today: BigDecimal = 0.0.toBigDecimal())

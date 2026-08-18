@@ -9,50 +9,26 @@
 
 package fireforestsoul.levelupsoul
 
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.minus
-import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -82,7 +58,7 @@ fun TableContent(
     val dataSellFontSize = 11.sp
     var maxDays = 0
     for (habit in LocalSaveManager.data.habits) {
-        maxDays = max(habit.habitDay.size, maxDays)
+        maxDays = max(habit.totalDays(), maxDays)
     }
 
     BoxWithConstraints(
@@ -190,7 +166,7 @@ fun TableContent(
                                 )
                                 val needOrCanMore =
                                     LocalSaveManager.data.habits[sortedHabits[y]].numericalGoal - LocalSaveManager.data.habits[sortedHabits[y]].totalOfAPeriod(
-                                        LocalSaveManager.data.habits[sortedHabits[y]].habitDay.size - 1
+                                        dateNow()
                                     )
                                 if (needOrCanMore > BigDecimal.ZERO) {
                                     Text(
@@ -294,119 +270,116 @@ fun TableContent(
                                         .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays(),
                                     max(maxCellX, 10).toLong()
                                 )) {
-                                    val xIndex =
-                                        LocalSaveManager.data.habits[sortedHabits[y]].habitDay.size - 1 - x + (countdownDate.toEpochDays() - kotlin.time.Clock.System.now()
-                                            .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays())
-                                    if (xIndex >= 0) {
-                                        Box(
-                                            modifier = Modifier
-                                                .width(nextCellSizeX)
-                                                .height(firstCellSizeY * 7 / 16),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            if (xIndex < LocalSaveManager.data.habits[sortedHabits[y]].habitDay.size) {
-                                                var inputText by remember { mutableStateOf("") }
-                                                var showDialog by remember { mutableStateOf(false) }
+                                    val xDay =
+                                        dateNow().minusDays(x.toInt())
+                                            .plusDays((countdownDate.toEpochDays() - dateNow().toEpochDays()).toInt())
+                                    Box(
+                                        modifier = Modifier
+                                            .width(nextCellSizeX)
+                                            .height(firstCellSizeY * 7 / 16),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        if (xDay < dateNow()) {
+                                            var inputText by remember { mutableStateOf("") }
+                                            var showDialog by remember { mutableStateOf(false) }
 
-                                                Text(
-                                                    text = LocalSaveManager.data.habits[sortedHabits[y]].habitDay[xIndex.toInt()].today.toBestString(),
-                                                    color = if (LocalSaveManager.data.habits[sortedHabits[y]].habitDay[xIndex.toInt()].correctly
-                                                    ) seeColor else noSeeColor,
-                                                    fontWeight = FontWeight.Normal,
-                                                    fontSize = firstSellFontSize,
-                                                    modifier = Modifier.clickable {
-                                                        showDialog = true
+                                            Text(
+                                                text = (LocalSaveManager.data.habits[sortedHabits[y]].habitDay[xDay]?.today
+                                                    ?: BigDecimal.ZERO).toBestString(),
+                                                color = if (LocalSaveManager.data.habits[sortedHabits[y]].correctly(
+                                                        xDay
+                                                    )
+                                                ) seeColor else noSeeColor,
+                                                fontWeight = FontWeight.Normal,
+                                                fontSize = firstSellFontSize,
+                                                modifier = Modifier.clickable {
+                                                    showDialog = true
+                                                }
+                                            )
+
+                                            if (showDialog) {
+                                                AlertDialog(
+                                                    containerColor = UIC,
+                                                    onDismissRequest = { showDialog = false },
+                                                    title = {
+                                                        Text(
+                                                            text = "$ts_Do_you_want_to_set_a_value_for ${xDay.month} ${xDay.day}, ${xDay.year} $ts_for_habit ${LocalSaveManager.data.habits[sortedHabits[y]].nameOfHabit}?",
+                                                            fontWeight = FontWeight.Normal,
+                                                            fontSize = 16.sp,
+                                                            color = UICT_see
+                                                        )
+                                                    },
+                                                    text = {
+                                                        OutlinedTextField(
+                                                            value = inputText,
+                                                            onValueChange = { inputText = it },
+                                                            label = {
+                                                                Text(
+                                                                    "$ts_Old: ${(LocalSaveManager.data.habits[sortedHabits[y]].habitDay[xDay]?.today ?: BigDecimal.ZERO).toBestString()}",
+                                                                    fontSize = 12.sp,
+                                                                    fontWeight = FontWeight.Normal,
+                                                                    color = UICT_no_see
+                                                                )
+                                                            },
+                                                            keyboardOptions = KeyboardOptions(
+                                                                keyboardType = KeyboardType.Number
+                                                            ),
+                                                            singleLine = true,
+                                                            textStyle = TextStyle(
+                                                                fontSize = 16.sp,
+                                                                fontWeight = FontWeight.Normal,
+                                                                color = UICT_see
+                                                            ),
+                                                            shape = RoundedCornerShape(15.dp),
+                                                            colors = TextFieldDefaults.colors(
+                                                                focusedTextColor = UICT_see,
+                                                                unfocusedTextColor = UICT_no_see,
+                                                                disabledTextColor = UICT_no_see,
+                                                                focusedContainerColor = UIC_dark,
+                                                                unfocusedContainerColor = UIC_dark,
+                                                                disabledContainerColor = UIC_dark,
+                                                                cursorColor = UICT_see,
+                                                                focusedIndicatorColor = Color.Transparent,
+                                                                unfocusedIndicatorColor = Color.Transparent,
+                                                                disabledIndicatorColor = Color.Transparent
+                                                            )
+                                                        )
+                                                    },
+                                                    dismissButton = {
+                                                        Text(
+                                                            text = "❌ $ts_Cancel",
+                                                            fontWeight = FontWeight.Normal,
+                                                            fontSize = 16.sp,
+                                                            color = Color(200, 150, 150),
+                                                            modifier = Modifier.clickable {
+                                                                showDialog = false
+                                                                viewModel.setStatus(AppStatus.TABLE_UPDATER)
+                                                            }
+                                                        )
+                                                    },
+                                                    confirmButton = {
+                                                        Text(
+                                                            text = "✅ $ts_Confirm",
+                                                            fontWeight = FontWeight.Normal,
+                                                            fontSize = 16.sp,
+                                                            color = Color(150, 200, 150),
+                                                            modifier = Modifier.clickable {
+                                                                val value =
+                                                                    inputText.toDoubleOrNull()
+                                                                if (value != null) {
+                                                                    LocalSaveManager.data.habits[sortedHabits[y]].habitDay[xDay] =
+                                                                        HabitDay(inputText.toBigDecimal())
+                                                                    LocalSaveManager.save()
+                                                                    LocalSaveManager.data.habits[sortedHabits[y]].update(
+                                                                        sortedHabits
+                                                                    )
+                                                                }
+                                                                showDialog = false
+                                                                viewModel.setStatus(AppStatus.TABLE_UPDATER)
+                                                            }
+                                                        )
                                                     }
                                                 )
-
-                                                if (showDialog) {
-                                                    AlertDialog(
-                                                        containerColor = UIC,
-                                                        onDismissRequest = { showDialog = false },
-                                                        title = {
-                                                            val dateToSet =
-                                                                LocalSaveManager.data.habits[sortedHabits[y]].startDate.plus(
-                                                                    xIndex, DateTimeUnit.DAY
-                                                                )
-                                                            Text(
-                                                                text = "$ts_Do_you_want_to_set_a_value_for ${dateToSet.month} ${dateToSet.day}, ${dateToSet.year} $ts_for_habit ${LocalSaveManager.data.habits[sortedHabits[y]].nameOfHabit}?",
-                                                                fontWeight = FontWeight.Normal,
-                                                                fontSize = 16.sp,
-                                                                color = UICT_see
-                                                            )
-                                                        },
-                                                        text = {
-                                                            OutlinedTextField(
-                                                                value = inputText,
-                                                                onValueChange = { inputText = it },
-                                                                label = {
-                                                                    Text(
-                                                                        "$ts_Old: ${LocalSaveManager.data.habits[sortedHabits[y]].habitDay[xIndex.toInt()].today.toBestString()}",
-                                                                        fontSize = 12.sp,
-                                                                        fontWeight = FontWeight.Normal,
-                                                                        color = UICT_no_see
-                                                                    )
-                                                                },
-                                                                keyboardOptions = KeyboardOptions(
-                                                                    keyboardType = KeyboardType.Number
-                                                                ),
-                                                                singleLine = true,
-                                                                textStyle = TextStyle(
-                                                                    fontSize = 16.sp,
-                                                                    fontWeight = FontWeight.Normal,
-                                                                    color = UICT_see
-                                                                ),
-                                                                shape = RoundedCornerShape(15.dp),
-                                                                colors = TextFieldDefaults.colors(
-                                                                    focusedTextColor = UICT_see,
-                                                                    unfocusedTextColor = UICT_no_see,
-                                                                    disabledTextColor = UICT_no_see,
-                                                                    focusedContainerColor = UIC_dark,
-                                                                    unfocusedContainerColor = UIC_dark,
-                                                                    disabledContainerColor = UIC_dark,
-                                                                    cursorColor = UICT_see,
-                                                                    focusedIndicatorColor = Color.Transparent,
-                                                                    unfocusedIndicatorColor = Color.Transparent,
-                                                                    disabledIndicatorColor = Color.Transparent
-                                                                )
-                                                            )
-                                                        },
-                                                        dismissButton = {
-                                                            Text(
-                                                                text = "❌ $ts_Cancel",
-                                                                fontWeight = FontWeight.Normal,
-                                                                fontSize = 16.sp,
-                                                                color = Color(200, 150, 150),
-                                                                modifier = Modifier.clickable {
-                                                                    showDialog = false
-                                                                    viewModel.setStatus(AppStatus.TABLE_UPDATER)
-                                                                }
-                                                            )
-                                                        },
-                                                        confirmButton = {
-                                                            Text(
-                                                                text = "✅ $ts_Confirm",
-                                                                fontWeight = FontWeight.Normal,
-                                                                fontSize = 16.sp,
-                                                                color = Color(150, 200, 150),
-                                                                modifier = Modifier.clickable {
-                                                                    val value =
-                                                                        inputText.toDoubleOrNull()
-                                                                    if (value != null) {
-                                                                        LocalSaveManager.data.habits[sortedHabits[y]].habitDay[xIndex.toInt()].today =
-                                                                            inputText.toBigDecimal()
-                                                                        LocalSaveManager.save()
-                                                                        LocalSaveManager.data.habits[sortedHabits[y]].update(
-                                                                            sortedHabits
-                                                                        )
-                                                                    }
-                                                                    showDialog = false
-                                                                    viewModel.setStatus(AppStatus.TABLE_UPDATER)
-                                                                }
-                                                            )
-                                                        }
-                                                    )
-                                                }
                                             }
                                         }
                                     }

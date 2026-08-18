@@ -55,7 +55,8 @@ private suspend fun loading(viewModel: AppViewModel) = withContext(Dispatchers.D
     LocalSaveManager.data
     changeLanguage()
     for (i in LocalSaveManager.data.habits.indices) {
-        LocalSaveManager.data.habits[i].updateDate()
+        LocalSaveManager.data.habits[i].clearOfDefaults()
+        LocalSaveManager.data.habits[i].update()
     }
     LocalSaveManager.save()
 

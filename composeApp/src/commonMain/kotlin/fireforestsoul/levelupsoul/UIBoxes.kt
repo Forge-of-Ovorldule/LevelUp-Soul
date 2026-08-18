@@ -938,10 +938,10 @@ fun SoulGrid(
 ) {
     var oldestHabit = Habit()
     for (habit in LocalSaveManager.data.habits) {
-        if (habit.startDate.toEpochDays() < oldestHabit.startDate.toEpochDays()) oldestHabit = habit
+        if (habit.startDate().toEpochDays() < oldestHabit.startDate().toEpochDays()) oldestHabit = habit
     }
     val values: List<Int> = listDaysNumbers(oldestHabit)
-    val startDate = oldestHabit.startDate
+    val startDate = oldestHabit.startDate()
 
     val backgroundColor = UIC_dark_x2
     val boxSize = 20.dp

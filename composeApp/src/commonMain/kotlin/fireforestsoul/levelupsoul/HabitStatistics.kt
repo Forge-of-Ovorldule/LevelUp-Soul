@@ -120,7 +120,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
         LocalSaveManager.data.listPointsOfHabitStatistic.getValue(startStatus) + 0.25f
 
     var habitStatisticsStatus by remember { mutableStateOf(if (LocalSaveManager.data.sortHabitStatisticsSectionsByFrequencyOfUse) startStatus else HabitStatisticsStatus.GOAL) }
-    var progressPeriodSetting by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size) }
+    var progressPeriodSetting by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].totalDays()) }
     pps_for_habit_statistic = progressPeriodSetting
 
     val sortedStatuses = remember {
@@ -737,14 +737,14 @@ private fun GoalContent(
         )
         ValueSetVector(
             pps,
-            LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size,
+            LocalSaveManager.data.habits[habit_statistics_and_edit_x].totalDays(),
             "$ts_PPS (0 $ts_for_full_time):",
             ts_days
         ) {
             pps_for_habit_statistic =
-                it.toIntOrNull() ?: LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size
+                it.toIntOrNull() ?: LocalSaveManager.data.habits[habit_statistics_and_edit_x].totalDays()
             if (pps_for_habit_statistic <= 0) pps_for_habit_statistic =
-                LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size
+                LocalSaveManager.data.habits[habit_statistics_and_edit_x].totalDays()
         }
     }
 }
@@ -1578,7 +1578,7 @@ private fun ProgressGraphContent(
         }
     }
 
-    var period by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size) }
+    var period by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].totalDays()) }
     var step by remember { mutableStateOf(1) }
 
     Column(
@@ -1595,16 +1595,16 @@ private fun ProgressGraphContent(
             SelectSmooth()
             ValueSetVector(
                 period,
-                LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size,
+                LocalSaveManager.data.habits[habit_statistics_and_edit_x].totalDays(),
                 "$ts_Period (0 $ts_For_all_time)",
                 ts_days
             ) {
-                period = it.toIntOrNull() ?: LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size
+                period = it.toIntOrNull() ?: LocalSaveManager.data.habits[habit_statistics_and_edit_x].totalDays()
                 if (period < 2) period = 2
             }
             ValueSetVector(
                 step,
-                LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size,
+                LocalSaveManager.data.habits[habit_statistics_and_edit_x].totalDays(),
                 ts_Step,
                 ts_days
             ) {
@@ -1842,7 +1842,7 @@ private fun BarChartContent() {
         }
         ValueSetVector(
             step,
-            LocalSaveManager.data.habits[habit_statistics_and_edit_x].habitDay.size,
+            LocalSaveManager.data.habits[habit_statistics_and_edit_x].totalDays(),
             ts_Step,
             ts_days
         ) {
@@ -1868,7 +1868,7 @@ fun CalendarContent() {
 
     @Composable
     fun HabitGrid(
-        startDay: Int = when (LocalSaveManager.data.habits[habit_statistics_and_edit_x].startDate.dayOfWeek) {
+        startDay: Int = when (LocalSaveManager.data.habits[habit_statistics_and_edit_x].startDate().dayOfWeek) {
             DayOfWeek.MONDAY -> 0
             DayOfWeek.TUESDAY -> 1
             DayOfWeek.WEDNESDAY -> 2

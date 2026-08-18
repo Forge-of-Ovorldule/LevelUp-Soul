@@ -61,10 +61,10 @@ object OldSaveSystem {
             habit.changeNumericalGoalWithLevel = changeNumericalGoalWithLevel
             habit.changePeriodForGoalCompletionWithLevel = changePeriodForGoalCompletionWithLevel
             habit.icon = icon
-            habit.startDate = startDate
             habit.lastLevelChangeDate = lastLevelChangeDate
             habit.level = level
-            habit.habitDay = habitDay.map { it.toHabitDay() }.toMutableList()
+            habit.habitDay =
+                habitDay.mapIndexed { index, day -> startDate.plusDays(index) to day.toHabitDay() }.toMap(hashMapOf())
             habit.phantomPeriodForGoalCompletionWithLevel = phantomPeriodForGoalCompletionWithLevel
             return habit
         }
@@ -83,7 +83,6 @@ object OldSaveSystem {
 
         fun toHabitDay(): HabitDay {
             val habitDay = HabitDay()
-            habitDay.correctly = correctly
             habitDay.today = today
             return habitDay
         }
@@ -207,7 +206,11 @@ object OldSaveSystem {
         loadAllValues()
         val data = LocalData()
         if (oldAppVersion >= 1001000000) {
-            data.habits = habits_.map { it.toHabit() }.toMutableList()
+            data.habits = habits_.map {
+                val tmp = it.toHabit()
+                tmp.clearOfDefaults()
+                tmp
+            }.toMutableList()
             data.soulColorType = soul_color_type_
             data.soulColor = soul_color_
             data.soulName = soul_name_
