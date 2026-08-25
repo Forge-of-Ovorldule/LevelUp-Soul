@@ -9,6 +9,7 @@
 
 package fireforestsoul.levelupsoul
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -32,6 +33,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             App()
         }
+    }
+
+    @Deprecated("Deprecated in Java")
+    @Suppress("DEPRECATION")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        SaveTransfer.handleActivityResult(requestCode, resultCode, data)
     }
 
     override fun onStop() {

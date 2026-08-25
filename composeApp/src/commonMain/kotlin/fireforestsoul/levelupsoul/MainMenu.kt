@@ -83,7 +83,7 @@ fun MainMenuContent(
                         if ("Android" !in getPlatform().name) {
                             IconButton(onClick = {
                                 LocalSaveManager.save()
-                                export()
+                                SaveImportExport.exportSave()
                             }) {
                                 Image(
                                     painter = painterResource(Res.drawable.export),
@@ -94,8 +94,9 @@ fun MainMenuContent(
                             }
                             IconButton(onClick = {
                                 LocalSaveManager.save()
-                                import {
-                                    screenChanger(ScreenManager.LOADING)
+                                SaveImportExport.importSave {
+                                    if (it)
+                                        screenChanger(ScreenManager.LOADING)
                                 }
                             }) {
                                 Image(

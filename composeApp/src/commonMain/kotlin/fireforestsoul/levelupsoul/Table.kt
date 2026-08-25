@@ -32,9 +32,6 @@ import kotlinx.datetime.*
 import kotlin.math.max
 import kotlin.math.min
 
-expect fun export()
-expect fun import(onImported: () -> Unit)
-
 @Composable
 fun TableContent(
     screenChanger: (newScreen: ScreenManager) -> Unit,
