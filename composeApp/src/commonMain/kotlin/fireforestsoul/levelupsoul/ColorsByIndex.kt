@@ -21,15 +21,15 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 
-val listMutex = Mutex()
+val listMutex: Mutex = Mutex()
 
 suspend fun calculateProgressiveColor(
     index: Int,
     onColorUpdate: (Color) -> Unit,
-    oldColor : Color = habits[index].colorGood
+    oldColor: Color = LocalSaveManager.data.habits[index].color
 ) {
-    if (habits[index].typeOfColorHabits == TypeOfColorHabits.SELECTED) {
-        onColorUpdate(habits[index].colorGood)
+    if (LocalSaveManager.data.habits[index].typeOfColor == TypeOfColorHabit.SELECTED) {
+        onColorUpdate(LocalSaveManager.data.habits[index].color)
         return
     }
 
@@ -63,7 +63,7 @@ suspend fun calculateProgressiveColor(
 
             var maxProgress = Float.MIN_VALUE
             var minProgress = Float.MAX_VALUE
-            for (habit in habits) {
+            for (habit in LocalSaveManager.data.habits) {
                 maxProgress = max(progress(habit), maxProgress)
                 minProgress = min(progress(habit), minProgress)
             }
@@ -75,12 +75,14 @@ suspend fun calculateProgressiveColor(
 
             var maxDays = Int.MIN_VALUE
             var minDays = Int.MAX_VALUE
-            for (habit in habits) {
-                maxDays = max(habit.habitDay.size, maxDays)
-                minDays = min(habit.habitDay.size, minDays)
+            for (habit in LocalSaveManager.data.habits) {
+                maxDays = max(habit.totalDays(), maxDays)
+                minDays = min(habit.totalDays(), minDays)
             }
             kDays =
-                if (maxDays == minDays) 1f else (habits[index].habitDay.size - minDays).toFloat() / (if (maxDays - minDays == 0) 1f else (maxDays - minDays).toFloat())
+                if (maxDays == minDays) 1f
+                else (LocalSaveManager.data.habits[index].totalDays() - minDays).toFloat() /
+                        (if (maxDays - minDays == 0) 1f else (maxDays - minDays).toFloat())
 
             emitCurrentColor()
             yield()
@@ -88,7 +90,7 @@ suspend fun calculateProgressiveColor(
             if (habitStreaks(index).isNotEmpty()) {
                 var maxStreak = Int.MIN_VALUE
                 val minStreak = 0
-                for (habit in habits) {
+                for (habit in LocalSaveManager.data.habits) {
                     val s = if (habitStreaks(habit).isNotEmpty()) habitStreaks(habit)[0] else 0
                     maxStreak = max(s, maxStreak)
                 }
@@ -103,25 +105,25 @@ suspend fun calculateProgressiveColor(
 
             var maxLevel = Int.MIN_VALUE
             var minLevel = Int.MAX_VALUE
-            for (habit in habits) {
+            for (habit in LocalSaveManager.data.habits) {
                 maxLevel = max(habit.level, maxLevel)
                 minLevel = min(habit.level, minLevel)
             }
             kLevel =
-                if (maxLevel == minLevel) 1f else (habits[index].level - minLevel).toFloat() / (if (maxLevel - minLevel == 0) 1f else (maxLevel - minLevel).toFloat())
+                if (maxLevel == minLevel) 1f else (LocalSaveManager.data.habits[index].level - minLevel).toFloat() / (if (maxLevel - minLevel == 0) 1f else (maxLevel - minLevel).toFloat())
 
             emitCurrentColor()
             yield()
 
             var maxNeedGoal = Double.MIN_VALUE.toBigDecimal()
             var minNeedGoal = Double.MAX_VALUE.toBigDecimal()
-            for (habit in habits) {
-                maxNeedGoal = maxOf(habit.needGoal, maxNeedGoal)
-                minNeedGoal = minOf(habit.needGoal, minNeedGoal)
+            for (habit in LocalSaveManager.data.habits) {
+                maxNeedGoal = maxOf(habit.numericalGoal, maxNeedGoal)
+                minNeedGoal = minOf(habit.numericalGoal, minNeedGoal)
             }
             val diffGoal = maxNeedGoal - minNeedGoal
             kNeedGoal =
-                if (maxNeedGoal == minNeedGoal) 1f else (habits[index].needGoal - minNeedGoal).floatValue(
+                if (maxNeedGoal == minNeedGoal) 1f else (LocalSaveManager.data.habits[index].numericalGoal - minNeedGoal).floatValue(
                     false
                 ) / (if (diffGoal == BigDecimal.ZERO) 1f else diffGoal.floatValue(
                     false
@@ -130,9 +132,9 @@ suspend fun calculateProgressiveColor(
             emitCurrentColor()
             yield()
 
-            kTypeOfGoal = when (habits[index].typeOfGoalHabits) {
-                TypeOfGoalHabits.NO_MORE -> 0f
-                TypeOfGoalHabits.AT_LEAST -> 1f
+            kTypeOfGoal = when (LocalSaveManager.data.habits[index].typeOfGoal) {
+                TypeOfGoalHabit.NO_MORE -> 0f
+                TypeOfGoalHabit.AT_LEAST -> 1f
             }
 
             emitCurrentColor()
@@ -140,19 +142,19 @@ suspend fun calculateProgressiveColor(
 
             var maxNeedDays = Int.MIN_VALUE
             var minNeedDays = Int.MAX_VALUE
-            for (habit in habits) {
-                maxNeedDays = maxOf(habit.needDays, maxNeedDays)
-                minNeedDays = minOf(habit.needDays, minNeedDays)
+            for (habit in LocalSaveManager.data.habits) {
+                maxNeedDays = maxOf(habit.periodForGoalCompletion, maxNeedDays)
+                minNeedDays = minOf(habit.periodForGoalCompletion, minNeedDays)
             }
             kNeedDays =
-                if (maxNeedDays == minNeedDays) 1f else (habits[index].needDays - minNeedDays).toFloat() / (if (maxNeedDays - minNeedDays == 0) 1f else (maxNeedDays - minNeedDays).toFloat())
+                if (maxNeedDays == minNeedDays) 1f else (LocalSaveManager.data.habits[index].periodForGoalCompletion - minNeedDays).toFloat() / (if (maxNeedDays - minNeedDays == 0) 1f else (maxNeedDays - minNeedDays).toFloat())
 
             emitCurrentColor()
             yield()
 
-            kLevelChange = ((if (habits[index].changeLevel) 1f else 0f)
-                    + (if (habits[index].changeNeedGoalWithLevel) 1f else 0f)
-                    + (if (habits[index].changeNeedDaysWithLevel) 1f else 0f)) / 3f
+            kLevelChange = ((if (LocalSaveManager.data.habits[index].changeLevel) 1f else 0f)
+                    + (if (LocalSaveManager.data.habits[index].changeNumericalGoalWithLevel) 1f else 0f)
+                    + (if (LocalSaveManager.data.habits[index].changePeriodForGoalCompletionWithLevel) 1f else 0f)) / 3f
 
             emitCurrentColor()
 
@@ -168,10 +170,10 @@ suspend fun calculateProgressiveColor(
 
 fun getSeeSoulColor(): Color {
     var maxDays = 0
-    for (habit in habits) {
-        maxDays = max(habit.habitDay.size, maxDays)
+    for (habit in LocalSaveManager.data.habits) {
+        maxDays = max(habit.totalDays(), maxDays)
     }
-    return if (soul_color_type == TypeOfColorHabits.SELECTED) soul_color
+    return if (LocalSaveManager.data.soulColorType == TypeOfColorHabit.SELECTED) LocalSaveManager.data.soulColor
     else Color(
         (progressAll(maxDays) * 255.0).toInt(),
         255,
@@ -188,6 +190,6 @@ fun getNoSeeSoulColor(): Color {
 }
 
 fun getSoulRealColor(): Color {
-    return if (soul_color_type == TypeOfColorHabits.SELECTED) soul_color
+    return if (LocalSaveManager.data.soulColorType == TypeOfColorHabit.SELECTED) LocalSaveManager.data.soulColor
     else getSeeSoulColor()
 }

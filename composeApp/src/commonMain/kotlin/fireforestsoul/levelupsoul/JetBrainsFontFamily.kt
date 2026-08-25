@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import org.jetbrains.compose.resources.Font
 
 @Composable
-fun JetBrainsFont(): FontFamily {
+fun jetBrainsFont(): FontFamily {
     return FontFamily(
         Font(Res.font.JetBrainsMono_ExtraBold, FontWeight.ExtraBold, FontStyle.Normal),
         Font(Res.font.JetBrainsMono_Italic, FontWeight.Normal, FontStyle.Italic),

@@ -9,63 +9,30 @@
 
 package fireforestsoul.levelupsoul
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.font.FontFamily
-import org.jetbrains.compose.resources.painterResource
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.*
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.with
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun MainMenuContent(
@@ -77,7 +44,7 @@ fun MainMenuContent(
     val appStatus by viewModel.appStatus.collectAsState()
     var countdownDate by remember {
         mutableStateOf(
-            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+            kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
         )
     }
 
@@ -114,7 +81,7 @@ fun MainMenuContent(
                         )
                         if ("Android" !in getPlatform().name) {
                             IconButton(onClick = {
-                                saveAllValues()
+                                LocalSaveManager.save()
                                 export()
                             }) {
                                 Image(
@@ -125,7 +92,7 @@ fun MainMenuContent(
                                 )
                             }
                             IconButton(onClick = {
-                                saveAllValues()
+                                LocalSaveManager.save()
                                 import {
                                     viewModel.setStatus(AppStatus.LOADING)
                                 }
@@ -160,7 +127,7 @@ fun MainMenuContent(
 
                         Box {
                             Text(
-                                language.name,
+                                LocalSaveManager.data.language.name,
                                 fontSize = 16.sp,
                                 color = averageColor(listOf(UICT_see, getSoulRealColor())),
                                 modifier = Modifier
@@ -179,10 +146,9 @@ fun MainMenuContent(
                                 Languages.entries.forEach { mode ->
                                     DropdownMenuItem(
                                         onClick = {
-                                            language = mode
-                                            language.saveLanguage()
+                                            LocalSaveManager.data.language = mode
+                                            LocalSaveManager.save()
                                             expanded0 = false
-                                            saveAllValues()
                                             viewModel.setStatus(AppStatus.LOADING)
                                         },
                                         text = {
@@ -279,7 +245,6 @@ fun MainMenuContent(
 }
 
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AnimatedTabItem(
     isActive: Boolean,
@@ -325,8 +290,7 @@ fun AnimatedTabItem(
             AnimatedContent(
                 targetState = isActive,
                 transitionSpec = {
-                    scaleIn(animationSpec = tween(150)) + fadeIn() with
-                            scaleOut(animationSpec = tween(150)) + fadeOut()
+                    (scaleIn(animationSpec = tween(150)) + fadeIn()).togetherWith(scaleOut(animationSpec = tween(150)) + fadeOut())
                 }
             ) { active ->
                 Image(

@@ -42,7 +42,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
@@ -54,8 +53,8 @@ fun SoulStatisticsContent() {
     val spaceCell = 8.dp
 
     var maxDays = 0
-    for (habit in habits) {
-        maxDays = max(habit.habitDay.size, maxDays)
+    for (habit in LocalSaveManager.data.habits) {
+        maxDays = max(habit.totalDays(), maxDays)
     }
     val seeColor = getSeeSoulColor()
     val noSeeColor = getNoSeeSoulColor()
@@ -278,35 +277,31 @@ fun SoulStatisticsContent() {
             /**
              * Level changed
              */
-            if (Clock.System.now()
-                    .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays() - soul_last_level_change_date.toEpochDays() >= 20
+            if (kotlin.time.Clock.System.now()
+                    .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays() - LocalSaveManager.data.soulLastLevelChangeDate.toEpochDays() >= 20
             ) {
                 var goodProgress = 0
                 if (progressAll(maxDays) >= 0.8) {
-                    for (x in (maxDays - 20) until maxDays) {
-                        if (x >= 0) {
-                            if (progressAll(maxDays, endIndex = x) >= 0.8) {
-                                goodProgress++
-                            }
+                    for (day in dateNow().minusDays(19)..dateNow()) {
+                        if (progressAll(maxDays, toDate = day) >= 0.8) {
+                            goodProgress++
                         }
                     }
                     if (goodProgress == 20) {
-                        soul_level++
-                        soul_last_level_change_date =
-                            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+                        LocalSaveManager.data.soulLevel++
+                        LocalSaveManager.data.soulLastLevelChangeDate =
+                            kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
                     }
                 } else if (progressAll(maxDays) <= 0.2) {
-                    for (x in (maxDays - 20) until maxDays) {
-                        if (x >= 0) {
-                            if (progressAll(maxDays, endIndex = x) <= 0.2) {
-                                goodProgress++
-                            }
+                    for (day in dateNow().minusDays(19)..dateNow()) {
+                        if (progressAll(maxDays, toDate = day) <= 0.2) {
+                            goodProgress++
                         }
                     }
                     if (goodProgress == 20) {
-                        soul_level--
-                        soul_last_level_change_date =
-                            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+                        LocalSaveManager.data.soulLevel--
+                        LocalSaveManager.data.soulLastLevelChangeDate =
+                            kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
                     }
                 }
             }
@@ -341,26 +336,20 @@ fun SoulStatisticsContent() {
 
                     goodProgress = 0f
                     if (progressAll(maxDays) >= 0.8) {
-                        for (x in (maxDays - (Clock.System.now()
-                            .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays() - soul_last_level_change_date.toEpochDays())) until maxDays) {
-                            if (x >= 0) {
-                                if (progressAll(maxDays, endIndex = x) >= 0.8) {
-                                    goodProgress++
-                                } else {
-                                    goodProgress = 0f
-                                }
+                        for (day in LocalSaveManager.data.soulLastLevelChangeDate.plusDays(1)..dateNow()) {
+                            if (progressAll(maxDays, toDate = day) >= 0.8) {
+                                goodProgress++
+                            } else {
+                                goodProgress = 0f
                             }
                         }
                         progressUp = true
                     } else if (progressAll(maxDays) <= 0.2) {
-                        for (x in (maxDays - (Clock.System.now()
-                            .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays() - soul_last_level_change_date.toEpochDays())) until maxDays) {
-                            if (x >= 0) {
-                                if (progressAll(maxDays, endIndex = x) <= 0.2) {
-                                    goodProgress++
-                                } else {
-                                    goodProgress = 0f
-                                }
+                        for (day in LocalSaveManager.data.soulLastLevelChangeDate.plusDays(1)..dateNow()) {
+                            if (progressAll(maxDays, toDate = day) <= 0.2) {
+                                goodProgress++
+                            } else {
+                                goodProgress = 0f
                             }
                         }
                         progressUp = false
@@ -386,7 +375,7 @@ fun SoulStatisticsContent() {
                                 strokeWidth = 10.dp
                             )
                             Text(
-                                text = if (goodProgress == 0f) "$soul_level" else (if (progressUp) "$soul_level ⬆" else "$soul_level ⬇"),
+                                text = if (goodProgress == 0f) "${LocalSaveManager.data.soulLevel}" else (if (progressUp) "${LocalSaveManager.data.soulLevel} ⬆" else "${LocalSaveManager.data.soulLevel} ⬇"),
                                 fontSize = 16.sp,
                                 fontWeight = if (goodProgress == 0f) FontWeight.Normal else FontWeight.Bold,
                                 color = if (goodProgress == 0f) UICT_see else (if (progressUp) Color.Green else Color.Red)

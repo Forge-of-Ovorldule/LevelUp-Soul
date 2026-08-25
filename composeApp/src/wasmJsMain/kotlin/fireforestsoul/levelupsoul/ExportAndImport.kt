@@ -9,6 +9,7 @@
 
 package fireforestsoul.levelupsoul
 
+@OptIn(ExperimentalWasmJsInterop::class)
 actual fun export() {
     js(
         """
@@ -31,6 +32,7 @@ actual fun export() {
     )
 }
 
+@OptIn(ExperimentalWasmJsInterop::class)
 actual fun import(onImported: () -> Unit) {
     js(
         """

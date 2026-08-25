@@ -9,7 +9,12 @@
 
 package fireforestsoul.levelupsoul
 
-enum class TypeOfColorHabits {
-    ADAPTIVE,
-    SELECTED
+import fireforestsoul.levelupsoul.OldSaveSystem.loadedElementToVal
+import kotlinx.browser.localStorage
+
+actual object HelpOldSaveSystem {
+    actual fun <T> loadValue(value: T, name: String): T {
+        val serialized = localStorage.getItem(name) ?: return value
+        return serialized.loadedElementToVal(value)
+    }
 }

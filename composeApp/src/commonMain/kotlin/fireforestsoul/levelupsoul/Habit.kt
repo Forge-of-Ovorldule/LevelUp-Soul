@@ -11,62 +11,67 @@ package fireforestsoul.levelupsoul
 
 import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.daysUntil
+import kotlinx.datetime.downTo
+import kotlinx.datetime.minus
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import kotlin.math.max
 import kotlin.math.min
 
+@Serializable
 class Habit(
     var nameOfHabit: String = ts_New_habit,
     var nameOfUnitsOfDimension: String = ts_km,
-    var typeOfGoalHabits: TypeOfGoalHabits = TypeOfGoalHabits.AT_LEAST,
-    var needGoal: BigDecimal = BigDecimal.ONE,
-    var needDays: Int = 1,
-    var typeOfColorHabits: TypeOfColorHabits = TypeOfColorHabits.SELECTED,
-    var colorGood: Color = UICT_see,
+    var typeOfGoal: TypeOfGoalHabit = TypeOfGoalHabit.AT_LEAST,
+    @Serializable(with = BigDecimalAsStringSerializer::class) var numericalGoal: BigDecimal = BigDecimal.ONE,
+    var periodForGoalCompletion: Int = 1,
+    var typeOfColor: TypeOfColorHabit = TypeOfColorHabit.SELECTED,
+    @Contextual var color: Color = UICT_see,
     var changeLevel: Boolean = true,
-    var changeNeedGoalWithLevel: Boolean = false,
-    var changeNeedDaysWithLevel: Boolean = false,
-    var iconChar: String = ""
+    var changeNumericalGoalWithLevel: Boolean = false,
+    var changePeriodForGoalCompletionWithLevel: Boolean = false,
+    var icon: String = ""
 ) {
 
-    var startDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-    var lastLevelChangeDate: LocalDate = startDate
+    var lastLevelChangeDate: LocalDate = dateNow()
     var level: Int = 0
-    var habitDay: MutableList<HabitDay> = MutableList(1) { HabitDay(0.toBigDecimal()) }
-    var phantomNeedDays = needDays.toBigDecimal()
+    var habitDay: HashMap<LocalDate, HabitDay> = hashMapOf()
 
-    fun updateDate() {
-        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-        val addDays: Int = (today.toEpochDays() - startDate.toEpochDays() - habitDay.size + 1)
+    @Serializable(with = BigDecimalAsStringSerializer::class)
+    var phantomPeriodForGoalCompletionWithLevel: BigDecimal = periodForGoalCompletion.toBigDecimal()
 
-        if (addDays > 0) {
-            habitDay.addAll(List(addDays) { HabitDay(0.toBigDecimal()) })
-        }
-
-        update()
+    fun clearOfDefaults() {
+        habitDay.entries.removeAll { it.value.today == BigDecimal.ZERO }
     }
 
-    fun updateHabitDay(index: Int) {
-        habitDay[index].totalOfAPeriod = 0.toBigDecimal()
-        for (i in (index - needDays + 1)..index) {
-            if (i >= 0)
-                habitDay[index].totalOfAPeriod += habitDay[i].today
+    fun setDayValue(date: LocalDate, value: BigDecimal) {
+        if (value == BigDecimal.ZERO) {
+            habitDay.remove(date)
+        } else {
+            habitDay[date] = HabitDay(value)
         }
-        when (typeOfGoalHabits) {
-            TypeOfGoalHabits.NO_MORE -> habitDay[index].correctly = (habitDay[index].totalOfAPeriod <= needGoal)
-            TypeOfGoalHabits.AT_LEAST -> habitDay[index].correctly = (habitDay[index].totalOfAPeriod >= needGoal)
+    }
+
+    fun totalOfAPeriod(toDate: LocalDate): BigDecimal {
+        var sum = BigDecimal.ZERO
+        for (i in toDate.minus(periodForGoalCompletion - 1, DateTimeUnit.DAY)..toDate) {
+            sum += habitDay[i]?.today ?: BigDecimal.ZERO
+        }
+        return sum
+    }
+
+    fun correctly(toDate: LocalDate): Boolean {
+        return when (typeOfGoal) {
+            TypeOfGoalHabit.AT_LEAST -> totalOfAPeriod(toDate) >= numericalGoal
+            TypeOfGoalHabit.NO_MORE -> totalOfAPeriod(toDate) <= numericalGoal
         }
     }
 
     fun update(sortedHabits: MutableList<Int> = mutableListOf()) {
-        for (i in habitDay.indices) {
-            updateHabitDay(i)
-        }
-
         if (sortedHabits.isNotEmpty()) {
             sortedHabits.sortSystem()
         }
@@ -76,28 +81,27 @@ class Habit(
         }
     }
 
-    fun changeLvl() {
-        if (Clock.System.now()
-                .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays() - lastLevelChangeDate.toEpochDays() >= 20
+    private fun minDate(): LocalDate = habitDay.keys.minOrNull() ?: dateNow()
+    fun startDate(): LocalDate = minDate()
+    fun totalDays(): Int = startDate().daysUntil(dateNow()) + 1
+
+    private fun changeLvl() {
+        if (dateNow().toEpochDays() - lastLevelChangeDate.toEpochDays() >= 20
         ) {
             var goodProgress = 0
             if (progress(this) >= 0.8) {
-                for (x in (habitDay.size - 20) until habitDay.size) {
-                    if (x >= 0) {
-                        if (progress(this, startIndex = x) >= 0.8) {
-                            goodProgress++
-                        }
+                for (x in (dateNow().minus(19, DateTimeUnit.DAY))..dateNow()) {
+                    if (progress(this, toDate = x) >= 0.8) {
+                        goodProgress++
                     }
                 }
                 if (goodProgress == 20) {
                     lvlUp()
                 }
             } else if (progress(this) <= 0.2) {
-                for (x in (habitDay.size - 20) until habitDay.size) {
-                    if (x >= 0) {
-                        if (progress(this, startIndex = x) <= 0.2) {
-                            goodProgress++
-                        }
+                for (day in dateNow().minusDays(19)..dateNow()) {
+                    if (progress(this, toDate = day) <= 0.2) {
+                        goodProgress++
                     }
                 }
                 if (goodProgress == 20) {
@@ -109,151 +113,164 @@ class Habit(
 
     fun lvlUp() {
         level++
-        lastLevelChangeDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-        if (changeNeedDaysWithLevel) {
-            when (typeOfGoalHabits) {
-                TypeOfGoalHabits.AT_LEAST -> phantomNeedDays *= "0.8".toBigDecimal()
-                TypeOfGoalHabits.NO_MORE -> phantomNeedDays /= "0.8".toBigDecimal()
+        lastLevelChangeDate = dateNow()
+        if (changePeriodForGoalCompletionWithLevel) {
+            when (typeOfGoal) {
+                TypeOfGoalHabit.AT_LEAST -> phantomPeriodForGoalCompletionWithLevel *= "0.8".toBigDecimal()
+                TypeOfGoalHabit.NO_MORE -> phantomPeriodForGoalCompletionWithLevel /= "0.8".toBigDecimal()
             }
-            needDays =
-                if (phantomNeedDays == phantomNeedDays.intValue(false)
+            periodForGoalCompletion =
+                if (phantomPeriodForGoalCompletionWithLevel == phantomPeriodForGoalCompletionWithLevel.intValue(false)
                         .toBigDecimal()
-                ) phantomNeedDays.intValue(false) else phantomNeedDays.intValue(
+                ) phantomPeriodForGoalCompletionWithLevel.intValue(false) else phantomPeriodForGoalCompletionWithLevel.intValue(
                     false
                 ) + 1
         }
-        if (changeNeedGoalWithLevel) {
-            when (typeOfGoalHabits) {
-                TypeOfGoalHabits.AT_LEAST -> needGoal /= "0.8".toBigDecimal()
-                TypeOfGoalHabits.NO_MORE -> needGoal *= "0.8".toBigDecimal()
+        if (changeNumericalGoalWithLevel) {
+            when (typeOfGoal) {
+                TypeOfGoalHabit.AT_LEAST -> numericalGoal /= "0.8".toBigDecimal()
+                TypeOfGoalHabit.NO_MORE -> numericalGoal *= "0.8".toBigDecimal()
             }
         }
     }
 
     fun lvlDown() {
         level--
-        lastLevelChangeDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-        if (changeNeedDaysWithLevel) {
-            when (typeOfGoalHabits) {
-                TypeOfGoalHabits.AT_LEAST -> phantomNeedDays /= 0.8
-                TypeOfGoalHabits.NO_MORE -> phantomNeedDays *= "0.8".toBigDecimal()
+        lastLevelChangeDate = dateNow()
+        if (changePeriodForGoalCompletionWithLevel) {
+            when (typeOfGoal) {
+                TypeOfGoalHabit.AT_LEAST -> phantomPeriodForGoalCompletionWithLevel /= 0.8
+                TypeOfGoalHabit.NO_MORE -> phantomPeriodForGoalCompletionWithLevel *= "0.8".toBigDecimal()
             }
-            needDays =
-                if (phantomNeedDays == phantomNeedDays.intValue(false)
+            periodForGoalCompletion =
+                if (phantomPeriodForGoalCompletionWithLevel == phantomPeriodForGoalCompletionWithLevel.intValue(false)
                         .toBigDecimal()
-                ) phantomNeedDays.intValue(false) else phantomNeedDays.intValue(
+                ) phantomPeriodForGoalCompletionWithLevel.intValue(false) else phantomPeriodForGoalCompletionWithLevel.intValue(
                     false
                 ) + 1
         }
-        if (changeNeedGoalWithLevel) {
-            when (typeOfGoalHabits) {
-                TypeOfGoalHabits.AT_LEAST -> needGoal *= "0.8".toBigDecimal()
-                TypeOfGoalHabits.NO_MORE -> needGoal /= "0.8".toBigDecimal()
+        if (changeNumericalGoalWithLevel) {
+            when (typeOfGoal) {
+                TypeOfGoalHabit.AT_LEAST -> numericalGoal *= "0.8".toBigDecimal()
+                TypeOfGoalHabit.NO_MORE -> numericalGoal /= "0.8".toBigDecimal()
             }
         }
     }
 
-    fun getToLevelUp(pps: Int = habitDay.size - 1): Float {
-        var end = habitDay.size - 20
-        end = if (end < 0) 0 else end
-        end =
-            if (end < lastLevelChangeDate.toEpochDays() - startDate.toEpochDays()) lastLevelChangeDate.toEpochDays() - startDate.toEpochDays() else end
+    fun getToLevelUp(daysToCalculateAverage: Int = totalDays()): Float {
+        val isProgressUp = if (progress(this, daysToCalculateAverage) <= 0.2f) false else (
+                if (progress(this, daysToCalculateAverage) >= 0.8f) true else return 0f
+                )
 
-        var progress = 0f
-        val isProgressUp = if (progress(this, pps) <= 0.2f) false else true
-        for (index in (habitDay.size - 1) downTo end) {
+        var progress = 0
+
+        for (day in dateNow() downTo dateNow().minusDays(19)) {
             if (isProgressUp) {
-                if (progress(this, pps, index) >= 0.8f) progress++
-                else break
+                if (progress(this, daysToCalculateAverage, day) >= 0.8f) progress++
+                else return progress.toFloat() / 20f
             } else {
-                if (progress(this, pps, index) <= 0.2f) progress--
-                else break
+                if (progress(this, daysToCalculateAverage, day) <= 0.2f) progress--
+                else return progress.toFloat() / 20f
             }
         }
-        return progress / 20f
+        return progress.toFloat() / 20f
     }
 
     fun getNeedGoalWhenNewLevel(
-        pps: Int = habitDay.size - 1,
-        isProgressUp: Boolean = if (progress(this, pps) <= 0.2f) false else true
+        daysToCalculateAverage: Int = totalDays(),
+        isProgressUp: Boolean = if (progress(this, daysToCalculateAverage) <= 0.2f) false else true
     ): BigDecimal {
-        if (changeNeedGoalWithLevel) {
+        if (changeNumericalGoalWithLevel) {
             return if (isProgressUp) {
-                when (typeOfGoalHabits) {
-                    TypeOfGoalHabits.AT_LEAST -> needGoal / "0.8".toBigDecimal()
-                    TypeOfGoalHabits.NO_MORE -> needGoal * "0.8".toBigDecimal()
+                when (typeOfGoal) {
+                    TypeOfGoalHabit.AT_LEAST -> numericalGoal / "0.8".toBigDecimal()
+                    TypeOfGoalHabit.NO_MORE -> numericalGoal * "0.8".toBigDecimal()
                 }
             } else {
-                when (typeOfGoalHabits) {
-                    TypeOfGoalHabits.AT_LEAST -> needGoal * "0.8".toBigDecimal()
-                    TypeOfGoalHabits.NO_MORE -> needGoal / "0.8".toBigDecimal()
+                when (typeOfGoal) {
+                    TypeOfGoalHabit.AT_LEAST -> numericalGoal * "0.8".toBigDecimal()
+                    TypeOfGoalHabit.NO_MORE -> numericalGoal / "0.8".toBigDecimal()
                 }
             }
         }
-        return needGoal
+        return numericalGoal
     }
 
     fun getPhantomNeedDaysWhenNewLevel(
-        pps: Int = habitDay.size - 1,
-        isProgressUp: Boolean = if (progress(this, pps) <= 0.2f) false else true
+        daysToCalculateAverage: Int = totalDays(),
+        isProgressUp: Boolean = if (progress(this, daysToCalculateAverage) <= 0.2f) false else true
     ): BigDecimal {
-        if (changeNeedDaysWithLevel) {
+        if (changePeriodForGoalCompletionWithLevel) {
             return if (isProgressUp) {
-                when (typeOfGoalHabits) {
-                    TypeOfGoalHabits.AT_LEAST -> phantomNeedDays * "0.8".toBigDecimal()
-                    TypeOfGoalHabits.NO_MORE -> phantomNeedDays / "0.8".toBigDecimal()
+                when (typeOfGoal) {
+                    TypeOfGoalHabit.AT_LEAST -> phantomPeriodForGoalCompletionWithLevel * "0.8".toBigDecimal()
+                    TypeOfGoalHabit.NO_MORE -> phantomPeriodForGoalCompletionWithLevel / "0.8".toBigDecimal()
                 }
             } else {
-                when (typeOfGoalHabits) {
-                    TypeOfGoalHabits.AT_LEAST -> phantomNeedDays / 0.8
-                    TypeOfGoalHabits.NO_MORE -> phantomNeedDays * "0.8".toBigDecimal()
+                when (typeOfGoal) {
+                    TypeOfGoalHabit.AT_LEAST -> phantomPeriodForGoalCompletionWithLevel / 0.8
+                    TypeOfGoalHabit.NO_MORE -> phantomPeriodForGoalCompletionWithLevel * "0.8".toBigDecimal()
                 }
             }
         }
-        return phantomNeedDays
+        return phantomPeriodForGoalCompletionWithLevel
     }
 
     fun getNeedDaysWhenNewLevel(
-        pps: Int = habitDay.size - 1,
-        isProgressUp: Boolean = if (progress(this, pps) <= 0.2f) false else true
+        daysToCalculateAverage: Int = totalDays(),
+        isProgressUp: Boolean = if (progress(this, daysToCalculateAverage) <= 0.2f) false else true
     ): Int {
-        if (changeNeedDaysWithLevel) {
-            return if (getPhantomNeedDaysWhenNewLevel(pps, isProgressUp) - getPhantomNeedDaysWhenNewLevel(
-                    pps,
+        if (changePeriodForGoalCompletionWithLevel) {
+            return if (getPhantomNeedDaysWhenNewLevel(
+                    daysToCalculateAverage,
+                    isProgressUp
+                ) - getPhantomNeedDaysWhenNewLevel(
+                    daysToCalculateAverage,
                     isProgressUp
                 ).intValue(false) != BigDecimal.ZERO
             )
-                getPhantomNeedDaysWhenNewLevel(pps, isProgressUp).intValue(false) + 1
+                getPhantomNeedDaysWhenNewLevel(daysToCalculateAverage, isProgressUp).intValue(false) + 1
             else
-                getPhantomNeedDaysWhenNewLevel(pps, isProgressUp).intValue(false)
+                getPhantomNeedDaysWhenNewLevel(daysToCalculateAverage, isProgressUp).intValue(false)
         }
-        return needDays
+        return periodForGoalCompletion
     }
 
-    fun loadNeedDays(value: Int) {
-        needDays = value
-        phantomNeedDays = value.toBigDecimal()
+    fun progress(
+        daysToCalculateAverage: Int = totalDays(),
+        toDate: LocalDate = dateNow()
+    ): Float {
+        if (daysToCalculateAverage <= 0) {
+            return 0f
+        }
+
+        var correctly = 0
+        for (day in toDate.minus(daysToCalculateAverage - 1, DateTimeUnit.DAY)..toDate) {
+            if (correctly(day)) correctly++
+        }
+        return correctly.toFloat() / daysToCalculateAverage
     }
 }
 
 fun MutableList<Int>.sortSystem() {
     this.sortByDescending { if (habitStreaks(it).isNotEmpty()) habitStreaks(it)[0] else 0 }
-    if (smart_sort) {
+    if (LocalSaveManager.data.smartSort) {
         var maxLevel = Int.MIN_VALUE
         var minLevel = Int.MAX_VALUE
-        for (habit in habits) {
+        for (habit in LocalSaveManager.data.habits) {
             maxLevel = max(habit.level, maxLevel)
             minLevel = min(habit.level, minLevel)
         }
         if (maxLevel != minLevel)
             this.sortByDescending {
-                val kLevel = (habits[it].level - minLevel).toFloat() / (maxLevel - minLevel).toFloat()
+                val kLevel =
+                    (LocalSaveManager.data.habits[it].level - minLevel).toFloat() / (maxLevel - minLevel).toFloat()
                 kLevel + progress(it)
             }
         else
             this.sortByDescending { progress(it) }
     } else {
-        this.sortByDescending { habits[it].level }
+        this.sortByDescending { LocalSaveManager.data.habits[it].level }
         this.sortByDescending { progress(it) }
     }
 }

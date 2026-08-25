@@ -59,16 +59,16 @@ fun CreateHabit(viewModel: AppViewModel) {
 
     val habit = Habit()
     var nameOfHabit by remember { mutableStateOf("") }
-    var icon by remember { mutableStateOf(habit.iconChar) }
-    var typeOfColorHabits by remember { mutableStateOf(habit.typeOfColorHabits) }
-    var colorGood by remember { mutableStateOf(habit.colorGood) }
-    var typeOfGoalHabits by remember { mutableStateOf(habit.typeOfGoalHabits) }
-    var needGoal by remember { mutableStateOf(habit.needGoal.toBestString()) }
+    var icon by remember { mutableStateOf(habit.icon) }
+    var typeOfColorHabits by remember { mutableStateOf(habit.typeOfColor) }
+    var colorGood by remember { mutableStateOf(habit.color) }
+    var typeOfGoalHabits by remember { mutableStateOf(habit.typeOfGoal) }
+    var needGoal by remember { mutableStateOf(habit.numericalGoal.toBestString()) }
     var nameOfUnitsOfDimension by remember { mutableStateOf("") }
-    var needDays by remember { mutableStateOf(habit.needDays.toString()) }
+    var needDays by remember { mutableStateOf(habit.periodForGoalCompletion.toString()) }
     var changeLevel by remember { mutableStateOf(habit.changeLevel) }
-    var changeNeedGoalWithLevel by remember { mutableStateOf(habit.changeNeedGoalWithLevel) }
-    var changeNeedDaysWithLevel by remember { mutableStateOf(habit.changeNeedDaysWithLevel) }
+    var changeNeedGoalWithLevel by remember { mutableStateOf(habit.changeNumericalGoalWithLevel) }
+    var changeNeedDaysWithLevel by remember { mutableStateOf(habit.changePeriodForGoalCompletionWithLevel) }
 
     val spaceX = 4.dp
     val spaceY = 4.dp
@@ -121,22 +121,23 @@ fun CreateHabit(viewModel: AppViewModel) {
                         color = Color(150, 200, 150),
                         modifier = Modifier.clickable {
                             habit.nameOfHabit = nameOfHabit
-                            habit.typeOfColorHabits = typeOfColorHabits
-                            habit.colorGood = colorGood
-                            habit.typeOfGoalHabits = typeOfGoalHabits
-                            habit.needGoal =
-                                if (needGoal.toDoubleOrNull() != null) needGoal.toBigDecimal() else habit.needGoal
+                            habit.typeOfColor = typeOfColorHabits
+                            habit.color = colorGood
+                            habit.typeOfGoal = typeOfGoalHabits
+                            habit.numericalGoal =
+                                if (needGoal.toDoubleOrNull() != null) needGoal.toBigDecimal() else habit.numericalGoal
                             habit.nameOfUnitsOfDimension = nameOfUnitsOfDimension
-                            habit.needDays =
-                                (if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else habit.needDays)!!
+                            habit.periodForGoalCompletion =
+                                ((if (needDays.toIntOrNull() != null) needDays.toIntOrNull() else habit.periodForGoalCompletion)
+                                    ?: return@clickable)
                             habit.changeLevel = changeLevel
-                            habit.changeNeedGoalWithLevel = changeNeedGoalWithLevel
-                            habit.changeNeedDaysWithLevel = changeNeedDaysWithLevel
-                            habit.iconChar = icon
-                            habit.phantomNeedDays = habit.needDays.toBigDecimal()
+                            habit.changeNumericalGoalWithLevel = changeNeedGoalWithLevel
+                            habit.changePeriodForGoalCompletionWithLevel = changeNeedDaysWithLevel
+                            habit.icon = icon
+                            habit.phantomPeriodForGoalCompletionWithLevel = habit.periodForGoalCompletion.toBigDecimal()
                             habit.update()
-                            habits.add(habit)
-                            habits.save()
+                            LocalSaveManager.data.habits.add(habit)
+                            LocalSaveManager.save()
                             viewModel.setStatus(AppStatus.TABLE)
                         }
                     )
@@ -212,7 +213,7 @@ fun CreateHabit(viewModel: AppViewModel) {
                             onValueChange = { icon = it },
                             label = {
                                 Text(
-                                    habit.iconChar,
+                                    habit.icon,
                                     fontSize = 12.sp,
                                     color = UICT_no_see
                                 )
@@ -270,7 +271,7 @@ fun CreateHabit(viewModel: AppViewModel) {
                                 onDismissRequest = { expanded0 = false },
                                 modifier = Modifier.background(UIC_extra_dark)
                             ) {
-                                TypeOfColorHabits.entries.forEach { mode ->
+                                TypeOfColorHabit.entries.forEach { mode ->
                                     DropdownMenuItem(
                                         onClick = {
                                             typeOfColorHabits = mode
@@ -343,7 +344,7 @@ fun CreateHabit(viewModel: AppViewModel) {
                                     onDismissRequest = { expanded1 = false },
                                     modifier = Modifier.background(UIC_extra_dark)
                                 ) {
-                                    TypeOfGoalHabits.entries.forEach { mode ->
+                                    TypeOfGoalHabit.entries.forEach { mode ->
                                         DropdownMenuItem(
                                             onClick = {
                                                 typeOfGoalHabits = mode
@@ -376,7 +377,7 @@ fun CreateHabit(viewModel: AppViewModel) {
                                 onValueChange = { needGoal = it },
                                 label = {
                                     Text(
-                                        "$ts_Example: ${habit.needGoal.toBestString()}",
+                                        "$ts_Example: ${habit.numericalGoal.toBestString()}",
                                         fontSize = 12.sp,
                                         color = UICT_no_see
                                     )
@@ -447,7 +448,7 @@ fun CreateHabit(viewModel: AppViewModel) {
                                 onValueChange = { needDays = it },
                                 label = {
                                     Text(
-                                        "$ts_Example: ${habit.needDays}",
+                                        "$ts_Example: ${habit.periodForGoalCompletion}",
                                         fontSize = 12.sp,
                                         color = UICT_no_see
                                     )

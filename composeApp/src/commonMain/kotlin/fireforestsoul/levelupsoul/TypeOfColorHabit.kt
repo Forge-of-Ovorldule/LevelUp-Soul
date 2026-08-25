@@ -9,10 +9,10 @@
 
 package fireforestsoul.levelupsoul
 
-class Greeting {
-    private val platform = getPlatform()
+import kotlinx.serialization.Serializable
 
-    fun greet(): String {
-        return "Hello, ${platform.name}!"
-    }
+@Serializable
+enum class TypeOfColorHabit {
+    ADAPTIVE,
+    SELECTED
 }

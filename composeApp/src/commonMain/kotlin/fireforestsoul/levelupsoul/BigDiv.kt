@@ -39,8 +39,3 @@ fun BigDecimal.saveDiv(other: Int): BigDecimal {
     return this.divide(other.toBigDecimal(), mode)
 }
 
-fun BigDecimal.saveDiv(other: Long): BigDecimal {
-    if (other == 0L)
-        return this
-    return this.divide(other.toBigDecimal(), mode)
-}

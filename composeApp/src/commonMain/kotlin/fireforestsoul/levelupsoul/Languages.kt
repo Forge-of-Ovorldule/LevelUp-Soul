@@ -9,6 +9,9 @@
 
 package fireforestsoul.levelupsoul
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class Languages {
     EN,
     RU

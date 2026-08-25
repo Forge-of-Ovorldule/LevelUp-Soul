@@ -1,29 +1,26 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
-import java.util.Properties
 import java.io.FileInputStream
+import java.util.*
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
 
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -37,7 +34,7 @@ kotlin {
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        moduleName = "LevelUp-Soul"
+        outputModuleName = "LevelUp-Soul"
         browser {
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
@@ -59,24 +56,28 @@ kotlin {
         val androidMain by getting
 
         androidMain.dependencies {
-            implementation("androidx.core:core-ktx:1.12.0")
-            implementation(compose.preview)
+            implementation(libs.androidx.core.ktx.v1120)
+            implementation(libs.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
-            implementation("org.json:json:20231013")
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+            implementation(libs.json)
+            implementation(libs.kotlinx.serialization.json)
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.runtime)
+            implementation(libs.foundation)
+            implementation(libs.material3)
+            implementation(libs.ui)
+            implementation(libs.components.resources)
+            implementation(libs.ui.tooling.preview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
-            implementation("com.ionspin.kotlin:bignum:0.3.10")
-            implementation("dev.chrisbanes.haze:haze:1.6.0")
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.bignum)
+            implementation(libs.bignum.serialization.kotlinx)
+            implementation(libs.haze)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.okio)
+            implementation(libs.kotlinx.coroutines.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -84,19 +85,22 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+            implementation(libs.kotlinx.serialization.json.v190)
         }
         wasmJsMain.dependencies {
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+            implementation(libs.kotlinx.serialization.json.v180)
         }
     }
 }
 
-val keystoreProperties = Properties()
-val keystoreFile = rootProject.file("composeApp/src/androidMain/keystore.properties")
+val keystoreProperties: Properties = Properties()
+val keystoreFile: File = rootProject.file("composeApp/src/androidMain/keystore.properties")
 if (keystoreFile.exists()) {
     FileInputStream(keystoreFile).use { keystoreProperties.load(it) }
 }
+
+val appVersionCode: Int = 11
+val appVersionName: String = "1.3.0"
 
 android {
     namespace = "fireforestsoul.levelupsoul"
@@ -108,10 +112,10 @@ android {
     defaultConfig {
         applicationId = "fireforestsoul.levelupsoul"
         minSdk = libs.versions.android.minSdk.get().toInt()
+        //noinspection OldTargetApi
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 10
-        versionName = "1.2.0"
-        setProperty("archivesBaseName", "LevelUpSoul-v$versionName")
+        versionCode = appVersionCode
+        versionName = appVersionName
     }
     packaging {
         resources {
@@ -153,8 +157,12 @@ android {
     }
 }
 
+base {
+    archivesName.set("LevelUp-Soul-$appVersionName")
+}
+
 dependencies {
-    debugImplementation(compose.uiTooling)
+    debugImplementation(libs.ui.tooling)
 }
 
 compose.desktop {
@@ -182,7 +190,7 @@ compose.desktop {
             )
 
             packageName = "LevelUpSoul"
-            packageVersion = "1.2.0"
+            packageVersion = appVersionName
 
             linux {
                 iconFile.set(project.file("src/desktopMain/resources/app_icon.png"))

@@ -58,10 +58,10 @@ import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.times
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.isoDayNumber
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 
@@ -233,7 +233,7 @@ fun DeleteHabitConfirm(index: Int, onDeleteConfirmed: () -> Unit) {
             },
             text = {
                 Text(
-                    text = "$ts_Are_you_sure_you_want_to_remove_the <${habits[index].nameOfHabit}>",
+                    text = "$ts_Are_you_sure_you_want_to_remove_the <${LocalSaveManager.data.habits[index].nameOfHabit}>",
                     fontSize = 16.sp,
                     color = UICT_see,
                 )
@@ -269,8 +269,8 @@ fun DatePickerDialog(
     onConfirm: (LocalDate) -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    var day by remember { mutableStateOf(initialDate.dayOfMonth.toString()) }
-    var month by remember { mutableStateOf(initialDate.monthNumber.toString()) }
+    var day by remember { mutableStateOf(initialDate.day.toString()) }
+    var month by remember { mutableStateOf(initialDate.month.number.toString()) }
     var year by remember { mutableStateOf(initialDate.year.toString()) }
 
     IconButton(onClick = {
@@ -449,7 +449,7 @@ fun DatePickerDialog(
                         onClick = {
                             showDialog = false
                             onConfirm(
-                                Clock.System.now()
+                                kotlin.time.Clock.System.now()
                                     .toLocalDateTime(TimeZone.currentSystemDefault()).date
                             )
                         },
@@ -487,16 +487,16 @@ fun SettingsDialog() {
         )
     }
 
-    var typeOfColor by remember { mutableStateOf(soul_color_type) }
-    var exponent by remember { mutableStateOf(withExponent) }
-    var soulName by remember { mutableStateOf(soul_name) }
-    var soulColor by remember { mutableStateOf(soul_color) }
+    var typeOfColor by remember { mutableStateOf(LocalSaveManager.data.soulColorType) }
+    var exponent by remember { mutableStateOf(LocalSaveManager.data.withExponent) }
+    var soulName by remember { mutableStateOf(LocalSaveManager.data.soulName) }
+    var soulColor by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
     var sortHabitStatisticsSectionsByFrequencyOfUse by remember {
         mutableStateOf(
-            sort_habit_statistics_sections_by_frequency_of_use
+            LocalSaveManager.data.sortHabitStatisticsSectionsByFrequencyOfUse
         )
     }
-    var smartSort by remember { mutableStateOf(smart_sort) }
+    var smartSort by remember { mutableStateOf(LocalSaveManager.data.smartSort) }
 
     if (showDialog) {
         AlertDialog(
@@ -585,7 +585,7 @@ fun SettingsDialog() {
                                 onDismissRequest = { expanded = false },
                                 modifier = Modifier.background(Color.Black)
                             ) {
-                                TypeOfColorHabits.entries.forEach { mode ->
+                                TypeOfColorHabit.entries.forEach { mode ->
                                     DropdownMenuItem(
                                         onClick = {
                                             typeOfColor = mode
@@ -656,13 +656,14 @@ fun SettingsDialog() {
             confirmButton = {
                 Button(
                     onClick = {
-                        withExponent = exponent
-                        soul_name = soulName
-                        soul_color = soulColor
-                        soul_color_type = typeOfColor
-                        sort_habit_statistics_sections_by_frequency_of_use = sortHabitStatisticsSectionsByFrequencyOfUse
-                        smart_sort = smartSort
-                        saveSettings()
+                        LocalSaveManager.data.withExponent = exponent
+                        LocalSaveManager.data.soulName = soulName
+                        LocalSaveManager.data.soulColor = soulColor
+                        LocalSaveManager.data.soulColorType = typeOfColor
+                        LocalSaveManager.data.sortHabitStatisticsSectionsByFrequencyOfUse =
+                            sortHabitStatisticsSectionsByFrequencyOfUse
+                        LocalSaveManager.data.smartSort = smartSort
+                        LocalSaveManager.save()
                         showDialog = false
                     },
                     colors = ButtonColors(
@@ -782,7 +783,7 @@ fun AnimatedLineChart(
     yMax: Float,
     ySteps: Int = 5,
     lineAndDotColor: Color = Color(0xFF3F51B5),
-    modifier: Modifier = Modifier
+    @Suppress("ModifierParameter") modifier: Modifier = Modifier
 ) {
     val animatedProgress = remember { Animatable(0f) }
 
@@ -933,14 +934,14 @@ fun SoulGrid(
     maxDays: Int,
     states: List<BigDecimal> = listTodayAll(maxDays, 1),
     colorBest: Color,
-    modifier: Modifier = Modifier
+    @Suppress("ModifierParameter") modifier: Modifier = Modifier
 ) {
     var oldestHabit = Habit()
-    for (habit in habits) {
-        if (habit.startDate.toEpochDays() < oldestHabit.startDate.toEpochDays()) oldestHabit = habit
+    for (habit in LocalSaveManager.data.habits) {
+        if (habit.startDate().toEpochDays() < oldestHabit.startDate().toEpochDays()) oldestHabit = habit
     }
     val values: List<Int> = listDaysNumbers(oldestHabit)
-    val startDate = oldestHabit.startDate
+    val startDate = oldestHabit.startDate()
 
     val backgroundColor = UIC_dark_x2
     val boxSize = 20.dp
@@ -970,11 +971,11 @@ fun SoulGrid(
                         } else {
                             val (value, state) = cell
                             val color = Color(
-                                ((colorBest.red * state).saveDiv(if (habits.isNotEmpty()) habits.size else 1)).toString()
+                                ((colorBest.red * state).saveDiv(if (LocalSaveManager.data.habits.isNotEmpty()) LocalSaveManager.data.habits.size else 1)).toString()
                                     .toFloat(),
-                                ((colorBest.green * state).saveDiv(if (habits.isNotEmpty()) habits.size else 1)).toString()
+                                ((colorBest.green * state).saveDiv(if (LocalSaveManager.data.habits.isNotEmpty()) LocalSaveManager.data.habits.size else 1)).toString()
                                     .toFloat(),
-                                ((colorBest.blue * state).saveDiv(if (habits.isNotEmpty()) habits.size else 1)).toString()
+                                ((colorBest.blue * state).saveDiv(if (LocalSaveManager.data.habits.isNotEmpty()) LocalSaveManager.data.habits.size else 1)).toString()
                                     .toFloat()
                             )
                             Box(
@@ -1030,7 +1031,7 @@ fun ValueSetVector(
         ) {
             Text(
                 text = subtitle,
-                fontFamily = JetBrainsFont(),
+                fontFamily = jetBrainsFont(),
                 fontWeight = FontWeight.Thin,
                 fontSize = 12.8.sp / 1.15f,
                 color = UICT_no_see,
@@ -1046,7 +1047,7 @@ fun ValueSetVector(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = TextStyle(
-                    fontFamily = JetBrainsFont(),
+                    fontFamily = jetBrainsFont(),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp / 1.15f,
                     color = if (isGreen) UIC_green else UICT_see,
@@ -1064,7 +1065,7 @@ fun ValueSetVector(
                             it()
                             Text(
                                 text = "/$maxValue",
-                                fontFamily = JetBrainsFont(),
+                                fontFamily = jetBrainsFont(),
                                 fontWeight = FontWeight.Thin,
                                 fontSize = 9.4.sp / 1.15f,
                                 color = UICT_no_see,
@@ -1073,7 +1074,7 @@ fun ValueSetVector(
                             )
                             Text(
                                 text = " $label" + " ".repeat(if (10 - stringValue.length > 0) 10 - stringValue.length else 0),
-                                fontFamily = JetBrainsFont(),
+                                fontFamily = jetBrainsFont(),
                                 fontWeight = if (labelIsBold) FontWeight.Bold else FontWeight.Normal,
                                 fontSize = 16.sp / 1.15f,
                                 color = if (isGreen) UIC_green else UICT_see,

@@ -19,14 +19,14 @@ import org.w3c.dom.events.Event
 fun setupSaveOnClose() {
     window.addEventListener("beforeunload") { _: Event ->
         if (loadIsGood)
-            saveAllValues()
+            LocalSaveManager.save()
     }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
     setupSaveOnClose()
-    ComposeViewport(document.body!!) {
+    ComposeViewport(document.body ?: return) {
         val viewModel = remember { AppViewModel() }
         App(viewModel)
     }

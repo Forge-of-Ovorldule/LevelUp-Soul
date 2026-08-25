@@ -10,84 +10,54 @@
 package fireforestsoul.levelupsoul
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
-import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.plus
+import kotlinx.datetime.*
 
 fun progress(
     index: Int,
-    pps: Int = habits[index].habitDay.size,
-    endIndex: Int = habits[index].habitDay.size - 1
+    daysToCalculateAverage: Int = LocalSaveManager.data.habits[index].totalDays(),
+    toDate: LocalDate = dateNow()
 ): Float {
-    var correctly = 0f
-    var correctlyDays = 0
-    for (indexY in (endIndex - pps + 1)..(endIndex)) {
-        if (indexY in 0..<habits[index].habitDay.size) {
-            if (habits[index].habitDay[indexY].correctly)
-                correctly++
-            correctlyDays++
-        }
-    }
-    return correctly / (if (correctlyDays != 0) correctlyDays else 1)
+    return LocalSaveManager.data.habits[index].progress(daysToCalculateAverage, toDate)
 }
 
 fun progress(
     habit: Habit,
+    daysToCalculateAverage: Int = habit.totalDays(),
+    toDate: LocalDate = dateNow()
 ): Float {
-    var correctly = 0f
-    for (habitDay in habit.habitDay) {
-        if (habitDay.correctly)
-            correctly++
-    }
-    return correctly / (if (habit.habitDay.isNotEmpty()) habit.habitDay.size else 1)
-}
-
-fun progress(
-    habit: Habit,
-    pps: Int = habit.habitDay.size,
-    startIndex: Int = habit.habitDay.size - 1
-): Float {
-    var correctly = 0f
-    var correctlyDays = 0
-    for (indexY in (startIndex - pps + 1)..(startIndex)) {
-        if (indexY in 0..<habit.habitDay.size) {
-            if (habit.habitDay[indexY].correctly)
-                correctly++
-            correctlyDays++
-        }
-    }
-    return correctly / (if (correctlyDays != 0) correctlyDays else 1)
+    return habit.progress(daysToCalculateAverage, toDate)
 }
 
 fun progressAll(
     maxDays: Int,
-    pps: Int = maxDays,
-    endIndex: Int = maxDays - 1
+    daysToCalculateAverage: Int = maxDays,
+    toDate: LocalDate = dateNow()
 ): Float {
+    if (LocalSaveManager.data.habits.isEmpty() || daysToCalculateAverage <= 0) return 0f
+
     var correctly = 0f
-    for (x in 0 until habits.size) {
-        correctly += progress(
-            x,
-            if (pps >= maxDays) habits[x].habitDay.size else pps,
-            habits[x].habitDay.size - maxDays + endIndex
+    for (habit in LocalSaveManager.data.habits) {
+        correctly += habit.progress(
+            if (daysToCalculateAverage >= maxDays) habit.totalDays() else daysToCalculateAverage,
+            toDate
         )
     }
-    return correctly / (if (habits.isNotEmpty()) habits.size else 1)
+    return correctly / LocalSaveManager.data.habits.size
 }
 
 fun plusProgress(
     index: Int,
     period: Int,
-    pps: Int = habits[index].habitDay.size,
-    startIndex: Int = habits[index].habitDay.size - 1
+    daysToCalculateAverage: Int = LocalSaveManager.data.habits[index].totalDays(),
+    toDate: LocalDate = dateNow()
 ): Float {
-    return progress(index, pps, startIndex) -
+    if (index < 0 || index >= LocalSaveManager.data.habits.size || period <= 0 || daysToCalculateAverage <= 0) return 0f
+
+    return progress(index, daysToCalculateAverage, toDate) -
             progress(
                 index,
-                pps,
-                startIndex - period
+                daysToCalculateAverage,
+                toDate.minusDays(period)
             )
 }
 
@@ -95,13 +65,15 @@ fun plusProgressAll(
     maxDays: Int,
     period: Int,
     days: Int = maxDays,
-    startIndex: Int = maxDays - 1
+    toDate: LocalDate = dateNow()
 ): Float {
-    return progressAll(maxDays, days, startIndex) -
+    if (maxDays <= 0 || period <= 0 || days <= 0) return 0f
+
+    return progressAll(maxDays, days, toDate) -
             progressAll(
                 maxDays,
                 days,
-                startIndex - period
+                toDate.minusDays(period)
             )
 }
 
@@ -109,16 +81,20 @@ fun listProgress(
     habitIndex: Int,
     period: Int,
     step: Int,
-    pps: Int = habits[habitIndex].habitDay.size
+    daysToCalculateAverage: Int = LocalSaveManager.data.habits[habitIndex].totalDays()
 ): List<Float> {
+    if (period <= 0 || step <= 0 || daysToCalculateAverage <= 0) return emptyList()
+
     val list = mutableListOf<Float>()
 
     var sum = 0f
     var n = 0
-    for (i in (habits[habitIndex].habitDay.size - 1) downTo (habits[habitIndex].habitDay.size - period)) {
-        sum += progress(habitIndex, pps, i)
+    var i = 0
+    for (day in dateNow() downTo dateNow().minusDays(period - 1)) {
+        sum += progress(habitIndex, daysToCalculateAverage, day)
         n++
-        if ((i + 1) % step == 0 || i == (habits[habitIndex].habitDay.size - period)) {
+        i++
+        if (i % step == 0 || day == dateNow().minusDays(period - 1)) {
             list.add(sum / n)
             sum = 0f
             n = 0
@@ -135,27 +111,35 @@ fun listProgressAll(
     step: Int,
     days: Int = maxDays
 ): List<Float> {
-    var y = maxDays - period
-    val list = mutableListOf(progressAll(maxDays, days, y))
-    y += step
-    while (y < maxDays) {
-        if (y >= 0)
-            list.add(progressAll(maxDays, days, y))
-        y += step
+    if (period <= 0 || step <= 0 || days <= 0 || maxDays <= 0) return emptyList()
+
+    var curDay = dateNow().minusDays(period - 1)
+    val list = mutableListOf(progressAll(maxDays, days, curDay))
+    curDay = curDay.plusDays(step)
+    while (curDay < dateNow()) {
+        list.add(progressAll(maxDays, days, curDay))
+        curDay = curDay.plusDays(step)
     }
     return list
 }
 
 fun listToday(
     habitIndex: Int,
-    step: Int
+    step: Int,
+    startDate: LocalDate = LocalSaveManager.data.habits[habitIndex].startDate()
 ): List<BigDecimal> {
+    if (habitIndex < 0 || habitIndex >= LocalSaveManager.data.habits.size || step <= 0) {
+        return emptyList()
+    }
+
     val list = mutableListOf<BigDecimal>()
 
     var sum = BigDecimal.ZERO
-    for (i in (habits[habitIndex].habitDay.size - 1) downTo 0) {
-        sum += habits[habitIndex].habitDay[i].today
-        if (((i + 1) % step == 0 && step != habits[habitIndex].habitDay.size) || i == 0) {
+    val habit = LocalSaveManager.data.habits[habitIndex]
+
+    for ((i, day) in (dateNow() downTo startDate).withIndex()) {
+        sum += habit.habitDay[day]?.today ?: BigDecimal.ZERO
+        if (i % step == 0 || day == startDate) {
             list.add(sum)
             sum = BigDecimal.ZERO
         }
@@ -169,26 +153,23 @@ fun listTodayAll(
     maxDays: Int,
     step: Int
 ): List<BigDecimal> {
-    var add0 = 0.toBigDecimal()
-    for (z in 0 until step) {
-        for (index in 0 until habits.size) {
-            if (z < habits[index].habitDay.size)
-                add0 += if (habits[index].habitDay[z].correctly) 1 else 0
+    if (maxDays <= 0 || step <= 0) return emptyList()
+
+    val list = mutableListOf<BigDecimal>()
+    var sum = BigDecimal.ZERO
+
+    val habits = LocalSaveManager.data.habits
+    val startDate = dateNow().minusDays(maxDays - 1)
+
+    for ((i, day) in (startDate..dateNow()).withIndex()) {
+        habits.forEach { habit ->
+            sum += if (habit.correctly(day)) BigDecimal.ONE else BigDecimal.ZERO
         }
-    }
-    val list = mutableListOf(add0)
-    var y = step
-    while (y < maxDays) {
-        var add = 0.toBigDecimal()
-        for (z in y until (y + step)) {
-            for (index in 0 until habits.size) {
-                val z0 = habits[index].habitDay.size - maxDays + z
-                if (z0 < habits[index].habitDay.size && z0 >= 0)
-                    add += if (habits[index].habitDay[z0].correctly) 1 else 0
-            }
+
+        if ((i + 1) % step == 0 || day == dateNow()) {
+            list.add(sum)
+            sum = BigDecimal.ZERO
         }
-        list.add(add)
-        y += step
     }
 
     return list
@@ -200,19 +181,18 @@ fun listTodayDates(
 ): List<String> {
     fun LocalDate.formatter(): String {
         return if (step < 7) this.dayOfWeek.toString().take(3)
-        else if (step < 30) this.dayOfMonth.toString()
+        else if (step < 30) day.toString()
         else if (step < 365) this.month.toString().take(3)
         else this.year.toString()
     }
 
     val list = mutableListOf<String>()
 
-    for (i in (habits[habitIndex].habitDay.size - 1) downTo 0) {
-        if (((i + 1) % step == 0 && step != habits[habitIndex].habitDay.size) || i == 0) {
-            list.add(
-                habits[habitIndex].startDate.plus(i, DateTimeUnit.DAY)
-                    .formatter()
-            )
+    val habit = LocalSaveManager.data.habits[habitIndex]
+
+    for ((i, day) in (dateNow() downTo habit.startDate()).withIndex()) {
+        if (i % step == 0 || day == habit.startDate()) {
+            list.add(day.formatter())
         }
     }
 
@@ -226,14 +206,14 @@ fun listTodayDatesAll(
 ): List<String> {
     fun formatter(localDate: LocalDate): String {
         return if (step < 7) localDate.dayOfWeek.toString().take(3)
-        else if (step < 30) localDate.dayOfMonth.toString()
+        else if (step < 30) localDate.day.toString()
         else if (step < 365) localDate.month.toString().take(3)
         else localDate.year.toString()
     }
 
     var oldestStartDate = LocalDate(9999, 1, 1)
-    for (habit in habits) {
-        oldestStartDate = if (oldestStartDate < habit.startDate) oldestStartDate else habit.startDate
+    for (habit in LocalSaveManager.data.habits) {
+        oldestStartDate = if (oldestStartDate < habit.startDate()) oldestStartDate else habit.startDate()
     }
 
     val list = mutableListOf(formatter(oldestStartDate))
@@ -248,9 +228,9 @@ fun listTodayDatesAll(
 fun listDaysNumbers(
     index: Int
 ): List<Int> {
-    val list = mutableListOf(habits[index].startDate.dayOfMonth)
-    for (y in 1 until habits[index].habitDay.size) {
-        list.add(habits[index].startDate.plus(y, DateTimeUnit.DAY).dayOfMonth)
+    val list = mutableListOf<Int>()
+    for (day in LocalSaveManager.data.habits[index].startDate()..dateNow()) {
+        list.add(day.day)
     }
     return list
 }
@@ -258,9 +238,9 @@ fun listDaysNumbers(
 fun listDaysNumbers(
     habit: Habit
 ): List<Int> {
-    val list = mutableListOf(habit.startDate.dayOfMonth)
-    for (y in 1 until habit.habitDay.size) {
-        list.add(habit.startDate.plus(y, DateTimeUnit.DAY).dayOfMonth)
+    val list = mutableListOf<Int>()
+    for (day in habit.startDate()..dateNow()) {
+        list.add(day.day)
     }
     return list
 }
@@ -268,9 +248,9 @@ fun listDaysNumbers(
 fun listDaysBoolean(
     index: Int
 ): List<Boolean> {
-    val list = mutableListOf(habits[index].habitDay[0].correctly)
-    for (y in 1 until habits[index].habitDay.size) {
-        list.add(habits[index].habitDay[y].correctly)
+    val list = mutableListOf<Boolean>()
+    for (day in LocalSaveManager.data.habits[index].startDate()..dateNow()) {
+        list.add(LocalSaveManager.data.habits[index].correctly(day))
     }
     return list
 }
@@ -280,8 +260,8 @@ fun habitStreaks(
 ): List<Int> {
     val list = mutableListOf(0)
     var add = 0
-    for (habitDay in habits[index].habitDay) {
-        if (habitDay.correctly) add++
+    for (day in LocalSaveManager.data.habits[index].startDate()..dateNow()) {
+        if (LocalSaveManager.data.habits[index].correctly(day)) add++
         else {
             list.add(add)
             add = 0
@@ -299,8 +279,8 @@ fun habitStreaks(
 ): List<Int> {
     val list = mutableListOf(0)
     var add = 0
-    for (habitDay in habit.habitDay) {
-        if (habitDay.correctly) add++
+    for (day in habit.startDate()..dateNow()) {
+        if (habit.correctly(day)) add++
         else {
             list.add(add)
             add = 0
@@ -327,17 +307,17 @@ fun habitDistributionByDayOfTheWeekContent(
     var saturday = BigDecimal.ZERO
     var sunday = BigDecimal.ZERO
 
-    for (i in 0 until habits[habitIndex].habitDay.size) {
-        val day = habits[habitIndex].startDate.plus(i, DateTimeUnit.DAY).dayOfWeek
-        when (day) {
-            DayOfWeek.MONDAY -> monday += habits[habitIndex].habitDay[i].today
-            DayOfWeek.TUESDAY -> tuesday += habits[habitIndex].habitDay[i].today
-            DayOfWeek.WEDNESDAY -> wednesday += habits[habitIndex].habitDay[i].today
-            DayOfWeek.THURSDAY -> thursday += habits[habitIndex].habitDay[i].today
-            DayOfWeek.FRIDAY -> friday += habits[habitIndex].habitDay[i].today
-            DayOfWeek.SATURDAY -> saturday += habits[habitIndex].habitDay[i].today
-            DayOfWeek.SUNDAY -> sunday += habits[habitIndex].habitDay[i].today
-            else -> {}
+    for (day in LocalSaveManager.data.habits[habitIndex].startDate()..dateNow()) {
+        val decimal = LocalSaveManager.data.habits[habitIndex].habitDay[day]?.today ?: BigDecimal.ZERO
+
+        when (day.dayOfWeek) {
+            DayOfWeek.MONDAY -> monday += decimal
+            DayOfWeek.TUESDAY -> tuesday += decimal
+            DayOfWeek.WEDNESDAY -> wednesday += decimal
+            DayOfWeek.THURSDAY -> thursday += decimal
+            DayOfWeek.FRIDAY -> friday += decimal
+            DayOfWeek.SATURDAY -> saturday += decimal
+            DayOfWeek.SUNDAY -> sunday += decimal
         }
     }
 
