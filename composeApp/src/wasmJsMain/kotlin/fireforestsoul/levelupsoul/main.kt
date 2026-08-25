@@ -9,7 +9,6 @@
 
 package fireforestsoul.levelupsoul
 
-import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
 import kotlinx.browser.document
@@ -27,7 +26,6 @@ fun setupSaveOnClose() {
 fun main() {
     setupSaveOnClose()
     ComposeViewport(document.body ?: return) {
-        val viewModel = remember { AppViewModel() }
-        App(viewModel)
+        App()
     }
 }

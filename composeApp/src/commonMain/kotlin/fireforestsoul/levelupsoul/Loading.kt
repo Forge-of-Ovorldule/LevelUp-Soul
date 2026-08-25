@@ -26,9 +26,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun LoadingContent(viewModel: AppViewModel) {
+fun LoadingContent(screenChanger: (newScreen: ScreenManager) -> Unit) {
     LaunchedEffect(Unit) {
-        loading(viewModel)
+        loading(screenChanger)
     }
 
     Box(
@@ -51,7 +51,7 @@ fun LoadingContent(viewModel: AppViewModel) {
 
 var loadIsGood: Boolean = false
 
-private suspend fun loading(viewModel: AppViewModel) = withContext(Dispatchers.Default) {
+private suspend fun loading(screenChanger: (newScreen: ScreenManager) -> Unit) = withContext(Dispatchers.Default) {
     LocalSaveManager.data
     changeLanguage()
     for (i in LocalSaveManager.data.habits.indices) {
@@ -64,5 +64,5 @@ private suspend fun loading(viewModel: AppViewModel) = withContext(Dispatchers.D
     AppVersionSaveManager.save()
 
     loadIsGood = true
-    viewModel.setStatus(LocalSaveManager.data.backAppStatus)
+    screenChanger(LocalSaveManager.data.backAppStatus)
 }

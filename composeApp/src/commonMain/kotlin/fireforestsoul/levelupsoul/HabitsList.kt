@@ -54,8 +54,8 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 
 @Composable
-fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel) {
-    LocalSaveManager.data.backAppStatus = AppStatus.HABITS_LIST_UPDATER
+fun HabitsListContent(verticalScrollState: ScrollState, screenChanger: (newScreen: ScreenManager) -> Unit) {
+    LocalSaveManager.data.backAppStatus = ScreenManager.HABITS_LIST_UPDATER
     val sortedHabits = MutableList(LocalSaveManager.data.habits.size) { it }
     sortedHabits.sortSystem()
 
@@ -77,7 +77,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                         .background(UIC, RoundedCornerShape(13.03.dp))
                         .clickable {
                             habit_statistics_and_edit_x = sortedHabits[x]
-                            viewModel.setStatus(AppStatus.HABIT_STATISTICS)
+                            screenChanger(ScreenManager.HABIT_STATISTICS)
                         }
                 ) {
                     Row(
@@ -276,7 +276,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                             color = Color(200, 150, 150),
                                             modifier = Modifier.clickable {
                                                 showDialog = false
-                                                viewModel.setStatus(AppStatus.HABITS_LIST_UPDATER)
+                                                screenChanger(ScreenManager.HABITS_LIST_UPDATER)
                                             }
                                         )
                                     },
@@ -297,7 +297,7 @@ fun HabitsListContent(verticalScrollState: ScrollState, viewModel: AppViewModel)
                                                     LocalSaveManager.save()
                                                 }
                                                 showDialog = false
-                                                viewModel.setStatus(AppStatus.HABITS_LIST_UPDATER)
+                                                screenChanger(ScreenManager.HABITS_LIST_UPDATER)
                                             }
                                         )
                                     }

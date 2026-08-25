@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 
 @Composable
-fun EditHabit(viewModel: AppViewModel) {
+fun EditHabit(screenChanger: (newScreen: ScreenManager) -> Unit) {
     val verticalScroll = rememberScrollState()
     val horizontalScroll = rememberScrollState()
     var expanded0 by remember { mutableStateOf(false) }
@@ -111,7 +111,7 @@ fun EditHabit(viewModel: AppViewModel) {
                         fontSize = 16.sp,
                         color = Color(200, 150, 150),
                         modifier = Modifier.clickable {
-                            viewModel.setStatus(AppStatus.HABIT_STATISTICS)
+                            screenChanger(ScreenManager.HABIT_STATISTICS)
                         }
                     )
                     Text(
@@ -144,7 +144,7 @@ fun EditHabit(viewModel: AppViewModel) {
                             LocalSaveManager.data.habits[habit_statistics_and_edit_x].icon = icon
                             LocalSaveManager.data.habits[habit_statistics_and_edit_x].update()
                             LocalSaveManager.save()
-                            viewModel.setStatus(AppStatus.HABIT_STATISTICS)
+                            screenChanger(ScreenManager.HABIT_STATISTICS)
                         }
                     )
                 }
@@ -560,7 +560,7 @@ fun EditHabit(viewModel: AppViewModel) {
                         LocalSaveManager.data.habits.removeAt(habit_statistics_and_edit_x)
                         LocalSaveManager.save()
                         habit_statistics_and_edit_x = 0
-                        viewModel.setStatus(LocalSaveManager.data.backAppStatus)
+                        screenChanger(LocalSaveManager.data.backAppStatus)
                     }
                 }
             }

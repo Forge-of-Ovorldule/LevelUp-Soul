@@ -9,19 +9,4 @@
 
 package fireforestsoul.levelupsoul
 
-import kotlinx.serialization.Serializable
-
-@Serializable
-enum class AppStatus {
-    LOADING,
-    TABLE,
-    CREATE_HABIT,
-    HABIT_STATISTICS,
-    EDIT_HABIT,
-    TABLE_UPDATER,
-    SOUL_STATISTICS,
-    HABITS_LIST,
-    HABITS_LIST_UPDATER
-}
-
 const val app_version: Int = 1003000 //version(001).002.000.000
