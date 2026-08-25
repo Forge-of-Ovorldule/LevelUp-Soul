@@ -84,6 +84,33 @@ object OldSaveSystem {
 
     }
 
+    @Serializable
+    enum class OldAppStatus {
+        LOADING,
+        TABLE,
+        CREATE_HABIT,
+        HABIT_STATISTICS,
+        EDIT_HABIT,
+        TABLE_UPDATER,
+        SOUL_STATISTICS,
+        HABITS_LIST,
+        HABITS_LIST_UPDATER
+    }
+
+    fun OldAppStatus.toScreenManager() : ScreenManager {
+        return when (this) {
+            OldAppStatus.CREATE_HABIT -> ScreenManager.CREATE_HABIT
+            OldAppStatus.EDIT_HABIT -> ScreenManager.EDIT_HABIT
+            OldAppStatus.TABLE_UPDATER -> ScreenManager.TABLE_UPDATER
+            OldAppStatus.HABITS_LIST -> ScreenManager.HABITS_LIST
+            OldAppStatus.HABITS_LIST_UPDATER -> ScreenManager.HABITS_LIST_UPDATER
+            OldAppStatus.HABIT_STATISTICS -> ScreenManager.HABIT_STATISTICS
+            OldAppStatus.LOADING -> ScreenManager.LOADING
+            OldAppStatus.SOUL_STATISTICS -> ScreenManager.SOUL_STATISTICS
+            OldAppStatus.TABLE -> ScreenManager.TABLE
+        }
+    }
+
     fun <T> String.loadedElementToVal(value: T): T {
         val element = this
         return when (value) {
@@ -97,7 +124,7 @@ object OldSaveSystem {
             is Boolean -> element.toBoolean()
             is LocalDate -> element.let { LocalDate.parse(it) }
             is Languages -> enumValueOf<Languages>(element)
-            is AppStatus -> enumValueOf<AppStatus>(element)
+            is OldAppStatus -> enumValueOf<OldAppStatus>(element)
             is Float -> element.toFloatOrNull() ?: value
             else -> value
         } as T
@@ -114,7 +141,7 @@ object OldSaveSystem {
         kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     private var language_: Languages = Languages.EN
     private var withExponent_: Boolean = false
-    private var backAppStatus_: AppStatus = AppStatus.TABLE
+    private var backAppStatus_: OldAppStatus = OldAppStatus.TABLE
     private var listPointsOfHabitStatistic_: MutableMap<HabitStatisticsStatus, Float> = mutableMapOf(
         HabitStatisticsStatus.GOAL to 0f,
         HabitStatisticsStatus.PROGRESS to 0f,
@@ -214,7 +241,7 @@ object OldSaveSystem {
             data.soulLastLevelChangeDate = soul_last_level_change_date_
             data.language = language_
             data.withExponent = withExponent_
-            data.backAppStatus = backAppStatus_
+            data.backAppStatus = backAppStatus_.toScreenManager()
             data.listPointsOfHabitStatistic = listPointsOfHabitStatistic_
             data.sortHabitStatisticsSectionsByFrequencyOfUse =
                 sort_habit_statistics_sections_by_frequency_of_use_

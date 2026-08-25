@@ -9,15 +9,12 @@
 
 package fireforestsoul.levelupsoul
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.runtime.remember
-import androidx.activity.compose.BackHandler
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,21 +31,15 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            val viewModel = remember { AppViewModel() }
-            App(viewModel)
-
-            BackHandler(enabled = true) {
-                when (viewModel.appStatus.value) {
-                    AppStatus.LOADING -> {}
-                    AppStatus.TABLE -> viewModel.setStatus(AppStatus.HABITS_LIST)
-                    AppStatus.HABITS_LIST -> viewModel.setStatus(AppStatus.TABLE)
-                    AppStatus.EDIT_HABIT -> viewModel.setStatus(AppStatus.HABIT_STATISTICS)
-                    else -> {
-                        viewModel.setStatus(LocalSaveManager.data.backAppStatus)
-                    }
-                }
-            }
+            App()
         }
+    }
+
+    @Deprecated("Deprecated in Java")
+    @Suppress("DEPRECATION")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        SaveTransfer.handleActivityResult(requestCode, resultCode, data)
     }
 
     override fun onStop() {
@@ -68,11 +59,4 @@ class MainActivity : ComponentActivity() {
             LocalSaveManager.save()
         super.onPause()
     }
-}
-
-@Preview
-@Composable
-fun AppAndroidPreview() {
-    val viewModel = remember { AppViewModel() }
-    App(viewModel)
 }

@@ -22,7 +22,7 @@ class LocalData {
         kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     var language: Languages = Languages.EN
     var withExponent: Boolean = false
-    var backAppStatus: AppStatus = AppStatus.TABLE
+    var backAppStatus: ScreenManager = ScreenManager.TABLE
     var listPointsOfHabitStatistic: MutableMap<HabitStatisticsStatus, Float> = mutableMapOf(
         HabitStatisticsStatus.GOAL to 0f,
         HabitStatisticsStatus.PROGRESS to 0f,

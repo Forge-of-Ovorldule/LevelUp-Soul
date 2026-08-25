@@ -29,28 +29,36 @@ var backgroundUp: Color = UIC_black
 var backgroundDown: Color = UIC_dark
 
 @Composable
-fun App(viewModel: AppViewModel) {
-    val appStatus by viewModel.appStatus.collectAsState()
+fun App() {
+    var screen by remember { mutableStateOf(ScreenManager.LOADING) }
 
     val verticalScrollForTableContent = rememberScrollState()
     val horizontalScrollForTableContent = rememberScrollState()
 
     val verticalScrollForHabitsListContent = rememberScrollState()
 
-    val showMainMenu = when (appStatus) {
-        AppStatus.TABLE,
-        AppStatus.TABLE_UPDATER,
-        AppStatus.HABITS_LIST_UPDATER,
-        AppStatus.SOUL_STATISTICS,
-        AppStatus.HABITS_LIST -> true
+    val showMainMenu by remember(screen) {
+        mutableStateOf(
+            when (screen) {
+                ScreenManager.TABLE,
+                ScreenManager.TABLE_UPDATER,
+                ScreenManager.HABITS_LIST_UPDATER,
+                ScreenManager.SOUL_STATISTICS,
+                ScreenManager.HABITS_LIST -> true
 
-        else -> false
+                else -> false
+            }
+        )
     }
 
-    val addAndroidPadding = when (appStatus) {
-        AppStatus.HABIT_STATISTICS -> false
+    val addAndroidPadding by remember(screen) {
+        mutableStateOf(
+            when (screen) {
+                ScreenManager.HABIT_STATISTICS -> false
 
-        else -> true
+                else -> true
+            }
+        )
     }
 
     val hazeState = rememberHazeState()
@@ -62,31 +70,34 @@ fun App(viewModel: AppViewModel) {
             .padding(if (addAndroidPadding) WindowInsets.systemBars.asPaddingValues() else PaddingValues(0.dp))
             .hazeSource(hazeState)
     ) {
-        when (appStatus) {
-            AppStatus.LOADING -> LoadingContent(viewModel)
-            AppStatus.CREATE_HABIT -> CreateHabit(viewModel)
-            AppStatus.HABIT_STATISTICS -> HabitStatistics(viewModel)
-            AppStatus.EDIT_HABIT -> EditHabit(viewModel)
-            else -> {
-                if (appStatus == AppStatus.TABLE_UPDATER) {
-                    LaunchedEffect(Unit) {
-                        viewModel.setStatus(AppStatus.TABLE)
+        key(screen) {
+            when (screen) {
+                ScreenManager.LOADING -> LoadingContent { screen = it }
+                ScreenManager.CREATE_HABIT -> CreateHabit { screen = it }
+                ScreenManager.HABIT_STATISTICS -> HabitStatistics { screen = it }
+                ScreenManager.EDIT_HABIT -> EditHabit { screen = it }
+                else -> {
+                    if (screen == ScreenManager.TABLE_UPDATER) {
+                        LaunchedEffect(Unit) {
+                            screen = ScreenManager.TABLE
+                        }
                     }
-                }
-                if (appStatus == AppStatus.HABITS_LIST_UPDATER) {
-                    LaunchedEffect(Unit) {
-                        viewModel.setStatus(AppStatus.HABITS_LIST)
+                    if (screen == ScreenManager.HABITS_LIST_UPDATER) {
+                        LaunchedEffect(Unit) {
+                            screen = ScreenManager.HABITS_LIST
+                        }
                     }
                 }
             }
-        }
-        if (showMainMenu) {
-            MainMenuContent(
-                viewModel,
-                verticalScrollForTableContent,
-                horizontalScrollForTableContent,
-                verticalScrollForHabitsListContent
-            )
+            if (showMainMenu) {
+                MainMenuContent(
+                    { screen = it },
+                    verticalScrollForTableContent,
+                    horizontalScrollForTableContent,
+                    verticalScrollForHabitsListContent,
+                    screen
+                )
+            }
         }
     }
 

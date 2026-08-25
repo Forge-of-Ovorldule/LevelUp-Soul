@@ -36,12 +36,13 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun MainMenuContent(
-    viewModel: AppViewModel,
+    screenChanger: (newScreen: ScreenManager) -> Unit,
     verticalScrollForTableContent: ScrollState,
     horizontalScrollForTableContent: ScrollState,
     verticalScrollForHabitsListContent: ScrollState,
+    screen: ScreenManager
 ) {
-    val appStatus by viewModel.appStatus.collectAsState()
+    val screenCopy by remember { mutableStateOf(screen) }
     var countdownDate by remember {
         mutableStateOf(
             kotlin.time.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -60,7 +61,7 @@ fun MainMenuContent(
                     .fillMaxWidth()
                     .background(UIC)
             ) {
-                if (appStatus == AppStatus.TABLE || appStatus == AppStatus.TABLE_UPDATER || appStatus == AppStatus.HABITS_LIST) {
+                if (screenCopy == ScreenManager.TABLE || screenCopy == ScreenManager.TABLE_UPDATER || screenCopy == ScreenManager.HABITS_LIST) {
                     Row(
                         modifier = Modifier
                             .height(48.dp)
@@ -82,7 +83,7 @@ fun MainMenuContent(
                         if ("Android" !in getPlatform().name) {
                             IconButton(onClick = {
                                 LocalSaveManager.save()
-                                export()
+                                SaveImportExport.exportSave()
                             }) {
                                 Image(
                                     painter = painterResource(Res.drawable.export),
@@ -93,8 +94,9 @@ fun MainMenuContent(
                             }
                             IconButton(onClick = {
                                 LocalSaveManager.save()
-                                import {
-                                    viewModel.setStatus(AppStatus.LOADING)
+                                SaveImportExport.importSave {
+                                    if (it)
+                                        screenChanger(ScreenManager.LOADING)
                                 }
                             }) {
                                 Image(
@@ -106,7 +108,7 @@ fun MainMenuContent(
                             }
                         }
                         IconButton(onClick = {
-                            viewModel.setStatus(AppStatus.CREATE_HABIT)
+                            screenChanger(ScreenManager.CREATE_HABIT)
                         }) {
                             Image(
                                 painter = painterResource(Res.drawable.add_habit),
@@ -115,7 +117,7 @@ fun MainMenuContent(
                                 colorFilter = ColorFilter.tint(getSoulRealColor())
                             )
                         }
-                        if (appStatus == AppStatus.TABLE || appStatus == AppStatus.TABLE_UPDATER) {
+                        if (screenCopy == ScreenManager.TABLE || screenCopy == ScreenManager.TABLE_UPDATER) {
                             DatePickerDialog(countdownDate) {
                                 countdownDate = it
                             }
@@ -149,7 +151,7 @@ fun MainMenuContent(
                                             LocalSaveManager.data.language = mode
                                             LocalSaveManager.save()
                                             expanded0 = false
-                                            viewModel.setStatus(AppStatus.LOADING)
+                                            screenChanger(ScreenManager.LOADING)
                                         },
                                         text = {
                                             Text(
@@ -164,7 +166,7 @@ fun MainMenuContent(
                         }
                     }
                 }
-                if (appStatus == AppStatus.SOUL_STATISTICS) {
+                if (screenCopy == ScreenManager.SOUL_STATISTICS) {
                     Row(
                         modifier = Modifier
                             .height(48.dp)
@@ -196,8 +198,8 @@ fun MainMenuContent(
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     AnimatedTabItem(
-                        isActive = appStatus == AppStatus.HABITS_LIST,
-                        onClick = { viewModel.setStatus(AppStatus.HABITS_LIST) },
+                        isActive = screenCopy == ScreenManager.HABITS_LIST,
+                        onClick = { screenChanger(ScreenManager.HABITS_LIST) },
                         activeIcon = painterResource(Res.drawable.habits_list),
                         inactiveIcon = painterResource(Res.drawable.habits_list_mono),
                         text = ts_habits_list,
@@ -206,8 +208,8 @@ fun MainMenuContent(
                     )
 
                     AnimatedTabItem(
-                        isActive = appStatus == AppStatus.TABLE,
-                        onClick = { viewModel.setStatus(AppStatus.TABLE_UPDATER) },
+                        isActive = screenCopy == ScreenManager.TABLE,
+                        onClick = { screenChanger(ScreenManager.TABLE_UPDATER) },
                         activeIcon = painterResource(Res.drawable.habits_table),
                         inactiveIcon = painterResource(Res.drawable.habits_table_mono),
                         text = ts_habits_table,
@@ -216,8 +218,8 @@ fun MainMenuContent(
                     )
 
                     AnimatedTabItem(
-                        isActive = appStatus == AppStatus.SOUL_STATISTICS,
-                        onClick = { viewModel.setStatus(AppStatus.SOUL_STATISTICS) },
+                        isActive = screenCopy == ScreenManager.SOUL_STATISTICS,
+                        onClick = { screenChanger(ScreenManager.SOUL_STATISTICS) },
                         activeIcon = painterResource(Res.drawable.soul_stat),
                         inactiveIcon = painterResource(Res.drawable.soul_stat_mono),
                         text = ts_soul_statistic,
@@ -229,17 +231,17 @@ fun MainMenuContent(
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
-            if (appStatus == AppStatus.TABLE || appStatus == AppStatus.TABLE_UPDATER)
+            if (screenCopy == ScreenManager.TABLE || screenCopy == ScreenManager.TABLE_UPDATER)
                 TableContent(
-                    viewModel,
+                    screenChanger,
                     verticalScrollForTableContent,
                     horizontalScrollForTableContent,
                     countdownDate
                 )
-            if (appStatus == AppStatus.SOUL_STATISTICS)
+            if (screenCopy == ScreenManager.SOUL_STATISTICS)
                 SoulStatisticsContent()
-            if (appStatus == AppStatus.HABITS_LIST || appStatus == AppStatus.HABITS_LIST_UPDATER)
-                HabitsListContent(verticalScrollForHabitsListContent, viewModel)
+            if (screenCopy == ScreenManager.HABITS_LIST || screenCopy == ScreenManager.HABITS_LIST_UPDATER)
+                HabitsListContent(verticalScrollForHabitsListContent, screenChanger)
         }
     }
 }

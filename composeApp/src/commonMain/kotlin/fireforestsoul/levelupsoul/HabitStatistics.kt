@@ -101,7 +101,7 @@ var habit_statistics_and_edit_x: Int = 0
 private var pps_for_habit_statistic = 0
 
 @Composable
-fun HabitStatistics(viewModel: AppViewModel) {
+fun HabitStatistics(screenChanger: (newScreen: ScreenManager) -> Unit) {
     var seeColorByHabitAndStatisticsEditX by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
 
     LaunchedEffect(habit_statistics_and_edit_x) {
@@ -235,7 +235,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                     }
 
                     IconButton(
-                        { viewModel.setStatus(LocalSaveManager.data.backAppStatus) },
+                        { screenChanger(LocalSaveManager.data.backAppStatus) },
                         modifier = Modifier.padding(14.dp / 1.15f, 12.dp / 1.15f)
                     ) {
                         Image(
@@ -332,7 +332,7 @@ fun HabitStatistics(viewModel: AppViewModel) {
                                         seeColorByHabitAndStatisticsEditX,
                                         RoundedCornerShape(27.2.dp / 1.15f)
                                     )
-                                    .clickable { viewModel.setStatus(AppStatus.EDIT_HABIT) }
+                                    .clickable { screenChanger(ScreenManager.EDIT_HABIT) }
                                     .padding(horizontal = 6.43.dp),
                                 contentAlignment = Alignment.Center
                             ) {

@@ -1,21 +1,6 @@
 package fireforestsoul.levelupsoul
 
-import android.content.Context
 import java.io.File
-
-object SaveStorageProvider {
-    private var appContext: Context? = null
-
-    fun init(context: Context) {
-        appContext = context
-    }
-
-    fun getContext(): Context {
-        return appContext ?: throw IllegalStateException(
-            "SaveStorageProvider not initialized! Call SaveStorageProvider.init(context) in Application.onCreate()"
-        )
-    }
-}
 
 actual object SaveStorage {
 

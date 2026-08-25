@@ -32,12 +32,9 @@ import kotlinx.datetime.*
 import kotlin.math.max
 import kotlin.math.min
 
-expect fun export()
-expect fun import(onImported: () -> Unit)
-
 @Composable
 fun TableContent(
-    viewModel: AppViewModel,
+    screenChanger: (newScreen: ScreenManager) -> Unit,
     verticalScroll: ScrollState,
     horizontalScroll: ScrollState,
     countdownDate: LocalDate,
@@ -45,7 +42,7 @@ fun TableContent(
     val sortedHabits = MutableList(LocalSaveManager.data.habits.size) { it }
     sortedHabits.sortSystem()
 
-    LocalSaveManager.data.backAppStatus = AppStatus.TABLE_UPDATER
+    LocalSaveManager.data.backAppStatus = ScreenManager.TABLE_UPDATER
 
     val firstCellSizeX = 200.dp
     val firstCellSizeY = 40.dp
@@ -116,7 +113,7 @@ fun TableContent(
                             )
                             .clickable {
                                 habit_statistics_and_edit_x = sortedHabits[y]
-                                viewModel.setStatus(AppStatus.HABIT_STATISTICS)
+                                screenChanger(ScreenManager.HABIT_STATISTICS)
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -353,7 +350,7 @@ fun TableContent(
                                                             color = Color(200, 150, 150),
                                                             modifier = Modifier.clickable {
                                                                 showDialog = false
-                                                                viewModel.setStatus(AppStatus.TABLE_UPDATER)
+                                                                screenChanger(ScreenManager.TABLE_UPDATER)
                                                             }
                                                         )
                                                     },
@@ -377,7 +374,7 @@ fun TableContent(
                                                                     LocalSaveManager.save()
                                                                 }
                                                                 showDialog = false
-                                                                viewModel.setStatus(AppStatus.TABLE_UPDATER)
+                                                                screenChanger(ScreenManager.TABLE_UPDATER)
                                                             }
                                                         )
                                                     }

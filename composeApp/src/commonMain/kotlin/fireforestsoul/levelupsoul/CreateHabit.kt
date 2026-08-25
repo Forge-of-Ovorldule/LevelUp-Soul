@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 
 @Composable
-fun CreateHabit(viewModel: AppViewModel) {
+fun CreateHabit(screenChanger: (newScreen: ScreenManager) -> Unit) {
     val verticalScroll = rememberScrollState()
     val horizontalScroll = rememberScrollState()
     var expanded0 by remember { mutableStateOf(false) }
@@ -112,7 +112,7 @@ fun CreateHabit(viewModel: AppViewModel) {
                         fontSize = 16.sp,
                         color = Color(200, 150, 150),
                         modifier = Modifier.clickable {
-                            viewModel.setStatus(AppStatus.TABLE)
+                            screenChanger(ScreenManager.TABLE)
                         }
                     )
                     Text(
@@ -138,7 +138,7 @@ fun CreateHabit(viewModel: AppViewModel) {
                             habit.update()
                             LocalSaveManager.data.habits.add(habit)
                             LocalSaveManager.save()
-                            viewModel.setStatus(AppStatus.TABLE)
+                            screenChanger(ScreenManager.TABLE)
                         }
                     )
                 }
