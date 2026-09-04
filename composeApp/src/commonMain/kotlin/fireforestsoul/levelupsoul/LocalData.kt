@@ -35,4 +35,5 @@ class LocalData {
     )
     var sortHabitStatisticsSectionsByFrequencyOfUse: Boolean = false
     var smartSort: Boolean = false
+    var settings: Settings = Settings()
 }

@@ -258,39 +258,13 @@ fun listDaysBoolean(
 fun habitStreaks(
     index: Int
 ): List<Int> {
-    val list = mutableListOf(0)
-    var add = 0
-    for (day in LocalSaveManager.data.habits[index].startDate()..dateNow()) {
-        if (LocalSaveManager.data.habits[index].correctly(day)) add++
-        else {
-            list.add(add)
-            add = 0
-        }
-    }
-    list.add(add)
-
-    list.removeAll { it == 0 }
-    list.sortDescending()
-    return list
+    return LocalSaveManager.data.habits[index].habitStreaks()
 }
 
 fun habitStreaks(
     habit: Habit
 ): List<Int> {
-    val list = mutableListOf(0)
-    var add = 0
-    for (day in habit.startDate()..dateNow()) {
-        if (habit.correctly(day)) add++
-        else {
-            list.add(add)
-            add = 0
-        }
-    }
-    list.add(add)
-
-    list.removeAll { it == 0 }
-    list.sortDescending()
-    return list
+    return habit.habitStreaks()
 }
 
 data class DistributionByDayOfTheWeekContent(var dayOfWeek: String, var value: BigDecimal)

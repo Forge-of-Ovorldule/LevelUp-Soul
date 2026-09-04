@@ -13,6 +13,11 @@ import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.LocalDate
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.downTo
@@ -43,6 +48,8 @@ class Habit(
 
     @Serializable(with = BigDecimalAsStringSerializer::class)
     var phantomPeriodForGoalCompletionWithLevel: BigDecimal = periodForGoalCompletion.toBigDecimal()
+
+    var priority : Priority = Priority.NO_PRIORITY
 
     fun clearOfDefaults() {
         habitDay.entries.removeAll { it.value.today == BigDecimal.ZERO }
@@ -249,6 +256,171 @@ class Habit(
             if (correctly(day)) correctly++
         }
         return correctly.toFloat() / daysToCalculateAverage
+    }
+
+    var progressiveColorCache = color
+
+    fun habitStreaks(): List<Int> {
+        val list = mutableListOf(0)
+        var add = 0
+        for (day in startDate()..dateNow()) {
+            if (correctly(day)) add++
+            else {
+                list.add(add)
+                add = 0
+            }
+        }
+        list.add(add)
+
+        list.removeAll { it == 0 }
+        list.sortDescending()
+        return list
+    }
+
+    suspend fun calculateProgressiveColor(
+        onColorUpdate: (Color) -> Unit,
+    ) {
+        if (typeOfColor == TypeOfColorHabit.SELECTED) {
+            onColorUpdate(color)
+            progressiveColorCache = color
+            return
+        }
+
+        val kRed = progressiveColorCache.red
+        var kProgress = kRed
+        var kLevel = kRed
+        var kNeedDays = kRed
+
+        val kGreen = progressiveColorCache.green
+        var kDays = kGreen
+        var kNeedGoal = kGreen
+        var kLevelChange = kGreen
+
+        val kBlue = progressiveColorCache.blue
+        var kStreak = kBlue
+        var kTypeOfGoal = kBlue
+
+        fun emitCurrentColor() {
+            val red = ((kProgress + kLevel + kNeedDays) / 3 * 255).toInt().coerceIn(0, 255)
+            val green = ((kDays + kNeedGoal + kLevelChange) / 3 * 255).toInt().coerceIn(0, 255)
+            val blue = ((kStreak + kTypeOfGoal) / 2 * 255).toInt().coerceIn(0, 255)
+
+            val curColor = Color(red, green, blue)
+            onColorUpdate(curColor)
+            progressiveColorCache = curColor
+        }
+
+        val addProcess = ts_Calculating_adaptive_color_habits
+
+        withContext(Dispatchers.Default) {
+            try {
+                lock.withLock { listProgressedStatusBar.add(addProcess) }
+
+                var maxProgress = Float.MIN_VALUE
+                var minProgress = Float.MAX_VALUE
+                for (habit in LocalSaveManager.data.habits) {
+                    maxProgress = max(progress(habit), maxProgress)
+                    minProgress = min(progress(habit), minProgress)
+                }
+                kProgress =
+                    if (maxProgress == minProgress) 1f else (progress() - minProgress) / (if (maxProgress - minProgress == 0f) 1f else (maxProgress - minProgress))
+
+                emitCurrentColor()
+                yield()
+
+                var maxDays = Int.MIN_VALUE
+                var minDays = Int.MAX_VALUE
+                for (habit in LocalSaveManager.data.habits) {
+                    maxDays = max(habit.totalDays(), maxDays)
+                    minDays = min(habit.totalDays(), minDays)
+                }
+                kDays =
+                    if (maxDays == minDays) 1f
+                    else (totalDays() - minDays).toFloat() /
+                            (if (maxDays - minDays == 0) 1f else (maxDays - minDays).toFloat())
+
+                emitCurrentColor()
+                yield()
+
+                if (habitStreaks().isNotEmpty()) {
+                    var maxStreak = Int.MIN_VALUE
+                    val minStreak = 0
+                    for (habit in LocalSaveManager.data.habits) {
+                        val s = if (habitStreaks(habit).isNotEmpty()) habitStreaks(habit)[0] else 0
+                        maxStreak = max(s, maxStreak)
+                    }
+                    kStreak =
+                        if (maxStreak == minStreak) 1f else (habitStreaks()[0] - minStreak).toFloat() / (if (maxStreak - minStreak == 0) 1f else (maxStreak - minStreak).toFloat())
+                } else {
+                    kStreak = 0f
+                }
+
+                emitCurrentColor()
+                yield()
+
+                var maxLevel = Int.MIN_VALUE
+                var minLevel = Int.MAX_VALUE
+                for (habit in LocalSaveManager.data.habits) {
+                    maxLevel = max(habit.level, maxLevel)
+                    minLevel = min(habit.level, minLevel)
+                }
+                kLevel =
+                    if (maxLevel == minLevel) 1f else (level - minLevel).toFloat() / (if (maxLevel - minLevel == 0) 1f else (maxLevel - minLevel).toFloat())
+
+                emitCurrentColor()
+                yield()
+
+                var maxNeedGoal = Double.MIN_VALUE.toBigDecimal()
+                var minNeedGoal = Double.MAX_VALUE.toBigDecimal()
+                for (habit in LocalSaveManager.data.habits) {
+                    maxNeedGoal = maxOf(habit.numericalGoal, maxNeedGoal)
+                    minNeedGoal = minOf(habit.numericalGoal, minNeedGoal)
+                }
+                val diffGoal = maxNeedGoal - minNeedGoal
+                kNeedGoal =
+                    if (maxNeedGoal == minNeedGoal) 1f else (numericalGoal - minNeedGoal).floatValue(
+                        false
+                    ) / (if (diffGoal == BigDecimal.ZERO) 1f else diffGoal.floatValue(
+                        false
+                    ))
+
+                emitCurrentColor()
+                yield()
+
+                kTypeOfGoal = when (typeOfGoal) {
+                    TypeOfGoalHabit.NO_MORE -> 0f
+                    TypeOfGoalHabit.AT_LEAST -> 1f
+                }
+
+                emitCurrentColor()
+                yield()
+
+                var maxNeedDays = Int.MIN_VALUE
+                var minNeedDays = Int.MAX_VALUE
+                for (habit in LocalSaveManager.data.habits) {
+                    maxNeedDays = maxOf(habit.periodForGoalCompletion, maxNeedDays)
+                    minNeedDays = minOf(habit.periodForGoalCompletion, minNeedDays)
+                }
+                kNeedDays =
+                    if (maxNeedDays == minNeedDays) 1f else (periodForGoalCompletion - minNeedDays).toFloat() / (if (maxNeedDays - minNeedDays == 0) 1f else (maxNeedDays - minNeedDays).toFloat())
+
+                emitCurrentColor()
+                yield()
+
+                kLevelChange = ((if (changeLevel) 1f else 0f)
+                        + (if (changeNumericalGoalWithLevel) 1f else 0f)
+                        + (if (changePeriodForGoalCompletionWithLevel) 1f else 0f)) / 3f
+
+                emitCurrentColor()
+
+            } finally {
+                withContext(NonCancellable) {
+                    lock.withLock {
+                        listProgressedStatusBar.removeAll { it == addProcess }
+                    }
+                }
+            }
+        }
     }
 }
 

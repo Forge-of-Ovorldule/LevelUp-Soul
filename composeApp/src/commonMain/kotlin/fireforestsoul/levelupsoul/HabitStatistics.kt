@@ -471,8 +471,7 @@ fun HabitStatistics(screenChanger: (newScreen: ScreenManager) -> Unit) {
                                             index = habit_statistics_and_edit_x,
                                             onColorUpdate = { newColor ->
                                                 seeColorByHabitAndStatisticsEditX = newColor
-                                            },
-                                            oldColor = seeColorByHabitAndStatisticsEditX
+                                            }
                                         )
                                     }
                                 }
