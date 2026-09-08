@@ -21,14 +21,11 @@ import kotlinx.coroutines.sync.Mutex
 
 var backgroundUp: Color = UIC_black
 var backgroundDown: Color = UIC_dark
-var lock = Mutex()
+var lock: Mutex = Mutex()
 
 @Composable
 fun App() {
     var screen by remember { mutableStateOf(ScreenManager.LOADING) }
-
-    val verticalScrollForTableContent = rememberScrollState()
-    val horizontalScrollForTableContent = rememberScrollState()
 
     val verticalScrollForHabitsListContent = rememberScrollState()
 
@@ -54,7 +51,7 @@ fun App() {
         key(screen) {
             when (screen) {
                 ScreenManager.TABLE -> {
-                    TableContent { screen = it }
+                    Table { screen = it }
                 }
 
                 else -> {
@@ -82,8 +79,6 @@ fun App() {
             if (showMainMenu) {
                 MainMenuContent(
                     { screen = it },
-                    verticalScrollForTableContent,
-                    horizontalScrollForTableContent,
                     verticalScrollForHabitsListContent,
                     screen
                 )

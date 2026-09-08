@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class Settings {
-    var uiDpScale = 1f
+    var uiDpScale: Float = 1.25f
 }

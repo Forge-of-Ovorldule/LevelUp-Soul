@@ -7,6 +7,8 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
+@file:Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+
 package fireforestsoul.levelupsoul
 
 import fireforestsoul.levelupsoul.OldSaveSystem.loadedElementToVal
@@ -28,12 +30,11 @@ internal fun readSettings(): MutableMap<String, JsonElement> {
 }
 
 actual object HelpOldSaveSystem {
-    actual fun <T> loadValue(value: T, name: String): T {
-        val settings = readSettings()
-        val jsonElement = settings[name] ?: return value
-        var element = jsonElement.jsonPrimitive.toString()
-        element = element.substring(1, element.length - 1)
+    private val settings: Map<String, JsonElement> by lazy { readSettings() }
 
-        return element.loadedElementToVal(value)
+    actual fun <T> loadValue(value: T, name: String): T {
+        val jsonElement = settings[name] ?: return value
+        return jsonElement.jsonPrimitive.content.loadedElementToVal(value)
     }
 }
+

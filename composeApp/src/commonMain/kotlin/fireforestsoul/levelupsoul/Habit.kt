@@ -10,7 +10,6 @@
 package fireforestsoul.levelupsoul
 
 import androidx.compose.ui.graphics.Color
-import kotlinx.datetime.LocalDate
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.coroutines.Dispatchers
@@ -18,11 +17,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.daysUntil
-import kotlinx.datetime.downTo
-import kotlinx.datetime.minus
-import kotlinx.serialization.Contextual
+import kotlinx.datetime.*
 import kotlinx.serialization.Serializable
 import kotlin.math.max
 import kotlin.math.min
@@ -35,7 +30,7 @@ class Habit(
     @Serializable(with = BigDecimalAsStringSerializer::class) var numericalGoal: BigDecimal = BigDecimal.ONE,
     var periodForGoalCompletion: Int = 1,
     var typeOfColor: TypeOfColorHabit = TypeOfColorHabit.SELECTED,
-    @Contextual var color: Color = UICT_see,
+    @Serializable(with = ColorAsStringSerializer::class) var color: Color = UICT_see,
     var changeLevel: Boolean = true,
     var changeNumericalGoalWithLevel: Boolean = false,
     var changePeriodForGoalCompletionWithLevel: Boolean = false,
@@ -49,7 +44,7 @@ class Habit(
     @Serializable(with = BigDecimalAsStringSerializer::class)
     var phantomPeriodForGoalCompletionWithLevel: BigDecimal = periodForGoalCompletion.toBigDecimal()
 
-    var priority : Priority = Priority.NO_PRIORITY
+    var priority: Priority = Priority.NO_PRIORITY
 
     fun clearOfDefaults() {
         habitDay.entries.removeAll { it.value.today == BigDecimal.ZERO }
@@ -258,7 +253,8 @@ class Habit(
         return correctly.toFloat() / daysToCalculateAverage
     }
 
-    var progressiveColorCache = color
+    @Serializable(with = ColorAsStringSerializer::class)
+    var progressiveColorCache: Color = color
 
     fun habitStreaks(): List<Int> {
         val list = mutableListOf(0)
@@ -419,6 +415,33 @@ class Habit(
                         listProgressedStatusBar.removeAll { it == addProcess }
                     }
                 }
+            }
+        }
+    }
+
+    fun habitDayProgress(
+        toDate: LocalDate,
+        newDayValue: BigDecimal = habitDay[toDate]?.today ?: BigDecimal.ZERO
+    ): Float {
+        val needToday = numericalGoal - totalOfAPeriod(toDate) + (habitDay[toDate]?.today ?: BigDecimal.ZERO)
+
+        when (typeOfGoal) {
+            TypeOfGoalHabit.AT_LEAST -> {
+                if (needToday == BigDecimal.ZERO) return if (newDayValue > BigDecimal.ZERO) 1f else 0f
+                return if (needToday > 0 && newDayValue > 0) newDayValue.saveDiv(needToday).floatValue(false)
+                else (newDayValue - minOf(newDayValue, needToday)).saveDiv(needToday - minOf(newDayValue, needToday))
+                    .floatValue(false)
+            }
+
+            TypeOfGoalHabit.NO_MORE -> {
+                if (needToday == BigDecimal.ZERO) return if (newDayValue > BigDecimal.ZERO) 0f else 1f
+                return if (needToday > 0 && newDayValue > 0) 1f - newDayValue.saveDiv(needToday).floatValue(false)
+                else 1f - (newDayValue - minOf(newDayValue, needToday)).saveDiv(
+                    needToday - minOf(
+                        newDayValue,
+                        needToday
+                    )
+                ).floatValue(false)
             }
         }
     }

@@ -1,8 +1,10 @@
+@file:Suppress("unused")
+
 package fireforestsoul.levelupsoul
 
 object SaveImportExport {
 
-    const val DEFAULT_FILE_NAME = "levelupsoul-save.json"
+    private const val DEFAULT_FILE_NAME = "levelupsoul-save.json"
 
     fun exportSave() {
         SaveTransfer.exportToFile(DEFAULT_FILE_NAME, LocalSaveManager.exportData())

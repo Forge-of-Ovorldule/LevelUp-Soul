@@ -473,20 +473,7 @@ fun DatePickerDialog(
 }
 
 @Composable
-fun SettingsDialog() {
-    var showDialog by remember { mutableStateOf(false) }
-
-    IconButton(onClick = {
-        showDialog = true
-    }) {
-        Image(
-            painter = painterResource(Res.drawable.settings),
-            contentDescription = ts_Settings,
-            modifier = Modifier.size(28.dp),
-            colorFilter = ColorFilter.tint(getSoulRealColor())
-        )
-    }
-
+fun SettingsDialog(onDismissRequest: () -> Unit) {
     var typeOfColor by remember { mutableStateOf(LocalSaveManager.data.soulColorType) }
     var exponent by remember { mutableStateOf(LocalSaveManager.data.withExponent) }
     var soulName by remember { mutableStateOf(LocalSaveManager.data.soulName) }
@@ -498,207 +485,205 @@ fun SettingsDialog() {
     }
     var smartSort by remember { mutableStateOf(LocalSaveManager.data.smartSort) }
 
-    if (showDialog) {
-        AlertDialog(
-            containerColor = UIC_dark,
-            onDismissRequest = { showDialog = false },
-            title = {
-                Text(
-                    ts_Settings,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = UICT_see
-                )
-            },
-            text = {
-                Column {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "$ts_Soul:",
-                            fontSize = 16.sp,
+    AlertDialog(
+        containerColor = UIC_dark,
+        onDismissRequest = { onDismissRequest() },
+        title = {
+            Text(
+                ts_Settings,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = UICT_see
+            )
+        },
+        text = {
+            Column {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "$ts_Soul:",
+                        fontSize = 16.sp,
+                        color = UICT_see
+                    )
+                    OutlinedTextField(
+                        value = soulName,
+                        onValueChange = {
+                            soulName = it
+                        },
+                        label = {
+                            Text(
+                                ts_Mr,
+                                fontSize = 12.sp,
+                                color = UICT_no_see
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        singleLine = true,
+                        textStyle = TextStyle(
+                            fontSize = 14.sp,
                             color = UICT_see
-                        )
-                        OutlinedTextField(
-                            value = soulName,
-                            onValueChange = {
-                                soulName = it
-                            },
-                            label = {
-                                Text(
-                                    ts_Mr,
-                                    fontSize = 12.sp,
-                                    color = UICT_no_see
-                                )
-                            },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                            singleLine = true,
-                            textStyle = TextStyle(
-                                fontSize = 14.sp,
-                                color = UICT_see
-                            ),
-                            shape = RoundedCornerShape(15.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = UICT_see,
-                                unfocusedTextColor = UICT_no_see,
-                                disabledTextColor = UICT_no_see,
-                                focusedContainerColor = UIC_dark_x2,
-                                unfocusedContainerColor = UIC_dark_x2,
-                                disabledContainerColor = UIC_dark_x2,
-                                cursorColor = UICT_see,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent
-                            ),
-                            modifier = Modifier.height(55.dp)
-                        )
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        var expanded by remember { mutableStateOf(false) }
+                        ),
+                        shape = RoundedCornerShape(15.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedTextColor = UICT_see,
+                            unfocusedTextColor = UICT_no_see,
+                            disabledTextColor = UICT_no_see,
+                            focusedContainerColor = UIC_dark_x2,
+                            unfocusedContainerColor = UIC_dark_x2,
+                            disabledContainerColor = UIC_dark_x2,
+                            cursorColor = UICT_see,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
+                        modifier = Modifier.height(55.dp)
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    var expanded by remember { mutableStateOf(false) }
 
-                        ColorPickerBox(soulColor) {
-                            soulColor = it
+                    ColorPickerBox(soulColor) {
+                        soulColor = it
+                    }
+                    Column {
+                        Button(
+                            onClick = { expanded = true },
+                            colors = ButtonColors(
+                                containerColor = UIC_extra_dark,
+                                contentColor = UICT_see,
+                                disabledContainerColor = UIC_extra_dark,
+                                disabledContentColor = UICT_no_see
+                            )
+                        ) {
+                            Text(
+                                "$ts_type: ${typeOfColor.name}",
+                                fontSize = 16.sp,
+                                color = UICT_see,
+                            )
                         }
-                        Column {
-                            Button(
-                                onClick = { expanded = true },
-                                colors = ButtonColors(
-                                    containerColor = UIC_extra_dark,
-                                    contentColor = UICT_see,
-                                    disabledContainerColor = UIC_extra_dark,
-                                    disabledContentColor = UICT_no_see
-                                )
-                            ) {
-                                Text(
-                                    "$ts_type: ${typeOfColor.name}",
-                                    fontSize = 16.sp,
-                                    color = UICT_see,
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier.background(Color.Black)
+                        ) {
+                            TypeOfColorHabit.entries.forEach { mode ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        typeOfColor = mode
+                                        expanded = false
+                                    },
+                                    text = {
+                                        Text(
+                                            text = mode.name,
+                                            fontSize = 16.sp,
+                                            color = UICT_no_see
+                                        )
+                                    }
                                 )
                             }
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false },
-                                modifier = Modifier.background(Color.Black)
-                            ) {
-                                TypeOfColorHabit.entries.forEach { mode ->
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            typeOfColor = mode
-                                            expanded = false
-                                        },
-                                        text = {
-                                            Text(
-                                                text = mode.name,
-                                                fontSize = 16.sp,
-                                                color = UICT_no_see
-                                            )
-                                        }
-                                    )
-                                }
-                            }
                         }
                     }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(
-                            checked = exponent,
-                            onCheckedChange = { exponent = it },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = UICT_no_see,
-                                uncheckedColor = UICT_no_see,
-                                checkmarkColor = UICT_see
-                            )
-                        )
-                        Text(
-                            text = if (exponent) ts_Write_with_an_exponent else ts_Write_without_exponents,
-                            fontSize = 16.sp,
-                            color = UICT_see
-                        )
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(
-                            checked = sortHabitStatisticsSectionsByFrequencyOfUse,
-                            onCheckedChange = { sortHabitStatisticsSectionsByFrequencyOfUse = it },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = UICT_no_see,
-                                uncheckedColor = UICT_no_see,
-                                checkmarkColor = UICT_see
-                            )
-                        )
-                        Text(
-                            text = ts_Sort_habit_statistics_sections_by_frequency_of_use,
-                            fontSize = 16.sp,
-                            color = UICT_see
-                        )
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(
-                            checked = smartSort,
-                            onCheckedChange = { smartSort = it },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = UICT_no_see,
-                                uncheckedColor = UICT_no_see,
-                                checkmarkColor = UICT_see
-                            )
-                        )
-                        Text(
-                            text = ts_Smart_sort,
-                            fontSize = 16.sp,
-                            color = UICT_see
-                        )
-                    }
                 }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        LocalSaveManager.data.withExponent = exponent
-                        LocalSaveManager.data.soulName = soulName
-                        LocalSaveManager.data.soulColor = soulColor
-                        LocalSaveManager.data.soulColorType = typeOfColor
-                        LocalSaveManager.data.sortHabitStatisticsSectionsByFrequencyOfUse =
-                            sortHabitStatisticsSectionsByFrequencyOfUse
-                        LocalSaveManager.data.smartSort = smartSort
-                        LocalSaveManager.save()
-                        showDialog = false
-                    },
-                    colors = ButtonColors(
-                        containerColor = UIC,
-                        contentColor = UICT_see,
-                        disabledContainerColor = Color.Transparent,
-                        disabledContentColor = Color.Transparent
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = exponent,
+                        onCheckedChange = { exponent = it },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = UICT_no_see,
+                            uncheckedColor = UICT_no_see,
+                            checkmarkColor = UICT_see
+                        )
                     )
-                ) {
                     Text(
-                        text = "✅ $ts_Apply",
+                        text = if (exponent) ts_Write_with_an_exponent else ts_Write_without_exponents,
                         fontSize = 16.sp,
-                        color = Color(150, 200, 150),
+                        color = UICT_see
                     )
                 }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showDialog = false },
-                    colors = ButtonColors(
-                        containerColor = UIC,
-                        contentColor = UICT_see,
-                        disabledContainerColor = Color.Transparent,
-                        disabledContentColor = Color.Transparent
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = sortHabitStatisticsSectionsByFrequencyOfUse,
+                        onCheckedChange = { sortHabitStatisticsSectionsByFrequencyOfUse = it },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = UICT_no_see,
+                            uncheckedColor = UICT_no_see,
+                            checkmarkColor = UICT_see
+                        )
                     )
-                ) {
                     Text(
-                        "❌ $ts_Cancel",
+                        text = ts_Sort_habit_statistics_sections_by_frequency_of_use,
                         fontSize = 16.sp,
-                        color = Color(200, 150, 150),
+                        color = UICT_see
+                    )
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = smartSort,
+                        onCheckedChange = { smartSort = it },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = UICT_no_see,
+                            uncheckedColor = UICT_no_see,
+                            checkmarkColor = UICT_see
+                        )
+                    )
+                    Text(
+                        text = ts_Smart_sort,
+                        fontSize = 16.sp,
+                        color = UICT_see
                     )
                 }
             }
-        )
-    }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    LocalSaveManager.data.withExponent = exponent
+                    LocalSaveManager.data.soulName = soulName
+                    LocalSaveManager.data.soulColor = soulColor
+                    LocalSaveManager.data.soulColorType = typeOfColor
+                    LocalSaveManager.data.sortHabitStatisticsSectionsByFrequencyOfUse =
+                        sortHabitStatisticsSectionsByFrequencyOfUse
+                    LocalSaveManager.data.smartSort = smartSort
+                    LocalSaveManager.save()
+                    onDismissRequest()
+                },
+                colors = ButtonColors(
+                    containerColor = UIC,
+                    contentColor = UICT_see,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.Transparent
+                )
+            ) {
+                Text(
+                    text = "✅ $ts_Apply",
+                    fontSize = 16.sp,
+                    color = Color(150, 200, 150),
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = { onDismissRequest() },
+                colors = ButtonColors(
+                    containerColor = UIC,
+                    contentColor = UICT_see,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.Transparent
+                )
+            ) {
+                Text(
+                    "❌ $ts_Cancel",
+                    fontSize = 16.sp,
+                    color = Color(200, 150, 150),
+                )
+            }
+        }
+    )
 }
 
 @Composable
