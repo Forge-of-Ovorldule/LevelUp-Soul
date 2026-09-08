@@ -406,6 +406,10 @@ object TranslatedStrings {
         var Priority: String by mutableStateOf("Priority")
     }
 
+    object Settings {
+        var Interface_scale: String by mutableStateOf("Interface scale")
+    }
+
     fun changeLanguage() {
         when (LocalSaveManager.data.language) {
             Languages.RU -> {
@@ -445,6 +449,7 @@ object TranslatedStrings {
                 Table.CANCEL = "Отмена"
                 Table.APPLY = "Применить"
                 CreateHabit.Priority = "Приоритет"
+                Settings.Interface_scale = "Масштаб интерфейса"
             }
 
             else -> {
@@ -484,6 +489,7 @@ object TranslatedStrings {
                 Table.CANCEL = "Cancel"
                 Table.APPLY = "Apply"
                 CreateHabit.Priority = "Priority"
+                Settings.Interface_scale = "Interface scale"
             }
         }
     }

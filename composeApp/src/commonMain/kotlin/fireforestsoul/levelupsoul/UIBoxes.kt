@@ -484,6 +484,8 @@ fun SettingsDialog(onDismissRequest: () -> Unit) {
         )
     }
     var smartSort by remember { mutableStateOf(LocalSaveManager.data.smartSort) }
+    var uiScaling by remember { mutableStateOf(LocalSaveManager.data.settings.uiDpScale) }
+    var uiScalingString by remember { mutableStateOf(uiScaling.toString()) }
 
     AlertDialog(
         containerColor = UIC_dark,
@@ -637,6 +639,50 @@ fun SettingsDialog(onDismissRequest: () -> Unit) {
                         color = UICT_see
                     )
                 }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${TranslatedStrings.Settings.Interface_scale}:",
+                        fontSize = 16.sp,
+                        color = UICT_see
+                    )
+                    OutlinedTextField(
+                        value = uiScalingString,
+                        onValueChange = {
+                            uiScalingString = it
+                            uiScaling = uiScalingString.toFloatOrNull() ?: LocalSaveManager.data.settings.uiDpScale
+                        },
+                        label = {
+                            Text(
+                                "x",
+                                fontSize = 12.sp,
+                                color = UICT_no_see
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        singleLine = true,
+                        textStyle = TextStyle(
+                            fontSize = 14.sp,
+                            color = UICT_see
+                        ),
+                        shape = RoundedCornerShape(15.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedTextColor = UICT_see,
+                            unfocusedTextColor = UICT_no_see,
+                            disabledTextColor = UICT_no_see,
+                            focusedContainerColor = UIC_dark_x2,
+                            unfocusedContainerColor = UIC_dark_x2,
+                            disabledContainerColor = UIC_dark_x2,
+                            cursorColor = UICT_see,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
+                        modifier = Modifier.height(55.dp)
+                    )
+                }
             }
         },
         confirmButton = {
@@ -649,6 +695,7 @@ fun SettingsDialog(onDismissRequest: () -> Unit) {
                     LocalSaveManager.data.sortHabitStatisticsSectionsByFrequencyOfUse =
                         sortHabitStatisticsSectionsByFrequencyOfUse
                     LocalSaveManager.data.smartSort = smartSort
+                    LocalSaveManager.data.settings.uiDpScale = uiScaling
                     LocalSaveManager.save()
                     onDismissRequest()
                 },
