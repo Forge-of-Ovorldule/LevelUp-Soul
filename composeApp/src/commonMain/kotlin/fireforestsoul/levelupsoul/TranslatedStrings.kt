@@ -402,6 +402,10 @@ object TranslatedStrings {
         var APPLY: String by mutableStateOf("Apply")
     }
 
+    object CreateHabit {
+        var Priority: String by mutableStateOf("Priority")
+    }
+
     fun changeLanguage() {
         when (LocalSaveManager.data.language) {
             Languages.RU -> {
@@ -440,6 +444,7 @@ object TranslatedStrings {
                 Table.DATE = "Дата"
                 Table.CANCEL = "Отмена"
                 Table.APPLY = "Применить"
+                CreateHabit.Priority = "Приоритет"
             }
 
             else -> {
@@ -478,6 +483,7 @@ object TranslatedStrings {
                 Table.DATE = "Date"
                 Table.CANCEL = "Cancel"
                 Table.APPLY = "Apply"
+                CreateHabit.Priority = "Priority"
             }
         }
     }

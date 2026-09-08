@@ -56,6 +56,7 @@ fun CreateHabit(screenChanger: (newScreen: ScreenManager) -> Unit) {
     val horizontalScroll = rememberScrollState()
     var expanded0 by remember { mutableStateOf(false) }
     var expanded1 by remember { mutableStateOf(false) }
+    var expanded2 by remember { mutableStateOf(false) }
 
     val habit = Habit()
     var nameOfHabit by remember { mutableStateOf("") }
@@ -69,6 +70,7 @@ fun CreateHabit(screenChanger: (newScreen: ScreenManager) -> Unit) {
     var changeLevel by remember { mutableStateOf(habit.changeLevel) }
     var changeNeedGoalWithLevel by remember { mutableStateOf(habit.changeNumericalGoalWithLevel) }
     var changeNeedDaysWithLevel by remember { mutableStateOf(habit.changePeriodForGoalCompletionWithLevel) }
+    var priority by remember { mutableStateOf(habit.priority) }
 
     val spaceX = 4.dp
     val spaceY = 4.dp
@@ -122,6 +124,7 @@ fun CreateHabit(screenChanger: (newScreen: ScreenManager) -> Unit) {
                         modifier = Modifier.clickable {
                             habit.nameOfHabit = nameOfHabit
                             habit.typeOfColor = typeOfColorHabits
+                            habit.priority = priority
                             habit.color = colorGood
                             habit.typeOfGoal = typeOfGoalHabits
                             habit.numericalGoal =
@@ -292,6 +295,54 @@ fun CreateHabit(screenChanger: (newScreen: ScreenManager) -> Unit) {
                             initialColor = colorGood,
                             onColorSelected = { colorGood = it }
                         )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(spaceX),
+                    ) {
+                        Text(
+                            text = "${TranslatedStrings.CreateHabit.Priority}: ",
+                            fontSize = 16.sp,
+                            color = UICT_see,
+                        )
+                        Column {
+                            Button(
+                                onClick = { expanded2 = true },
+                                colors = ButtonColors(
+                                    containerColor = UIC_extra_dark,
+                                    contentColor = UICT_see,
+                                    disabledContainerColor = UIC_extra_dark,
+                                    disabledContentColor = UICT_no_see
+                                )
+                            ) {
+                                Text(
+                                    priority.toTranslatedString(),
+                                    fontSize = 16.sp,
+                                    color = UICT_see,
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = expanded2,
+                                onDismissRequest = { expanded2 = false },
+                                modifier = Modifier.background(UIC_extra_dark)
+                            ) {
+                                Priority.entries.forEach { mode ->
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            priority = mode
+                                            expanded2 = false
+                                        },
+                                        text = {
+                                            Text(
+                                                text = mode.toTranslatedString(),
+                                                fontSize = 16.sp,
+                                                color = UICT_no_see
+                                            )
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
                     //Goal
                     Box(

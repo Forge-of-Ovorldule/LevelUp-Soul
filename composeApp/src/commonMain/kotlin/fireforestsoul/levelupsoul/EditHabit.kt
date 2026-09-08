@@ -56,6 +56,7 @@ fun EditHabit(screenChanger: (newScreen: ScreenManager) -> Unit) {
     val horizontalScroll = rememberScrollState()
     var expanded0 by remember { mutableStateOf(false) }
     var expanded1 by remember { mutableStateOf(false) }
+    var expanded2 by remember { mutableStateOf(false) }
 
     var nameOfHabit by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].nameOfHabit) }
     var icon by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].icon) }
@@ -68,6 +69,7 @@ fun EditHabit(screenChanger: (newScreen: ScreenManager) -> Unit) {
     var changeLevel by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].changeLevel) }
     var changeNeedGoalWithLevel by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].changeNumericalGoalWithLevel) }
     var changeNeedDaysWithLevel by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].changePeriodForGoalCompletionWithLevel) }
+    var priority by remember { mutableStateOf(LocalSaveManager.data.habits[habit_statistics_and_edit_x].priority) }
 
     val spaceX = 4.dp
     val spaceY = 4.dp
@@ -121,6 +123,7 @@ fun EditHabit(screenChanger: (newScreen: ScreenManager) -> Unit) {
                         modifier = Modifier.clickable {
                             LocalSaveManager.data.habits[habit_statistics_and_edit_x].nameOfHabit = nameOfHabit
                             LocalSaveManager.data.habits[habit_statistics_and_edit_x].typeOfColor = typeOfColorHabits
+                            LocalSaveManager.data.habits[habit_statistics_and_edit_x].priority = priority
                             LocalSaveManager.data.habits[habit_statistics_and_edit_x].color = colorGood
                             LocalSaveManager.data.habits[habit_statistics_and_edit_x].typeOfGoal = typeOfGoalHabits
                             LocalSaveManager.data.habits[habit_statistics_and_edit_x].numericalGoal =
@@ -297,6 +300,54 @@ fun EditHabit(screenChanger: (newScreen: ScreenManager) -> Unit) {
                             initialColor = colorGood,
                             onColorSelected = { colorGood = it }
                         )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(spaceX),
+                    ) {
+                        Text(
+                            text = TranslatedStrings.CreateHabit.Priority,
+                            fontSize = 16.sp,
+                            color = UICT_see,
+                        )
+                        Column {
+                            Button(
+                                onClick = { expanded2 = true },
+                                colors = ButtonColors(
+                                    containerColor = UIC_extra_dark,
+                                    contentColor = UICT_see,
+                                    disabledContainerColor = UIC_extra_dark,
+                                    disabledContentColor = UICT_no_see
+                                )
+                            ) {
+                                Text(
+                                    text = priority.toTranslatedString(),
+                                    fontSize = 16.sp,
+                                    color = UICT_see,
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = expanded2,
+                                onDismissRequest = { expanded2 = false },
+                                modifier = Modifier.background(UIC_extra_dark)
+                            ) {
+                                Priority.entries.forEach { mode ->
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            priority = mode
+                                            expanded2 = false
+                                        },
+                                        text = {
+                                            Text(
+                                                text = mode.toTranslatedString(),
+                                                fontSize = 16.sp,
+                                                color = UICT_no_see
+                                            )
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
                     //Goal
                     Box(
