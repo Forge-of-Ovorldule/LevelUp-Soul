@@ -1,6 +1,6 @@
 [versions]
 agp = "9.1.1"
-android-compileSdk = "36"
+android-compileSdk = "37"
 android-minSdk = "24"
 #noinspection OldTargetApi
 android-targetSdk = "35"

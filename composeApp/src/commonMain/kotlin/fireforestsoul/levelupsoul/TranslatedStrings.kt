@@ -408,6 +408,8 @@ object TranslatedStrings {
 
     object Settings {
         var Interface_scale: String by mutableStateOf("Interface scale")
+        var Import: String by mutableStateOf("Import")
+        var Export: String by mutableStateOf("Export")
     }
 
     fun changeLanguage() {
@@ -450,6 +452,8 @@ object TranslatedStrings {
                 Table.APPLY = "Применить"
                 CreateHabit.Priority = "Приоритет"
                 Settings.Interface_scale = "Масштаб интерфейса"
+                Settings.Import = "Импорт"
+                Settings.Export = "Экспорт"
             }
 
             else -> {
@@ -490,6 +494,8 @@ object TranslatedStrings {
                 Table.APPLY = "Apply"
                 CreateHabit.Priority = "Priority"
                 Settings.Interface_scale = "Interface scale"
+                Settings.Import = "Import"
+                Settings.Export = "Export"
             }
         }
     }

@@ -67,22 +67,24 @@ fun Table(
     var canSee by remember { mutableStateOf(1) }
     var haveToNameOfHabit by remember { mutableStateOf(140.uiDp()) }
 
-    var highPrioritySorted by remember {
+    var importIndex by remember { mutableStateOf(0) }
+
+    var highPrioritySorted by remember(importIndex) {
         mutableStateOf(
             LocalSaveManager.data.habits.getPriority(Priority.HIGH_PRIORITY)
         )
     }
-    var mediumPrioritySorted by remember {
+    var mediumPrioritySorted by remember(importIndex) {
         mutableStateOf(
             LocalSaveManager.data.habits.getPriority(Priority.MEDIUM_PRIORITY)
         )
     }
-    var lowPrioritySorted by remember {
+    var lowPrioritySorted by remember(importIndex) {
         mutableStateOf(
             LocalSaveManager.data.habits.getPriority(Priority.LOW_PRIORITY)
         )
     }
-    var noPrioritySorted by remember {
+    var noPrioritySorted by remember(importIndex) {
         mutableStateOf(
             LocalSaveManager.data.habits.getPriority(Priority.NO_PRIORITY)
         )
@@ -90,7 +92,7 @@ fun Table(
 
     val backgroundColor = Color(0xFF0F141A)
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(importIndex) {
         val highSource = highPrioritySorted.toList()
         val mediumSource = mediumPrioritySorted.toList()
         val lowSource = lowPrioritySorted.toList()
@@ -297,7 +299,7 @@ fun Table(
                             }
 
                             if (expanded) {
-                                SettingsDialog { expanded = false }
+                                SettingsDialog(onImport = { importIndex++ }) { expanded = false }
                             }
                         }
                     }
@@ -652,9 +654,10 @@ fun Table(
                         },
                         key = { curPriorityPair -> curPriorityPair.second }
                     ) { curPriorityPair ->
-                        var habit by remember { mutableStateOf(curPriorityPair.first) }
-                        var id by remember { mutableStateOf(curPriorityPair.second) }
-                        var progressiveColor by remember { mutableStateOf(habit.progressiveColorCache) }
+
+                        var habit by remember(importIndex) { mutableStateOf(curPriorityPair.first) }
+                        var id by remember(importIndex) { mutableStateOf(curPriorityPair.second) }
+                        var progressiveColor by remember(importIndex) { mutableStateOf(habit.progressiveColorCache) }
 
                         val updateScope = rememberCoroutineScope()
 

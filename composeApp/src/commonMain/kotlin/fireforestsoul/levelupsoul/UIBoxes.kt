@@ -13,30 +13,12 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderColors
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,11 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.times
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.isoDayNumber
-import kotlinx.datetime.number
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.*
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -473,7 +451,7 @@ fun DatePickerDialog(
 }
 
 @Composable
-fun SettingsDialog(onDismissRequest: () -> Unit) {
+fun SettingsDialog(onImport: () -> Unit = {}, onDismissRequest: () -> Unit) {
     var typeOfColor by remember { mutableStateOf(LocalSaveManager.data.soulColorType) }
     var exponent by remember { mutableStateOf(LocalSaveManager.data.withExponent) }
     var soulName by remember { mutableStateOf(LocalSaveManager.data.soulName) }
@@ -682,6 +660,67 @@ fun SettingsDialog(onDismissRequest: () -> Unit) {
                         ),
                         modifier = Modifier.height(55.dp)
                     )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(45.uiDp()),
+                    horizontalArrangement = Arrangement.spacedBy(12.uiDp())
+                ) {
+                    Box(
+                        modifier = Modifier.weight(109f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(13.uiDp()))
+                            .clickable {
+                                LocalSaveManager.save()
+                                SaveImportExport.importSave {
+                                    if (it) onImport()
+                                }
+                            }
+                            .background(Color(0xFF111114))
+                            .insideBorder(
+                                1.uiDp(),
+                                Color(0xFF36363D),
+                                RoundedCornerShape(13.uiDp())
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = TranslatedStrings.Settings.Import,
+                            color = Color(0xFF848484),
+                            fontSize = 12.uiSp(),
+                            maxLines = 1,
+                            fontFamily = jetBrainsFont(),
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier.weight(154f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(13.uiDp()))
+                            .clickable {
+                                LocalSaveManager.save()
+                                SaveImportExport.exportSave()
+                            }
+                            .background(Color(0xFF111114))
+                            .insideBorder(
+                                1.uiDp(),
+                                Color(0xFF36363D),
+                                RoundedCornerShape(13.uiDp())
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = TranslatedStrings.Settings.Export,
+                            color = Color(0xFF848484),
+                            fontSize = 12.uiSp(),
+                            maxLines = 1,
+                            fontFamily = jetBrainsFont(),
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         },
