@@ -13,8 +13,6 @@ import androidx.compose.ui.graphics.Color
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import kotlinx.datetime.*
@@ -306,12 +304,8 @@ class Habit(
             progressiveColorCache = curColor
         }
 
-        val addProcess = ts_Calculating_adaptive_color_habits
-
         withContext(Dispatchers.Default) {
             try {
-                lock.withLock { listProgressedStatusBar.add(addProcess) }
-
                 var maxProgress = Float.MIN_VALUE
                 var minProgress = Float.MAX_VALUE
                 for (habit in LocalSaveManager.data.habits) {
@@ -410,11 +404,6 @@ class Habit(
                 emitCurrentColor()
 
             } finally {
-                withContext(NonCancellable) {
-                    lock.withLock {
-                        listProgressedStatusBar.removeAll { it == addProcess }
-                    }
-                }
             }
         }
     }

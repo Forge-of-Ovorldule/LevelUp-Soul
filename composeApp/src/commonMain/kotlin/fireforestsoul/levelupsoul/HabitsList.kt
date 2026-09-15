@@ -115,11 +115,6 @@ fun HabitsListContent(verticalScrollState: ScrollState, screenChanger: (newScree
                         ) {
                             TextWithDeployableEllipsis(
                                 backgroundColor = UIC,
-                                newStatusBarInfo = changeStatusBarInfo(
-                                    backgroundColor = UIC,
-                                    downPanelSize = 48.dp,
-                                    isProcessed = false
-                                ),
                                 hazeState = null,
                                 text = LocalSaveManager.data.habits[sortedHabits[x]].nameOfHabit,
                                 color = UICT_see,
@@ -186,11 +181,6 @@ fun HabitsListContent(verticalScrollState: ScrollState, screenChanger: (newScree
                                 }
                                 TextWithDeployableEllipsis(
                                     backgroundColor = UIC,
-                                    newStatusBarInfo = changeStatusBarInfo(
-                                        backgroundColor = UIC,
-                                        downPanelSize = 48.dp,
-                                        isProcessed = false
-                                    ),
                                     hazeState = null,
                                     text = if (LocalSaveManager.data.habits[sortedHabits[x]].typeOfGoal == TypeOfGoalHabit.AT_LEAST)
                                         if (LocalSaveManager.data.habits[sortedHabits[x]].totalOfAPeriod(

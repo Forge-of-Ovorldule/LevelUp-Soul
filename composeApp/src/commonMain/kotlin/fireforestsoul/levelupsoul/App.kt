@@ -85,12 +85,4 @@ fun App() {
             }
         }
     }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(WindowInsets.systemBars.asPaddingValues())
-    ) {
-        StatusBar(hazeState)
-    }
 }
