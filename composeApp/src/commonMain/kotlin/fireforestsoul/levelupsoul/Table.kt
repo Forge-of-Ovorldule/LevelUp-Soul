@@ -69,24 +69,24 @@ fun Table(
     var canSee by remember { mutableStateOf(1) }
     var haveToNameOfHabit by remember { mutableStateOf(140.uiDp()) }
 
-    var importIndex by remember { mutableStateOf(0) }
+    var updateScreenId by remember { mutableStateOf(0) }
 
-    var highPrioritySorted by remember(importIndex) {
+    var highPrioritySorted by remember(updateScreenId) {
         mutableStateOf(
             LocalSaveManager.data.habits.getPriority(Priority.HIGH_PRIORITY)
         )
     }
-    var mediumPrioritySorted by remember(importIndex) {
+    var mediumPrioritySorted by remember(updateScreenId) {
         mutableStateOf(
             LocalSaveManager.data.habits.getPriority(Priority.MEDIUM_PRIORITY)
         )
     }
-    var lowPrioritySorted by remember(importIndex) {
+    var lowPrioritySorted by remember(updateScreenId) {
         mutableStateOf(
             LocalSaveManager.data.habits.getPriority(Priority.LOW_PRIORITY)
         )
     }
-    var noPrioritySorted by remember(importIndex) {
+    var noPrioritySorted by remember(updateScreenId) {
         mutableStateOf(
             LocalSaveManager.data.habits.getPriority(Priority.NO_PRIORITY)
         )
@@ -94,7 +94,7 @@ fun Table(
 
     val backgroundColor = Color(0xFF0F141A)
 
-    LaunchedEffect(importIndex) {
+    LaunchedEffect(updateScreenId) {
         val highSource = highPrioritySorted.toList()
         val mediumSource = mediumPrioritySorted.toList()
         val lowSource = lowPrioritySorted.toList()
@@ -301,7 +301,7 @@ fun Table(
                             }
 
                             if (expanded) {
-                                SettingsDialog(onImport = { importIndex++ }) { expanded = false }
+                                SettingsDialog(onImport = { updateScreenId++ }) { expanded = false }
                             }
                         }
                     }
@@ -657,13 +657,13 @@ fun Table(
                         key = { curPriorityPair -> curPriorityPair.second }
                     ) { curPriorityPair ->
 
-                        var habit by remember(importIndex) { mutableStateOf(curPriorityPair.first) }
-                        var id by remember(importIndex) { mutableStateOf(curPriorityPair.second) }
-                        var progressiveColor by remember(importIndex) { mutableStateOf(habit.progressiveColorCache) }
+                        var habit by remember(updateScreenId) { mutableStateOf(curPriorityPair.first) }
+                        var id by remember(updateScreenId) { mutableStateOf(curPriorityPair.second) }
+                        var progressiveColor by remember(updateScreenId) { mutableStateOf(habit.progressiveColorCache) }
 
                         val updateScope = rememberCoroutineScope()
 
-                        LaunchedEffect(id) {
+                        LaunchedEffect(id, updateScreenId) {
                             withContext(Dispatchers.Default) {
                                 habit.calculateProgressiveColor {
                                     updateScope.launch {
@@ -1096,7 +1096,6 @@ fun Table(
                                                         )
                                                     }
 
-                                                    val scope = rememberCoroutineScope()
                                                     Box(
                                                         modifier = Modifier.weight(154f)
                                                             .fillMaxHeight()
@@ -1111,26 +1110,7 @@ fun Table(
                                                                             ?: BigDecimal.ZERO)
                                                                 )
                                                                 LocalSaveManager.save()
-                                                                scope.launch {
-                                                                    val highSource = highPrioritySorted.toList()
-                                                                    val mediumSource = mediumPrioritySorted.toList()
-                                                                    val lowSource = lowPrioritySorted.toList()
-                                                                    val noPrioritySource = noPrioritySorted.toList()
-
-                                                                    val sorted = withContext(Dispatchers.Default) {
-                                                                        listOf(
-                                                                            async { highSource.sortSystem() },
-                                                                            async { mediumSource.sortSystem() },
-                                                                            async { lowSource.sortSystem() },
-                                                                            async { noPrioritySource.sortSystem() },
-                                                                        ).awaitAll()
-                                                                    }
-
-                                                                    highPrioritySorted = sorted[0]
-                                                                    mediumPrioritySorted = sorted[1]
-                                                                    lowPrioritySorted = sorted[2]
-                                                                    noPrioritySorted = sorted[3]
-                                                                }
+                                                                updateScreenId++
                                                                 setValDialogOpen = false
                                                                 curValDialogOpen = false
                                                             }
