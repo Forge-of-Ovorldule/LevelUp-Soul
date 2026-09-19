@@ -69,24 +69,22 @@ fun Table(
     var canSee by remember { mutableStateOf(1) }
     var haveToNameOfHabit by remember { mutableStateOf(140.uiDp()) }
 
-    var updateScreenId by remember { mutableStateOf(0) }
-
-    var highPrioritySorted by remember(updateScreenId) {
+    var highPrioritySorted by remember {
         mutableStateOf(
             LocalSaveManager.data.habits.getPriority(Priority.HIGH_PRIORITY)
         )
     }
-    var mediumPrioritySorted by remember(updateScreenId) {
+    var mediumPrioritySorted by remember {
         mutableStateOf(
             LocalSaveManager.data.habits.getPriority(Priority.MEDIUM_PRIORITY)
         )
     }
-    var lowPrioritySorted by remember(updateScreenId) {
+    var lowPrioritySorted by remember {
         mutableStateOf(
             LocalSaveManager.data.habits.getPriority(Priority.LOW_PRIORITY)
         )
     }
-    var noPrioritySorted by remember(updateScreenId) {
+    var noPrioritySorted by remember {
         mutableStateOf(
             LocalSaveManager.data.habits.getPriority(Priority.NO_PRIORITY)
         )
@@ -94,25 +92,57 @@ fun Table(
 
     val backgroundColor = Color(0xFF0F141A)
 
+    var updateScreenId by remember { mutableStateOf(0) }
+    var highPriorityUpdateId by remember { mutableIntStateOf(0) }
+    var mediumPriorityUpdateId by remember { mutableIntStateOf(0) }
+    var lowPriorityUpdateId by remember { mutableIntStateOf(0) }
+    var noPriorityUpdateId by remember { mutableIntStateOf(0) }
+
     LaunchedEffect(updateScreenId) {
-        val highSource = highPrioritySorted.toList()
-        val mediumSource = mediumPrioritySorted.toList()
-        val lowSource = lowPrioritySorted.toList()
-        val noPrioritySource = noPrioritySorted.toList()
+        highPriorityUpdateId++
+        mediumPriorityUpdateId++
+        lowPriorityUpdateId++
+        noPriorityUpdateId++
+    }
 
-        val sorted = withContext(Dispatchers.Default) {
-            listOf(
-                async { highSource.sortSystem() },
-                async { mediumSource.sortSystem() },
-                async { lowSource.sortSystem() },
-                async { noPrioritySource.sortSystem() },
-            ).awaitAll()
+    LaunchedEffect(highPriorityUpdateId) {
+        val source = LocalSaveManager.data.habits
+            .getPriority(Priority.HIGH_PRIORITY)
+            .toList()
+
+        highPrioritySorted = withContext(Dispatchers.Default) {
+            source.sortSystem()
         }
+    }
 
-        highPrioritySorted = sorted[0]
-        mediumPrioritySorted = sorted[1]
-        lowPrioritySorted = sorted[2]
-        noPrioritySorted = sorted[3]
+    LaunchedEffect(mediumPriorityUpdateId) {
+        val source = LocalSaveManager.data.habits
+            .getPriority(Priority.MEDIUM_PRIORITY)
+            .toList()
+
+        mediumPrioritySorted = withContext(Dispatchers.Default) {
+            source.sortSystem()
+        }
+    }
+
+    LaunchedEffect(lowPriorityUpdateId) {
+        val source = LocalSaveManager.data.habits
+            .getPriority(Priority.LOW_PRIORITY)
+            .toList()
+
+        lowPrioritySorted = withContext(Dispatchers.Default) {
+            source.sortSystem()
+        }
+    }
+
+    LaunchedEffect(noPriorityUpdateId) {
+        val source = LocalSaveManager.data.habits
+            .getPriority(Priority.NO_PRIORITY)
+            .toList()
+
+        noPrioritySorted = withContext(Dispatchers.Default) {
+            source.sortSystem()
+        }
     }
 
     var setValDialogOpen by remember { mutableStateOf(false) }
@@ -313,6 +343,8 @@ fun Table(
             }
         }
 
+        val bottomBarHeight = 79.uiDp()
+
         @Composable
         fun BottomBar() {
             @Composable
@@ -362,7 +394,7 @@ fun Table(
             fun ScreenSwitcherBlock() {
                 Box(
                     modifier = Modifier.fillMaxWidth()
-                        .height(79.uiDp())
+                        .height(bottomBarHeight)
                         .background(Color(0xFF070709))
                         .outsideBorder(width = 1.uiDp(), color = Color(0xFF36363D), RectangleShape)
                 ) {
@@ -656,14 +688,40 @@ fun Table(
                         },
                         key = { curPriorityPair -> curPriorityPair.second }
                     ) { curPriorityPair ->
+                        fun updateCurPriorityState() {
+                            when (priority) {
+                                Priority.HIGH_PRIORITY -> highPriorityUpdateId++
+                                Priority.MEDIUM_PRIORITY -> mediumPriorityUpdateId++
+                                Priority.LOW_PRIORITY -> lowPriorityUpdateId++
+                                Priority.NO_PRIORITY -> noPriorityUpdateId++
+                            }
+                        }
 
-                        var habit by remember(updateScreenId) { mutableStateOf(curPriorityPair.first) }
-                        var id by remember(updateScreenId) { mutableStateOf(curPriorityPair.second) }
-                        var progressiveColor by remember(updateScreenId) { mutableStateOf(habit.progressiveColorCache) }
+                        val curPriorityState by remember(
+                            when (priority) {
+                                Priority.NO_PRIORITY -> noPriorityUpdateId
+                                Priority.HIGH_PRIORITY -> highPriorityUpdateId
+                                Priority.MEDIUM_PRIORITY -> mediumPriorityUpdateId
+                                Priority.LOW_PRIORITY -> lowPriorityUpdateId
+                            }
+                        ) {
+                            mutableStateOf(
+                                when (priority) {
+                                    Priority.NO_PRIORITY -> noPriorityUpdateId
+                                    Priority.HIGH_PRIORITY -> highPriorityUpdateId
+                                    Priority.MEDIUM_PRIORITY -> mediumPriorityUpdateId
+                                    Priority.LOW_PRIORITY -> lowPriorityUpdateId
+                                }
+                            )
+                        }
+
+                        var habit by remember(curPriorityState) { mutableStateOf(curPriorityPair.first) }
+                        var id by remember(curPriorityState) { mutableStateOf(curPriorityPair.second) }
+                        var progressiveColor by remember(curPriorityState) { mutableStateOf(habit.progressiveColorCache) }
 
                         val updateScope = rememberCoroutineScope()
 
-                        LaunchedEffect(id, updateScreenId) {
+                        LaunchedEffect(id, curPriorityState) {
                             withContext(Dispatchers.Default) {
                                 habit.calculateProgressiveColor {
                                     updateScope.launch {
@@ -1110,7 +1168,7 @@ fun Table(
                                                                             ?: BigDecimal.ZERO)
                                                                 )
                                                                 LocalSaveManager.save()
-                                                                updateScreenId++
+                                                                updateCurPriorityState()
                                                                 setValDialogOpen = false
                                                                 curValDialogOpen = false
                                                             }
@@ -1151,7 +1209,7 @@ fun Table(
 
             Column(
                 modifier = Modifier.fillMaxSize()
-                    .padding(start = 6.uiDp(), top = 102.uiDp()),
+                    .padding(start = 6.uiDp(), top = 102.uiDp(), bottom = bottomBarHeight),
                 verticalArrangement = Arrangement.spacedBy(8.uiDp()),
             ) {
                 Box(
