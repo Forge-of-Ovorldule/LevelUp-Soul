@@ -9,6 +9,10 @@
 
 package fireforestsoul.levelupsoul
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+
 var ts_Edit: String = "Edit"
 var ts_Cancel: String = "Cancel"
 var ts_Confirm: String = "Confirm"
@@ -356,5 +360,143 @@ fun changeLanguage() {
         ts_Manual_change = "Manual change"
         ts_Level_up = "Level up"
         ts_Level_down = "Level down"
+    }
+}
+
+object TranslatedStrings {
+    object Table {
+        var JAN: String by mutableStateOf("JAN")
+        var FEB: String by mutableStateOf("FEB")
+        var MAR: String by mutableStateOf("MAR")
+        var APR: String by mutableStateOf("APR")
+        var MAY: String by mutableStateOf("MAY")
+        var JUN: String by mutableStateOf("JUN")
+        var JUL: String by mutableStateOf("JUL")
+        var AUG: String by mutableStateOf("AUG")
+        var SEP: String by mutableStateOf("SEP")
+        var OCT: String by mutableStateOf("OCT")
+        var NOV: String by mutableStateOf("NOV")
+        var DEC: String by mutableStateOf("DEC")
+        var RU: String by mutableStateOf("RU")
+        var EN: String by mutableStateOf("EN")
+        var LIST: String by mutableStateOf("LIST")
+        var TABLE: String by mutableStateOf("TABLE")
+        var STATISTICS: String by mutableStateOf("STATISTICS")
+        var MON: String by mutableStateOf("MON")
+        var TUE: String by mutableStateOf("TUE")
+        var WED: String by mutableStateOf("WED")
+        var THU: String by mutableStateOf("THU")
+        var FRI: String by mutableStateOf("FRI")
+        var SAT: String by mutableStateOf("SAT")
+        var SUN: String by mutableStateOf("SUN")
+        var HIGH_PRIORITY: String by mutableStateOf("High priority")
+        var MEDIUM_PRIORITY: String by mutableStateOf("Medium priority")
+        var LOW_PRIORITY: String by mutableStateOf("Low priority")
+        var NO_PRIORITY: String by mutableStateOf("No priority")
+        var LVL: String by mutableStateOf("LVL")
+        var DAYS: String by mutableStateOf("d")
+        var OLD: String by mutableStateOf("Old")
+        var GOAL: String by mutableStateOf("Goal")
+        var DATE: String by mutableStateOf("Date")
+        var CANCEL: String by mutableStateOf("Cancel")
+        var APPLY: String by mutableStateOf("Apply")
+    }
+
+    object CreateHabit {
+        var Priority: String by mutableStateOf("Priority")
+    }
+
+    object Settings {
+        var Interface_scale: String by mutableStateOf("Interface scale")
+        var Import: String by mutableStateOf("Import")
+        var Export: String by mutableStateOf("Export")
+    }
+
+    fun changeLanguage() {
+        when (LocalSaveManager.data.language) {
+            Languages.RU -> {
+                Table.JAN = "ЯНВ"
+                Table.FEB = "ФЕВ"
+                Table.MAR = "МАРТ"
+                Table.APR = "АПР"
+                Table.MAY = "МАЙ"
+                Table.JUN = "ИЮН"
+                Table.JUL = "ИЮЛ"
+                Table.AUG = "АВГ"
+                Table.SEP = "СЕН"
+                Table.OCT = "ОКТ"
+                Table.NOV = "НОЯ"
+                Table.DEC = "ДЕК"
+                Table.RU = "RU"
+                Table.EN = "EN"
+                Table.LIST = "СПИСОК"
+                Table.TABLE = "ТАБЛИЦА"
+                Table.STATISTICS = "СТАТИСТИКА"
+                Table.MON = "ПОН"
+                Table.TUE = "ВТО"
+                Table.WED = "СРЕ"
+                Table.THU = "ЧЕТ"
+                Table.FRI = "ПЯТ"
+                Table.SAT = "СУБ"
+                Table.SUN = "ВОС"
+                Table.HIGH_PRIORITY = "Высокий приоритет"
+                Table.MEDIUM_PRIORITY = "Средний приоритет"
+                Table.LOW_PRIORITY = "Низкий приоритет"
+                Table.NO_PRIORITY = "Без приоритета"
+                Table.LVL = "УР"
+                Table.DAYS = "дн"
+                Table.OLD = "Старое"
+                Table.GOAL = "Цель"
+                Table.DATE = "Дата"
+                Table.CANCEL = "Отмена"
+                Table.APPLY = "Применить"
+                CreateHabit.Priority = "Приоритет"
+                Settings.Interface_scale = "Масштаб интерфейса"
+                Settings.Import = "Импорт"
+                Settings.Export = "Экспорт"
+            }
+
+            else -> {
+                Table.JAN = "JAN"
+                Table.FEB = "FEB"
+                Table.MAR = "MAR"
+                Table.APR = "APR"
+                Table.MAY = "MAY"
+                Table.JUN = "JUN"
+                Table.JUL = "JUL"
+                Table.AUG = "AUG"
+                Table.SEP = "SEP"
+                Table.OCT = "OCT"
+                Table.NOV = "NOV"
+                Table.DEC = "DEC"
+                Table.RU = "RU"
+                Table.EN = "EN"
+                Table.LIST = "LIST"
+                Table.TABLE = "TABLE"
+                Table.STATISTICS = "STATISTICS"
+                Table.MON = "MON"
+                Table.TUE = "TUE"
+                Table.WED = "WED"
+                Table.THU = "THU"
+                Table.FRI = "FRI"
+                Table.SAT = "SAT"
+                Table.SUN = "SUN"
+                Table.HIGH_PRIORITY = "High priority"
+                Table.MEDIUM_PRIORITY = "Medium priority"
+                Table.LOW_PRIORITY = "Low priority"
+                Table.NO_PRIORITY = "No priority"
+                Table.LVL = "LVL"
+                Table.DAYS = "d"
+                Table.OLD = "Old"
+                Table.GOAL = "Goal"
+                Table.DATE = "Date"
+                Table.CANCEL = "Cancel"
+                Table.APPLY = "Apply"
+                CreateHabit.Priority = "Priority"
+                Settings.Interface_scale = "Interface scale"
+                Settings.Import = "Import"
+                Settings.Export = "Export"
+            }
+        }
     }
 }

@@ -53,7 +53,10 @@ var loadIsGood: Boolean = false
 
 private suspend fun loading(screenChanger: (newScreen: ScreenManager) -> Unit) = withContext(Dispatchers.Default) {
     LocalSaveManager.data
+
     changeLanguage()
+    TranslatedStrings.changeLanguage()
+
     for (i in LocalSaveManager.data.habits.indices) {
         LocalSaveManager.data.habits[i].clearOfDefaults()
         LocalSaveManager.data.habits[i].update()

@@ -37,8 +37,6 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun MainMenuContent(
     screenChanger: (newScreen: ScreenManager) -> Unit,
-    verticalScrollForTableContent: ScrollState,
-    horizontalScrollForTableContent: ScrollState,
     verticalScrollForHabitsListContent: ScrollState,
     screen: ScreenManager
 ) {
@@ -61,7 +59,7 @@ fun MainMenuContent(
                     .fillMaxWidth()
                     .background(UIC)
             ) {
-                if (screenCopy == ScreenManager.TABLE || screenCopy == ScreenManager.TABLE_UPDATER || screenCopy == ScreenManager.HABITS_LIST) {
+                if (screenCopy == ScreenManager.TABLE || screenCopy == ScreenManager.HABITS_LIST) {
                     Row(
                         modifier = Modifier
                             .height(48.dp)
@@ -111,19 +109,34 @@ fun MainMenuContent(
                             screenChanger(ScreenManager.CREATE_HABIT)
                         }) {
                             Image(
-                                painter = painterResource(Res.drawable.add_habit),
+                                painter = painterResource(Res.drawable.__OLD__add_habit),
                                 contentDescription = ts_Create_habit,
                                 modifier = Modifier.size(28.dp),
                                 colorFilter = ColorFilter.tint(getSoulRealColor())
                             )
                         }
-                        if (screenCopy == ScreenManager.TABLE || screenCopy == ScreenManager.TABLE_UPDATER) {
+                        if (screenCopy == ScreenManager.TABLE) {
                             DatePickerDialog(countdownDate) {
                                 countdownDate = it
                             }
                         }
 
-                        SettingsDialog()
+                        var showDialog by remember { mutableStateOf(false) }
+
+                        IconButton(onClick = {
+                            showDialog = true
+                        }) {
+                            Image(
+                                painter = painterResource(Res.drawable.__OLD__settings),
+                                contentDescription = ts_Settings,
+                                modifier = Modifier.size(28.dp),
+                                colorFilter = ColorFilter.tint(getSoulRealColor())
+                            )
+                        }
+
+                        if (showDialog) {
+                            SettingsDialog { showDialog = false }
+                        }
 
                         var expanded0 by remember { mutableStateOf(false) }
 
@@ -209,7 +222,7 @@ fun MainMenuContent(
 
                     AnimatedTabItem(
                         isActive = screenCopy == ScreenManager.TABLE,
-                        onClick = { screenChanger(ScreenManager.TABLE_UPDATER) },
+                        onClick = { screenChanger(ScreenManager.TABLE) },
                         activeIcon = painterResource(Res.drawable.habits_table),
                         inactiveIcon = painterResource(Res.drawable.habits_table_mono),
                         text = ts_habits_table,
@@ -231,12 +244,9 @@ fun MainMenuContent(
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
-            if (screenCopy == ScreenManager.TABLE || screenCopy == ScreenManager.TABLE_UPDATER)
-                TableContent(
-                    screenChanger,
-                    verticalScrollForTableContent,
-                    horizontalScrollForTableContent,
-                    countdownDate
+            if (screenCopy == ScreenManager.TABLE)
+                Table(
+                    screenChanger
                 )
             if (screenCopy == ScreenManager.SOUL_STATISTICS)
                 SoulStatisticsContent()

@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,7 +13,7 @@ class LocalData {
     )
     var soulColorType: TypeOfColorHabit = TypeOfColorHabit.ADAPTIVE
 
-    @Contextual
+    @Serializable(with = ColorAsStringSerializer::class)
     var soulColor: Color = Color(200, 200, 200)
     var soulName: String = ts_Mr_Soul_Forest
     var soulLevel: Int = 0
@@ -35,4 +34,5 @@ class LocalData {
     )
     var sortHabitStatisticsSectionsByFrequencyOfUse: Boolean = false
     var smartSort: Boolean = false
+    var settings: Settings = Settings()
 }

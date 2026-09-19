@@ -1,7 +1,6 @@
 package fireforestsoul.levelupsoul
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -28,7 +27,6 @@ import dev.chrisbanes.haze.hazeEffect
 @Composable
 fun TextWithDeployableEllipsis(
     backgroundColor: Color,
-    newStatusBarInfo: StatusBarInfo,
     hazeState: HazeState?,
     contentBefore: @Composable () -> Unit = {},
     text: String,
@@ -74,12 +72,6 @@ fun TextWithDeployableEllipsis(
 
                 Box(
                     modifier = Modifier
-                        .clickable {
-                            newStatusBarInfo.text = text
-                            newStatusBarInfo.textColor = color
-                            updateTimerForStatusBar = true
-                            statusBarInfo = newStatusBarInfo
-                        }
                         .padding(
                             start = with(LocalDensity.current) { fontSize.toDp() / 6.8f },
                             end = with(LocalDensity.current) { fontSize.toDp() / 3.4f }),

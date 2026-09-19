@@ -9,395 +9,1273 @@
 
 package fireforestsoul.levelupsoul
 
-import androidx.compose.foundation.*
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.max
+import androidx.compose.ui.unit.times
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import kotlinx.datetime.*
-import kotlin.math.max
-import kotlin.math.min
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun TableContent(
+fun Table(
     screenChanger: (newScreen: ScreenManager) -> Unit,
-    verticalScroll: ScrollState,
-    horizontalScroll: ScrollState,
-    countdownDate: LocalDate,
 ) {
-    val sortedHabits = MutableList(LocalSaveManager.data.habits.size) { it }
-    sortedHabits.sortSystem()
+    LocalSaveManager.data.backAppStatus = ScreenManager.TABLE
 
-    LocalSaveManager.data.backAppStatus = ScreenManager.TABLE_UPDATER
+    var startDate by remember { mutableStateOf(dateNow()) }
+    var canSee by remember { mutableStateOf(1) }
+    var haveToNameOfHabit by remember { mutableStateOf(140.uiDp()) }
 
-    val firstCellSizeX = 200.dp
-    val firstCellSizeY = 40.dp
-    val nextCellSizeX = 45.dp
-    val spacedCell = 3.dp
-    val sizeOfBorder = 1.dp
-    val roundedBorder = 7.5.dp
-    val firstSellFontSize = 16.sp
-    val firstSellSmallFontSize = 9.sp
-    val dataSellFontSize = 11.sp
-    var maxDays = 0
-    for (habit in LocalSaveManager.data.habits) {
-        maxDays = max(habit.totalDays(), maxDays)
+    var highPrioritySorted by remember {
+        mutableStateOf(
+            LocalSaveManager.data.habits.getPriority(Priority.HIGH_PRIORITY)
+        )
+    }
+    var mediumPrioritySorted by remember {
+        mutableStateOf(
+            LocalSaveManager.data.habits.getPriority(Priority.MEDIUM_PRIORITY)
+        )
+    }
+    var lowPrioritySorted by remember {
+        mutableStateOf(
+            LocalSaveManager.data.habits.getPriority(Priority.LOW_PRIORITY)
+        )
+    }
+    var noPrioritySorted by remember {
+        mutableStateOf(
+            LocalSaveManager.data.habits.getPriority(Priority.NO_PRIORITY)
+        )
     }
 
-    BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(UIC_dark)
+    val backgroundColor = Color(0xFF0F141A)
+
+    var updateScreenId by remember { mutableStateOf(0) }
+    var highPriorityUpdateId by remember { mutableIntStateOf(0) }
+    var mediumPriorityUpdateId by remember { mutableIntStateOf(0) }
+    var lowPriorityUpdateId by remember { mutableIntStateOf(0) }
+    var noPriorityUpdateId by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(updateScreenId) {
+        highPriorityUpdateId++
+        mediumPriorityUpdateId++
+        lowPriorityUpdateId++
+        noPriorityUpdateId++
+    }
+
+    LaunchedEffect(highPriorityUpdateId) {
+        val source = LocalSaveManager.data.habits
+            .getPriority(Priority.HIGH_PRIORITY)
+            .toList()
+
+        highPrioritySorted = withContext(Dispatchers.Default) {
+            source.sortSystem()
+        }
+    }
+
+    LaunchedEffect(mediumPriorityUpdateId) {
+        val source = LocalSaveManager.data.habits
+            .getPriority(Priority.MEDIUM_PRIORITY)
+            .toList()
+
+        mediumPrioritySorted = withContext(Dispatchers.Default) {
+            source.sortSystem()
+        }
+    }
+
+    LaunchedEffect(lowPriorityUpdateId) {
+        val source = LocalSaveManager.data.habits
+            .getPriority(Priority.LOW_PRIORITY)
+            .toList()
+
+        lowPrioritySorted = withContext(Dispatchers.Default) {
+            source.sortSystem()
+        }
+    }
+
+    LaunchedEffect(noPriorityUpdateId) {
+        val source = LocalSaveManager.data.habits
+            .getPriority(Priority.NO_PRIORITY)
+            .toList()
+
+        noPrioritySorted = withContext(Dispatchers.Default) {
+            source.sortSystem()
+        }
+    }
+
+    var setValDialogOpen by remember { mutableStateOf(false) }
+    val backgroundBlur by animateDpAsState(
+        targetValue = if (setValDialogOpen) 10.dp else 0.dp,
+        animationSpec = tween(durationMillis = 180)
+    )
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+            .background(backgroundColor)
+            .blur(backgroundBlur)
     ) {
-        val maxCellX =
-            ((maxWidth - firstCellSizeX) / (if (nextCellSizeX + spacedCell != 0.dp) (nextCellSizeX + spacedCell) else 1.dp)).toInt()
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(spacedCell),
-            modifier = Modifier.verticalScroll(verticalScroll)
-        ) {
-            //first column
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(spacedCell),
-                modifier = Modifier.width(firstCellSizeX)
+        @Composable
+        fun topBar() {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(top = 35.uiDp(), start = 15.uiDp(), end = 21.uiDp()),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(
-                    modifier = Modifier.size(firstCellSizeX, firstCellSizeY),
-                    contentAlignment = Alignment.Center
-                ) {}
-                for (y in LocalSaveManager.data.habits.indices) {
-                    var seeColor by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
-                    var noSeeColor by remember {
-                        mutableStateOf(
-                            seeColor.multiply(
-                                0.5f,
-                                0.5f,
-                                0.5f
-                            )
-                        )
-                    }
-
-                    LaunchedEffect(sortedHabits[y], progress(sortedHabits[y])) {
-                        calculateProgressiveColor(
-                            index = sortedHabits[y],
-                            onColorUpdate = { newColor ->
-                                seeColor = newColor
-                                noSeeColor = newColor.multiply(0.5f, 0.5f, 0.5f)
-                            }
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .size(firstCellSizeX, firstCellSizeY)
-                            .border(
-                                sizeOfBorder,
-                                color = noSeeColor,
-                                shape = RoundedCornerShape(roundedBorder)
-                            )
-                            .clickable {
-                                habit_statistics_and_edit_x = sortedHabits[y]
-                                screenChanger(ScreenManager.HABIT_STATISTICS)
-                            },
-                        contentAlignment = Alignment.Center
+                @Composable
+                fun DateChooseBlock() {
+                    Row(
+                        modifier = Modifier.size(138.uiDp(), 34.uiDp())
+                            .clip(RoundedCornerShape(11.uiDp()))
+                            .background(Color(0XFF111114))
+                            .insideBorder(1.uiDp(), color = Color(0xFF36363D), shape = RoundedCornerShape(11.uiDp())),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(3.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                        Box(
+                            modifier = Modifier.width((22 + 5.66).uiDp())
+                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(11.uiDp()))
+                                .clickable { startDate = startDate.minusDays(canSee) },
+                            contentAlignment = Alignment.Center
                         ) {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier.padding(start = 8.dp)
-                            ) {
-                                DonutChart(
-                                    values = listOf(
-                                        progress(sortedHabits[y]),
-                                        1f - progress(sortedHabits[y])
-                                    ),
-                                    colors = listOf(seeColor, noSeeColor),
-                                    modifier = Modifier
-                                        .size(24.25.dp)
-                                        .padding(start = 1.75.dp, top = 1.75.dp),
-                                    strokeWidth = 3.5.dp
-                                )
-                                Text(
-                                    text = "${LocalSaveManager.data.habits[sortedHabits[y]].level}",
-                                    fontSize = 11.sp,
-                                    color = seeColor
-                                )
-                            }
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                TextWithDeployableEllipsis(
-                                    backgroundColor = UIC_black,
-                                    newStatusBarInfo = changeStatusBarInfo(
-                                        backgroundColor = UIC_dark,
-                                        downPanelSize = 48.dp,
-                                        isProcessed = false
-                                    ),
-                                    hazeState = null,
-                                    text = LocalSaveManager.data.habits[sortedHabits[y]].nameOfHabit,
-                                    color = seeColor,
-                                    fontWeight = FontWeight.Normal,
-                                    fontFamily = jetBrainsFont(),
-                                    fontSize = firstSellFontSize / 1.15f
-                                )
-                                val needOrCanMore =
-                                    LocalSaveManager.data.habits[sortedHabits[y]].numericalGoal - LocalSaveManager.data.habits[sortedHabits[y]].totalOfAPeriod(
-                                        dateNow()
-                                    )
-                                if (needOrCanMore > BigDecimal.ZERO) {
-                                    Text(
-                                        text = if (LocalSaveManager.data.habits[sortedHabits[y]].typeOfGoal == TypeOfGoalHabit.AT_LEAST)
-                                            "$ts_Need ${needOrCanMore.toBestString()} $ts_more"
-                                        else "$ts_You_can_have ${needOrCanMore.toBestString()} $ts_more",
-                                        color = noSeeColor,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = firstSellSmallFontSize,
-                                    )
-                                }
-                            }
+                            Icon(
+                                painter = painterResource(Res.drawable.left),
+                                contentDescription = null,
+                                tint = Color(0xFF36363D),
+                                modifier = Modifier.size(5.66.uiDp(), 8.66.uiDp())
+                            )
+                        }
+                        Text(
+                            text = "${startDate.minusDays(canSee - 1).day} — ${startDate.day} ${startDate.month.toThreeString()}",
+                            color = Color(0xFFEEEEEE),
+                            fontSize = 10.uiSp(),
+                            maxLines = 1,
+                            fontFamily = jetBrainsFont(),
+                            fontWeight = FontWeight.Normal,
+                            textAlign = TextAlign.Center
+                        )
+                        Box(
+                            modifier = Modifier.width((22 + 5.66).uiDp())
+                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(11.uiDp()))
+                                .clickable { startDate = startDate.plusDays(canSee) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(Res.drawable.left),
+                                contentDescription = null,
+                                tint = Color(0xFF36363D),
+                                modifier = Modifier.size(5.66.uiDp(), 8.66.uiDp())
+                                    .rotate(180f)
+                            )
                         }
                     }
                 }
-            }
 
-            //main table body
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .horizontalScroll(horizontalScroll)
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(spacedCell),
+                DateChooseBlock()
+                Row(
+                    modifier = Modifier.size(70.uiDp(), 29.uiDp()),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    //dates
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(spacedCell),
-                        modifier = Modifier.height(firstCellSizeY)
-                    ) {
-                        for (x in 0 until max(maxCellX, 10)) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
-                                modifier = Modifier.size(nextCellSizeX, firstCellSizeY)
+                    @Composable
+                    fun LanguageChooseBlock() {
+                        Box {
+                            var expanded by remember { mutableStateOf(false) }
+
+                            Box(
+                                modifier = Modifier.size(32.uiDp(), 29.uiDp())
+                                    .clip(RoundedCornerShape(8.uiDp()))
+                                    .background(Color(0XFF111114))
+                                    .insideBorder(
+                                        1.uiDp(),
+                                        color = Color(0xFF36363D),
+                                        shape = RoundedCornerShape(8.uiDp())
+                                    )
+                                    .clickable { expanded = !expanded },
+                                contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = (countdownDate.minus(
-                                        x,
-                                        DateTimeUnit.DAY
-                                    )).day.toString(),
-                                    color = UICT_no_see,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = dataSellFontSize
-                                )
-                                Text(
-                                    text = (countdownDate.minus(
-                                        x,
-                                        DateTimeUnit.DAY
-                                    )).dayOfWeek.toString().take(3),
-                                    color = UICT_no_see,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = dataSellFontSize
+                                    text = when (LocalSaveManager.data.language) {
+                                        Languages.RU -> TranslatedStrings.Table.RU
+                                        Languages.EN -> TranslatedStrings.Table.EN
+                                    },
+                                    color = Color(0xFF848484),
+                                    fontSize = 10.uiSp(),
+                                    maxLines = 1,
+                                    fontFamily = jetBrainsFont(),
+                                    fontWeight = FontWeight.Normal,
+                                    textAlign = TextAlign.Center
                                 )
                             }
-                        }
-                    }
-                    //results
-                    for (y in LocalSaveManager.data.habits.indices) {
-                        var seeColor by remember { mutableStateOf(LocalSaveManager.data.soulColor) }
-                        var noSeeColor by remember {
-                            mutableStateOf(
-                                seeColor.multiply(
-                                    0.5f,
-                                    0.5f,
-                                    0.5f
-                                )
-                            )
-                        }
 
-                        LaunchedEffect(sortedHabits[y], progress(sortedHabits[y])) {
-                            calculateProgressiveColor(
-                                index = sortedHabits[y],
-                                onColorUpdate = { newColor ->
-                                    seeColor = newColor
-                                    noSeeColor = newColor.multiply(0.5f, 0.5f, 0.5f)
-                                }
-                            )
-                        }
-
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.Start,
-                            modifier = Modifier
-                                .height(firstCellSizeY)
-                                .border(
-                                    sizeOfBorder,
-                                    color = noSeeColor,
-                                    shape = RoundedCornerShape(roundedBorder)
-                                )
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(spacedCell),
-                            ) {
-                                for (x in 0 until min(
-                                    maxDays + countdownDate.toEpochDays() - kotlin.time.Clock.System.now()
-                                        .toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays(),
-                                    max(maxCellX, 10).toLong()
-                                )) {
-                                    val xDay =
-                                        dateNow().minusDays(x.toInt())
-                                            .plusDays((countdownDate.toEpochDays() - dateNow().toEpochDays()).toInt())
-                                    Box(
+                            if (expanded) {
+                                Popup(
+                                    alignment = Alignment.TopStart,
+                                    onDismissRequest = { expanded = false },
+                                    properties = PopupProperties(
+                                        focusable = true,
+                                    ),
+                                ) {
+                                    Column(
                                         modifier = Modifier
-                                            .width(nextCellSizeX)
-                                            .height(firstCellSizeY * 7 / 16),
-                                        contentAlignment = Alignment.Center
+                                            .width(32.uiDp())
+                                            .clip(RoundedCornerShape(8.uiDp()))
+                                            .background(Color(0xFF111114))
+                                            .insideBorder(
+                                                width = 1.uiDp(),
+                                                color = Color(0xFF36363D),
+                                                shape = RoundedCornerShape(8.uiDp()),
+                                            ),
                                     ) {
-                                        if (xDay <= dateNow()) {
-                                            var inputText by remember { mutableStateOf("") }
-                                            var showDialog by remember { mutableStateOf(false) }
-
-                                            Text(
-                                                text = (LocalSaveManager.data.habits[sortedHabits[y]].habitDay[xDay]?.today
-                                                    ?: BigDecimal.ZERO).toBestString(),
-                                                color = if (LocalSaveManager.data.habits[sortedHabits[y]].correctly(
-                                                        xDay
-                                                    )
-                                                ) seeColor else noSeeColor,
-                                                fontWeight = FontWeight.Normal,
-                                                fontSize = firstSellFontSize,
-                                                modifier = Modifier.clickable {
-                                                    showDialog = true
-                                                }
-                                            )
-
-                                            if (showDialog) {
-                                                AlertDialog(
-                                                    containerColor = UIC,
-                                                    onDismissRequest = { showDialog = false },
-                                                    title = {
-                                                        Text(
-                                                            text = "$ts_Do_you_want_to_set_a_value_for ${xDay.month} ${xDay.day}, ${xDay.year} $ts_for_habit ${LocalSaveManager.data.habits[sortedHabits[y]].nameOfHabit}?",
-                                                            fontWeight = FontWeight.Normal,
-                                                            fontSize = 16.sp,
-                                                            color = UICT_see
-                                                        )
+                                        Languages.entries.forEach { lang ->
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(29.uiDp())
+                                                    .clickable {
+                                                        LocalSaveManager.data.language = lang
+                                                        LocalSaveManager.save()
+                                                        changeLanguage()
+                                                        TranslatedStrings.changeLanguage()
+                                                        expanded = false
                                                     },
-                                                    text = {
-                                                        OutlinedTextField(
-                                                            value = inputText,
-                                                            onValueChange = { inputText = it },
-                                                            label = {
-                                                                Text(
-                                                                    "$ts_Old: ${(LocalSaveManager.data.habits[sortedHabits[y]].habitDay[xDay]?.today ?: BigDecimal.ZERO).toBestString()}",
-                                                                    fontSize = 12.sp,
-                                                                    fontWeight = FontWeight.Normal,
-                                                                    color = UICT_no_see
-                                                                )
-                                                            },
-                                                            keyboardOptions = KeyboardOptions(
-                                                                keyboardType = KeyboardType.Number
-                                                            ),
-                                                            singleLine = true,
-                                                            textStyle = TextStyle(
-                                                                fontSize = 16.sp,
-                                                                fontWeight = FontWeight.Normal,
-                                                                color = UICT_see
-                                                            ),
-                                                            shape = RoundedCornerShape(15.dp),
-                                                            colors = TextFieldDefaults.colors(
-                                                                focusedTextColor = UICT_see,
-                                                                unfocusedTextColor = UICT_no_see,
-                                                                disabledTextColor = UICT_no_see,
-                                                                focusedContainerColor = UIC_dark,
-                                                                unfocusedContainerColor = UIC_dark,
-                                                                disabledContainerColor = UIC_dark,
-                                                                cursorColor = UICT_see,
-                                                                focusedIndicatorColor = Color.Transparent,
-                                                                unfocusedIndicatorColor = Color.Transparent,
-                                                                disabledIndicatorColor = Color.Transparent
-                                                            )
-                                                        )
+                                                contentAlignment = Alignment.Center,
+                                            ) {
+                                                Text(
+                                                    text = when (lang) {
+                                                        Languages.RU -> TranslatedStrings.Table.RU
+                                                        Languages.EN -> TranslatedStrings.Table.EN
                                                     },
-                                                    dismissButton = {
-                                                        Text(
-                                                            text = "❌ $ts_Cancel",
-                                                            fontWeight = FontWeight.Normal,
-                                                            fontSize = 16.sp,
-                                                            color = Color(200, 150, 150),
-                                                            modifier = Modifier.clickable {
-                                                                showDialog = false
-                                                                screenChanger(ScreenManager.TABLE_UPDATER)
-                                                            }
-                                                        )
-                                                    },
-                                                    confirmButton = {
-                                                        Text(
-                                                            text = "✅ $ts_Confirm",
-                                                            fontWeight = FontWeight.Normal,
-                                                            fontSize = 16.sp,
-                                                            color = Color(150, 200, 150),
-                                                            modifier = Modifier.clickable {
-                                                                val value =
-                                                                    inputText.toDoubleOrNull()
-                                                                if (value != null) {
-                                                                    LocalSaveManager.data.habits[sortedHabits[y]].setDayValue(
-                                                                        xDay,
-                                                                        inputText.toBigDecimal()
-                                                                    )
-                                                                    LocalSaveManager.data.habits[sortedHabits[y]].update(
-                                                                        sortedHabits
-                                                                    )
-                                                                    LocalSaveManager.save()
-                                                                }
-                                                                showDialog = false
-                                                                screenChanger(ScreenManager.TABLE_UPDATER)
-                                                            }
-                                                        )
-                                                    }
+                                                    color = Color(0xFF848484),
+                                                    fontSize = 10.uiSp(),
+                                                    maxLines = 1,
+                                                    fontFamily = jetBrainsFont(),
+                                                    fontWeight = FontWeight.Normal,
+                                                    textAlign = TextAlign.Center,
                                                 )
                                             }
                                         }
                                     }
                                 }
                             }
+                        }
+                    }
+
+                    @Composable
+                    fun SettingsBlock() {
+                        Box {
+                            var expanded by remember { mutableStateOf(false) }
+
                             Box(
-                                modifier = Modifier.padding(spacedCell * 2)
+                                modifier = Modifier.size(29.uiDp().toRoundDp())
+                                    .clip(CircleShape)
+                                    .background(Color(0XFF111114))
+                                    .insideBorder(
+                                        1.uiDp(),
+                                        color = Color(0xFF36363D),
+                                        shape = CircleShape
+                                    )
+                                    .clickable { expanded = !expanded },
+                                contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    text = LocalSaveManager.data.habits[sortedHabits[y]].nameOfUnitsOfDimension,
-                                    color = noSeeColor,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = firstSellSmallFontSize
+                                Icon(
+                                    painter = painterResource(Res.drawable.settings),
+                                    contentDescription = null,
+                                    tint = Color(0xFF848484),
+                                    modifier = Modifier.size(25.uiDp().toRoundDp())
                                 )
+                            }
+
+                            if (expanded) {
+                                SettingsDialog(onImport = { updateScreenId++ }) { expanded = false }
+                            }
+                        }
+                    }
+
+
+                    LanguageChooseBlock()
+                    SettingsBlock()
+                }
+            }
+        }
+
+        val bottomBarHeight = 79.uiDp()
+
+        @Composable
+        fun BottomBar() {
+            @Composable
+            fun AddHabitBlock() {
+                Image(
+                    painter = painterResource(Res.drawable.add_habit),
+                    contentDescription = null,
+                    modifier = Modifier.offset(x = (-27).uiDp())
+                        .size(44.uiDp())
+                        .clip(CircleShape)
+                        .clickable {
+                            screenChanger(ScreenManager.CREATE_HABIT)
+                        }
+                )
+            }
+
+            @Composable
+            fun ShadowBlock() {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(69.uiDp())
+                        .drawWithCache {
+                            val radius = 774.uiDp().toPx()
+
+                            val gradient = Brush.radialGradient(
+                                colorStops = arrayOf(
+                                    0f to Color(0xFF070709),
+                                    0.910435f to Color(0xFF070709).copy(alpha = 0.66f),
+                                    1f to Color(0xFF070709).copy(alpha = 0f),
+                                ),
+                                center = Offset(
+                                    x = size.width / 2f,
+                                    y = radius,
+                                ),
+                                radius = radius,
+                            )
+
+                            onDrawBehind {
+                                drawRect(brush = gradient)
+                            }
+                        }
+                )
+            }
+
+            @Composable
+            fun ScreenSwitcherBlock() {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(bottomBarHeight)
+                        .background(Color(0xFF070709))
+                        .outsideBorder(width = 1.uiDp(), color = Color(0xFF36363D), RectangleShape)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                            .height(4.uiDp())
+                    ) {
+                        repeat(3) {
+                            BoxWithConstraints(Modifier.weight(1f)) {
+                                val cnt = ((maxWidth - 4.uiDp()) / 5.uiDp()).toInt()
+                                Row(
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    repeat(cnt) {
+                                        Spacer(modifier = Modifier.weight(1f))
+                                        Box(
+                                            modifier = Modifier.fillMaxHeight()
+                                                .width(1.uiDp()).background(Color(0XFF36363D))
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+                            }
+                            Box(
+                                modifier = Modifier.fillMaxHeight()
+                                    .width(1.uiDp()).background(Color(0XFF36363D))
+                            )
+                        }
+                        BoxWithConstraints(Modifier.weight(1f)) {
+                            val cnt = ((maxWidth - 4.uiDp()) / 5.uiDp()).toInt()
+                            Row(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                repeat(cnt) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    Box(
+                                        modifier = Modifier.fillMaxHeight()
+                                            .width(1.uiDp()).background(Color(0XFF36363D))
+                                    )
+                                }
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Spacer(modifier = Modifier.weight(1f))
+                        Box(
+                            modifier = Modifier.size(1.uiDp(), 9.uiDp())
+                                .background(Color(0XFF36363D)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                modifier = Modifier.requiredSize(29.uiDp(), 42.uiDp())
+                                    .offset(y = 16.5.uiDp())
+                                    .clickable {
+                                        screenChanger(ScreenManager.HABITS_LIST)
+                                    },
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(4.uiDp()),
+                            ) {
+                                Box(
+                                    modifier = Modifier.size(1.uiDp(), 9.uiDp())
+                                )
+                                Icon(
+                                    painter = painterResource(Res.drawable.list),
+                                    contentDescription = null,
+                                    tint = Color(0xFF36363D),
+                                    modifier = Modifier.size(14.uiDp())
+                                )
+                                Text(
+                                    text = TranslatedStrings.Table.LIST,
+                                    color = Color(0xFF36363D),
+                                    fontSize = 8.uiSp(),
+                                    maxLines = 1,
+                                    fontFamily = jetBrainsFont(),
+                                    fontWeight = FontWeight.Normal,
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        Box(
+                            modifier = Modifier.size(1.uiDp(), 14.uiDp())
+                                .background(Color(0XFFEEEEEE)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                modifier = Modifier.requiredSize(39.uiDp(), 50.uiDp())
+                                    .offset(y = 18.uiDp()),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(4.uiDp()),
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    val width = 7.uiDp()
+                                    val height = 17.uiDp()
+
+                                    val centerY = 5.1.uiDp()
+                                    val radiusX = 3.16999.uiDp()
+                                    val radiusY = 11.9.uiDp()
+
+                                    Canvas(
+                                        modifier = Modifier.size(
+                                            width = width,
+                                            height = height,
+                                        ),
+                                    ) {
+                                        val center = Offset(
+                                            x = size.width / 2f,
+                                            y = centerY.toPx(),
+                                        )
+
+                                        val radiusXPx = radiusX.toPx()
+                                        val radiusYPx = radiusY.toPx()
+
+                                        val brush = Brush.radialGradient(
+                                            colorStops = arrayOf(
+                                                0f to Color.White.copy(alpha = 0.75f),
+                                                1f to Color.White.copy(alpha = 0f),
+                                            ),
+                                            center = center,
+                                            radius = radiusYPx,
+                                        )
+
+                                        clipRect {
+                                            scale(
+                                                scaleX = radiusXPx / radiusYPx,
+                                                scaleY = 1f,
+                                                pivot = center,
+                                            ) {
+                                                drawCircle(
+                                                    brush = brush,
+                                                    center = center,
+                                                    radius = radiusYPx,
+                                                    alpha = 0.47f,
+                                                )
+                                            }
+                                        }
+                                    }
+                                    Box(
+                                        modifier = Modifier.size(1.uiDp(), 14.uiDp())
+                                    )
+                                }
+                                Icon(
+                                    painter = painterResource(Res.drawable.table),
+                                    contentDescription = null,
+                                    tint = Color(0xFFEEEEEE),
+                                    modifier = Modifier.size(19.uiDp(), 17.uiDp())
+                                )
+                                Text(
+                                    text = TranslatedStrings.Table.TABLE,
+                                    color = Color(0xFF848484),
+                                    fontSize = 8.uiSp(),
+                                    maxLines = 1,
+                                    fontFamily = jetBrainsFont(),
+                                    fontWeight = FontWeight.Normal,
+                                    textAlign = TextAlign.Center,
+                                    letterSpacing = 0.8.uiSp(),
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        Box(
+                            modifier = Modifier.size(1.uiDp(), 9.uiDp())
+                                .background(Color(0XFF36363D)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                modifier = Modifier.requiredSize(48.uiDp(), 42.uiDp())
+                                    .offset(y = 16.5.uiDp())
+                                    .clickable {
+                                        screenChanger(ScreenManager.SOUL_STATISTICS)
+                                    },
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(4.uiDp()),
+                            ) {
+                                Box(
+                                    modifier = Modifier.size(1.uiDp(), 9.uiDp())
+                                )
+                                Icon(
+                                    painter = painterResource(Res.drawable.statistic),
+                                    contentDescription = null,
+                                    tint = Color(0xFF36363D),
+                                    modifier = Modifier.size(13.uiDp(), 14.uiDp())
+                                )
+                                Text(
+                                    text = TranslatedStrings.Table.STATISTICS,
+                                    color = Color(0xFF36363D),
+                                    fontSize = 8.uiSp(),
+                                    maxLines = 1,
+                                    fontFamily = jetBrainsFont(),
+                                    fontWeight = FontWeight.Normal,
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
+            }
+
+            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom) {
+                Box(contentAlignment = Alignment.TopEnd) {
+                    AddHabitBlock()
+                    ShadowBlock()
+                }
+
+                ScreenSwitcherBlock()
+            }
+        }
+
+        @Composable
+        fun MainBlock() {
+            @Composable
+            fun DateBlock() {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.uiDp()),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(
+                        modifier = Modifier.size(1.uiDp(), 29.uiDp())
+                            .background(Color(0xFF25272D))
+                    )
+                    repeat(canSee) { id ->
+                        Column(
+                            modifier = Modifier.size(37.uiDp(), 27.uiDp()),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Spacer(Modifier.height(1.uiDp()))
+                            Text(
+                                text = startDate.minusDays(id).dayOfWeek.toThreeString(),
+                                color = Color(0xFF45454C),
+                                fontSize = 9.uiSp(),
+                                maxLines = 1,
+                                fontFamily = jetBrainsFont(),
+                                fontWeight = FontWeight.Normal,
+                                textAlign = TextAlign.Center,
+                            )
+                            Text(
+                                text = startDate.minusDays(id).day.toString(),
+                                color = Color(0xFF848484),
+                                fontSize = 11.uiSp(),
+                                maxLines = 1,
+                                fontFamily = jetBrainsFont(),
+                                fontWeight = FontWeight.Normal,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.offset(y = (-2).uiDp())
+                            )
+                        }
+                    }
+                }
+            }
+
+            fun LazyListScope.onePriorityHabitBlock(
+                minimumVisibility: Float,
+                maximumVisibility: Float,
+                priority: Priority
+            ) {
+                if (when (priority) {
+                        Priority.HIGH_PRIORITY -> highPrioritySorted
+                        Priority.MEDIUM_PRIORITY -> mediumPrioritySorted
+                        Priority.LOW_PRIORITY -> lowPrioritySorted
+                        Priority.NO_PRIORITY -> noPrioritySorted
+                    }.isNotEmpty()
+                ) {
+                    item(key = priority.name) {
+                        Box(
+                            modifier = Modifier.height(39.uiDp())
+                                .fillMaxWidth()
+                                .padding(start = 17.uiDp(), top = 11.uiDp())
+                        ) {
+                            Text(
+                                text = priority.toTranslatedString(),
+                                color = Color(0xFF848484),
+                                fontSize = 13.uiSp(),
+                                maxLines = 1,
+                                fontFamily = jetBrainsFont(),
+                                fontWeight = FontWeight.Normal,
+                                textAlign = TextAlign.Left,
+                            )
+                        }
+                    }
+                    items(
+                        items = when (priority) {
+                            Priority.HIGH_PRIORITY -> highPrioritySorted
+                            Priority.MEDIUM_PRIORITY -> mediumPrioritySorted
+                            Priority.LOW_PRIORITY -> lowPrioritySorted
+                            Priority.NO_PRIORITY -> noPrioritySorted
+                        },
+                        key = { curPriorityPair -> curPriorityPair.second }
+                    ) { curPriorityPair ->
+                        fun updateCurPriorityState() {
+                            when (priority) {
+                                Priority.HIGH_PRIORITY -> highPriorityUpdateId++
+                                Priority.MEDIUM_PRIORITY -> mediumPriorityUpdateId++
+                                Priority.LOW_PRIORITY -> lowPriorityUpdateId++
+                                Priority.NO_PRIORITY -> noPriorityUpdateId++
+                            }
+                        }
+
+                        val curPriorityState by remember(
+                            when (priority) {
+                                Priority.NO_PRIORITY -> noPriorityUpdateId
+                                Priority.HIGH_PRIORITY -> highPriorityUpdateId
+                                Priority.MEDIUM_PRIORITY -> mediumPriorityUpdateId
+                                Priority.LOW_PRIORITY -> lowPriorityUpdateId
+                            }
+                        ) {
+                            mutableStateOf(
+                                when (priority) {
+                                    Priority.NO_PRIORITY -> noPriorityUpdateId
+                                    Priority.HIGH_PRIORITY -> highPriorityUpdateId
+                                    Priority.MEDIUM_PRIORITY -> mediumPriorityUpdateId
+                                    Priority.LOW_PRIORITY -> lowPriorityUpdateId
+                                }
+                            )
+                        }
+
+                        var habit by remember(curPriorityState) { mutableStateOf(curPriorityPair.first) }
+                        var id by remember(curPriorityState) { mutableStateOf(curPriorityPair.second) }
+                        var progressiveColor by remember(curPriorityState) { mutableStateOf(habit.progressiveColorCache) }
+
+                        val updateScope = rememberCoroutineScope()
+
+                        LaunchedEffect(id, curPriorityState) {
+                            withContext(Dispatchers.Default) {
+                                habit.calculateProgressiveColor {
+                                    updateScope.launch {
+                                        progressiveColor = it
+                                    }
+                                }
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier.height(39.uiDp())
+                                .fillMaxWidth()
+                                .animateItem(),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Box(
+                                modifier = Modifier.size(5.uiDp(), 39.uiDp()),
+                                contentAlignment = Alignment.BottomCenter
+                            ) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize()
+                                        .clip(RoundedCornerShape(2.5.uiDp()))
+                                        .background(Color(0XFF25272D))
+                                )
+                                Box(
+                                    modifier = Modifier.fillMaxWidth()
+                                        .fillMaxHeight(progress(habit))
+                                        .clip(RoundedCornerShape(2.5.uiDp()))
+                                        .background(progressiveColor)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(14.uiDp()))
+                            Column(
+                                modifier = Modifier.fillMaxHeight()
+                                    .width(haveToNameOfHabit)
+                                    .padding(top = 5.uiDp())
+                                    .clickable {
+                                        habit_statistics_and_edit_x = id
+                                        screenChanger(ScreenManager.HABIT_STATISTICS)
+                                    },
+                                verticalArrangement = Arrangement.spacedBy(4.uiDp())
+                            ) {
+                                Row {
+                                    Text(
+                                        text = habit.nameOfHabit,
+                                        color = Color(0xFFEEEEEE),
+                                        fontSize = 13.uiSp(),
+                                        maxLines = 1,
+                                        fontFamily = jetBrainsFont(),
+                                        fontWeight = FontWeight.Medium,
+                                        textAlign = TextAlign.Left,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                    if (habit.changeLevel)
+                                        Text(
+                                            text = "${TranslatedStrings.Table.LVL}${habit.level}",
+                                            color = closestColorWithVisibility(
+                                                backgroundColor,
+                                                progressiveColor,
+                                                minimumVisibility
+                                            ),
+                                            fontSize = 9.uiSp(),
+                                            maxLines = 1,
+                                            fontFamily = jetBrainsFont(),
+                                            fontWeight = FontWeight.Light,
+                                            textAlign = TextAlign.Right,
+                                            modifier = Modifier.offset(y = 4.uiDp())
+                                        )
+                                }
+                                Row {
+                                    Text(
+                                        text = "${
+                                            when (habit.typeOfGoal) {
+                                                TypeOfGoalHabit.NO_MORE -> "<="
+                                                TypeOfGoalHabit.AT_LEAST -> ">="
+                                            }
+                                        } ${habit.numericalGoal.toBestString()} ${habit.nameOfUnitsOfDimension}",
+                                        color = Color(0xFF848484),
+                                        fontSize = 8.uiSp(),
+                                        maxLines = 1,
+                                        fontFamily = jetBrainsFont(),
+                                        fontWeight = FontWeight.Light,
+                                        textAlign = TextAlign.Left,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f, false),
+                                    )
+                                    Text(
+                                        text = " / ${habit.periodForGoalCompletion} ${TranslatedStrings.Table.DAYS}",
+                                        color = Color(0xFF848484),
+                                        fontSize = 8.uiSp(),
+                                        maxLines = 1,
+                                        fontFamily = jetBrainsFont(),
+                                        fontWeight = FontWeight.Light,
+                                        textAlign = TextAlign.Left,
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(6.uiDp()))
+                            Box(
+                                modifier = Modifier.fillMaxHeight()
+                                    .width(1.uiDp())
+                                    .background(Color(0xFF25272D))
+                            )
+                            repeat(canSee) { index ->
+                                Spacer(modifier = Modifier.width(6.uiDp()))
+                                val fixedColor by remember(progressiveColor) {
+                                    mutableStateOf(
+                                        closestColorWithVisibility(
+                                            backgroundColor,
+                                            progressiveColor,
+                                            minimumVisibility,
+                                            maximumVisibility
+                                        )
+                                    )
+                                }
+                                var curValDialogOpen by rememberSaveable { mutableStateOf(false) }
+
+                                Box(
+                                    modifier = Modifier.size(37.uiDp())
+                                        .clip(RoundedCornerShape(5.uiDp()))
+                                        .insideBorder(
+                                            1.uiDp(),
+                                            fixedColor,
+                                            RoundedCornerShape(5.uiDp())
+                                        )
+                                        .background(
+                                            fixedColor.copy(
+                                                if (habit.correctly(startDate.minusDays(index))) 1f else 0.1f
+                                            )
+                                        )
+                                        .clickable {
+                                            setValDialogOpen = true
+                                            curValDialogOpen = true
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = habit.habitDay[startDate.minusDays(index)]?.today?.toBestString()
+                                            ?: BigDecimal.ZERO.toBestString(),
+                                        color = if (habit.correctly(startDate.minusDays(index))) bestVisibleColor(
+                                            backgroundColor,
+                                            listOf(Color(0xFFEEEEEE), Color(0XFF000000))
+                                        ) else fixedColor,
+                                        fontSize = 10.uiSp(),
+                                        maxLines = 1,
+                                        fontFamily = jetBrainsFont(),
+                                        fontWeight = FontWeight.Normal,
+                                        textAlign = TextAlign.Center,
+                                    )
+                                }
+
+                                if (curValDialogOpen) {
+                                    Dialog(
+                                        onDismissRequest = {
+                                            setValDialogOpen = false
+                                            curValDialogOpen = false
+                                        },
+                                        properties = DialogProperties(usePlatformDefaultWidth = false),
+                                    ) {
+                                        Box(
+                                            modifier = Modifier.fillMaxSize()
+                                                .padding(bottom = 80.uiDp()),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            var curVar by remember {
+                                                mutableStateOf(
+                                                    habit.habitDay[startDate.minusDays(index)]?.today?.toBestString()
+                                                        ?: "0"
+                                                )
+                                            }
+                                            var curVarBigDecimal by remember {
+                                                mutableStateOf(
+                                                    curVar.toDoubleOrNull()?.toBigDecimal()
+                                                        ?: (habit.habitDay[startDate.minusDays(index)]?.today
+                                                            ?: BigDecimal.ZERO)
+                                                )
+                                            }
+
+                                            Column(
+                                                modifier = Modifier.width(297.uiDp())
+                                                    .clip(RoundedCornerShape(25.uiDp()))
+                                                    .background(Color(0xFF070709))
+                                                    .insideBorder(
+                                                        2.uiDp(),
+                                                        Color(0xFF36363D),
+                                                        RoundedCornerShape(25.uiDp())
+                                                    )
+                                                    .padding(25.uiDp())
+                                            ) {
+                                                Row(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                                ) {
+                                                    Text(
+                                                        text = habit.nameOfHabit,
+                                                        color = Color(0xFFEEEEEE),
+                                                        fontSize = 16.uiSp(),
+                                                        maxLines = 1,
+                                                        fontFamily = jetBrainsFont(),
+                                                        fontWeight = FontWeight.Medium,
+                                                        textAlign = TextAlign.Left,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                        modifier = Modifier.weight(1f),
+                                                    )
+                                                    if (habit.changeLevel)
+                                                        Text(
+                                                            text = "${TranslatedStrings.Table.LVL}${habit.level}",
+                                                            color = progressiveColor,
+                                                            fontSize = 12.uiSp(),
+                                                            maxLines = 1,
+                                                            fontFamily = jetBrainsFont(),
+                                                            fontWeight = FontWeight.Normal,
+                                                            textAlign = TextAlign.Right,
+                                                        )
+                                                }
+                                                Spacer(modifier = Modifier.height(37.uiDp()))
+                                                Column(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                                    verticalArrangement = Arrangement.spacedBy(6.uiDp()),
+                                                ) {
+                                                    Column(
+                                                        modifier = Modifier.fillMaxWidth()
+                                                            .padding(horizontal = 13.uiDp()),
+                                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                                        verticalArrangement = Arrangement.spacedBy(2.uiDp()),
+                                                    ) {
+                                                        BasicTextField(
+                                                            value = curVar,
+                                                            onValueChange = {
+                                                                curVar = it
+                                                                curVarBigDecimal =
+                                                                    curVar.toDoubleOrNull()?.toBigDecimal()
+                                                                        ?: (habit.habitDay[startDate.minusDays(index)]?.today
+                                                                            ?: BigDecimal.ZERO)
+                                                            },
+                                                            modifier = Modifier,
+                                                            singleLine = true,
+                                                            cursorBrush = SolidColor(Color(0xFF848484)),
+                                                            textStyle = TextStyle(
+                                                                color = Color(0xFF848484),
+                                                                fontSize = 12.uiSp(),
+                                                                fontFamily = jetBrainsFont(),
+                                                                fontWeight = FontWeight.Medium,
+                                                                textAlign = TextAlign.Center,
+                                                            ),
+                                                            decorationBox = { innerTextField ->
+                                                                innerTextField()
+                                                            },
+                                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                                        )
+                                                        Box(
+                                                            modifier = Modifier.fillMaxWidth()
+                                                                .height(1.uiDp())
+                                                                .background(Color(0xFF36363D))
+                                                        )
+                                                    }
+                                                    Box(modifier = Modifier.fillMaxWidth()) {
+                                                        Box(
+                                                            modifier = Modifier.fillMaxWidth()
+                                                                .height(7.uiDp())
+                                                                .clip(RoundedCornerShape(3.5.uiDp()))
+                                                                .background(Color(0xFF111114))
+                                                        )
+                                                        Box(
+                                                            modifier = Modifier.fillMaxWidth(
+                                                                habit.habitDayProgress(
+                                                                    startDate.minusDays(index),
+                                                                    curVarBigDecimal
+                                                                )
+                                                            )
+                                                                .height(7.uiDp())
+                                                                .clip(RoundedCornerShape(3.5.uiDp()))
+                                                                .background(progressiveColor)
+                                                        )
+                                                    }
+                                                    Row(
+                                                        modifier = Modifier.fillMaxWidth()
+                                                            .height(45.uiDp())
+                                                            .clip(RoundedCornerShape(13.uiDp()))
+                                                            .background(Color(0xFF111114))
+                                                            .insideBorder(
+                                                                1.uiDp(),
+                                                                Color(0xFF36363D),
+                                                                RoundedCornerShape(13.uiDp())
+                                                            )
+                                                            .padding(horizontal = 13.uiDp()),
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                                    ) {
+                                                        Text(
+                                                            text = TranslatedStrings.Table.OLD + ":",
+                                                            color = Color(0xFF45454C),
+                                                            fontSize = 10.uiSp(),
+                                                            maxLines = 1,
+                                                            fontFamily = jetBrainsFont(),
+                                                            fontWeight = FontWeight.Normal,
+                                                            textAlign = TextAlign.Left
+                                                        )
+                                                        Spacer(modifier = Modifier.width(13.uiDp()))
+                                                        Text(
+                                                            text = habit.habitDay[startDate.minusDays(index)]?.today?.toBestString()
+                                                                ?: "0",
+                                                            color = Color(0xFF848484),
+                                                            fontSize = 12.uiSp(),
+                                                            maxLines = 1,
+                                                            fontFamily = jetBrainsFont(),
+                                                            fontWeight = FontWeight.Medium,
+                                                            textAlign = TextAlign.Right
+                                                        )
+                                                    }
+                                                    Row(
+                                                        modifier = Modifier.fillMaxWidth()
+                                                            .height(45.uiDp())
+                                                            .clip(RoundedCornerShape(13.uiDp()))
+                                                            .background(Color(0xFF111114))
+                                                            .insideBorder(
+                                                                1.uiDp(),
+                                                                Color(0xFF36363D),
+                                                                RoundedCornerShape(13.uiDp())
+                                                            )
+                                                            .padding(horizontal = 13.uiDp()),
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                                    ) {
+                                                        Text(
+                                                            text = TranslatedStrings.Table.GOAL + ":",
+                                                            color = Color(0xFF45454C),
+                                                            fontSize = 10.uiSp(),
+                                                            maxLines = 1,
+                                                            fontFamily = jetBrainsFont(),
+                                                            fontWeight = FontWeight.Normal,
+                                                            textAlign = TextAlign.Left
+                                                        )
+                                                        Spacer(modifier = Modifier.width(13.uiDp()))
+                                                        Row {
+                                                            Text(
+                                                                text = when (habit.typeOfGoal) {
+                                                                    TypeOfGoalHabit.AT_LEAST -> ">="
+                                                                    TypeOfGoalHabit.NO_MORE -> "<="
+                                                                } + habit.numericalGoal.toBestString() + " " + habit.nameOfUnitsOfDimension,
+                                                                color = Color(0xFF848484),
+                                                                fontSize = 12.uiSp(),
+                                                                maxLines = 1,
+                                                                fontFamily = jetBrainsFont(),
+                                                                fontWeight = FontWeight.Medium,
+                                                                textAlign = TextAlign.Right,
+                                                                overflow = TextOverflow.Ellipsis,
+                                                                modifier = Modifier.weight(1f, false),
+                                                            )
+                                                            Text(
+                                                                text = " / " + habit.periodForGoalCompletion + " " + TranslatedStrings.Table.DAYS,
+                                                                color = Color(0xFF848484),
+                                                                fontSize = 12.uiSp(),
+                                                                maxLines = 1,
+                                                                fontFamily = jetBrainsFont(),
+                                                                fontWeight = FontWeight.Medium,
+                                                                textAlign = TextAlign.Right
+                                                            )
+                                                        }
+                                                    }
+                                                    Row(
+                                                        modifier = Modifier.fillMaxWidth()
+                                                            .height(45.uiDp())
+                                                            .clip(RoundedCornerShape(13.uiDp()))
+                                                            .background(Color(0xFF111114))
+                                                            .insideBorder(
+                                                                1.uiDp(),
+                                                                Color(0xFF36363D),
+                                                                RoundedCornerShape(13.uiDp())
+                                                            )
+                                                            .padding(horizontal = 13.uiDp()),
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                                    ) {
+                                                        Text(
+                                                            text = TranslatedStrings.Table.DATE + ":",
+                                                            color = Color(0xFF45454C),
+                                                            fontSize = 10.uiSp(),
+                                                            maxLines = 1,
+                                                            fontFamily = jetBrainsFont(),
+                                                            fontWeight = FontWeight.Normal,
+                                                            textAlign = TextAlign.Left
+                                                        )
+                                                        Spacer(modifier = Modifier.width(13.uiDp()))
+                                                        Text(
+                                                            text = startDate.minusDays(index).day.toString() + " " + startDate.minusDays(
+                                                                index
+                                                            ).month.toThreeString(),
+                                                            color = Color(0xFF848484),
+                                                            fontSize = 12.uiSp(),
+                                                            maxLines = 1,
+                                                            fontFamily = jetBrainsFont(),
+                                                            fontWeight = FontWeight.Medium,
+                                                            textAlign = TextAlign.Right
+                                                        )
+                                                    }
+                                                }
+                                                Spacer(modifier = Modifier.height(12.uiDp()))
+                                                Row(
+                                                    modifier = Modifier.fillMaxWidth()
+                                                        .height(45.uiDp()),
+                                                    horizontalArrangement = Arrangement.spacedBy(12.uiDp())
+                                                ) {
+                                                    Box(
+                                                        modifier = Modifier.weight(109f)
+                                                            .fillMaxHeight()
+                                                            .clip(RoundedCornerShape(13.uiDp()))
+                                                            .clickable {
+                                                                setValDialogOpen = false
+                                                                curValDialogOpen = false
+                                                            }
+                                                            .background(Color(0xFF111114))
+                                                            .insideBorder(
+                                                                1.uiDp(),
+                                                                Color(0xFF36363D),
+                                                                RoundedCornerShape(13.uiDp())
+                                                            ),
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        Text(
+                                                            text = TranslatedStrings.Table.CANCEL,
+                                                            color = Color(0xFF848484),
+                                                            fontSize = 12.uiSp(),
+                                                            maxLines = 1,
+                                                            fontFamily = jetBrainsFont(),
+                                                            fontWeight = FontWeight.Medium,
+                                                            textAlign = TextAlign.Center
+                                                        )
+                                                    }
+
+                                                    Box(
+                                                        modifier = Modifier.weight(154f)
+                                                            .fillMaxHeight()
+                                                            .clip(RoundedCornerShape(13.uiDp()))
+                                                            .clickable {
+                                                                LocalSaveManager.data.habits[id].setDayValue(
+                                                                    startDate.minusDays(
+                                                                        index
+                                                                    ),
+                                                                    curVar.toDoubleOrNull()?.toBigDecimal()
+                                                                        ?: (habit.habitDay[startDate.minusDays(index)]?.today
+                                                                            ?: BigDecimal.ZERO)
+                                                                )
+                                                                LocalSaveManager.save()
+                                                                updateCurPriorityState()
+                                                                setValDialogOpen = false
+                                                                curValDialogOpen = false
+                                                            }
+                                                            .background(Color(0xFF111114))
+                                                            .insideBorder(
+                                                                1.uiDp(),
+                                                                Color(0xFF36363D),
+                                                                RoundedCornerShape(13.uiDp())
+                                                            ),
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        Text(
+                                                            text = TranslatedStrings.Table.APPLY,
+                                                            color = Color(0xFF848484),
+                                                            fontSize = 12.uiSp(),
+                                                            maxLines = 1,
+                                                            fontFamily = jetBrainsFont(),
+                                                            fontWeight = FontWeight.Medium,
+                                                            textAlign = TextAlign.Center
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
+
+            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                canSee = ((maxWidth - 172.uiDp()) / (37.uiDp() + 6.uiDp())).toInt()
+                haveToNameOfHabit =
+                    max(140.uiDp(), maxWidth - canSee * (37.uiDp() + 6.uiDp()) - 6.uiDp() - 25.uiDp() - 7.uiDp())
+            }
+
+            Column(
+                modifier = Modifier.fillMaxSize()
+                    .padding(start = 6.uiDp(), top = 102.uiDp(), bottom = bottomBarHeight),
+                verticalArrangement = Arrangement.spacedBy(8.uiDp()),
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(29.uiDp())
+                        .padding(start = haveToNameOfHabit + 25.5.uiDp()),
+                ) {
+                    DateBlock()
+                }
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    state = rememberLazyListState(
+                        initialFirstVisibleItemIndex = 0,
+                        initialFirstVisibleItemScrollOffset = with(LocalDensity.current) {
+                            (39 + 8).uiDp().toPx().toInt()
+                        }),
+                    verticalArrangement = Arrangement.spacedBy(8.uiDp()),
+                ) {
+                    val minimumVisibility = 0.05f
+                    val maximumVisibility = 0.9f
+
+                    onePriorityHabitBlock(minimumVisibility, maximumVisibility, Priority.HIGH_PRIORITY)
+                    onePriorityHabitBlock(minimumVisibility, maximumVisibility, Priority.MEDIUM_PRIORITY)
+                    onePriorityHabitBlock(minimumVisibility, maximumVisibility, Priority.LOW_PRIORITY)
+                    onePriorityHabitBlock(minimumVisibility, maximumVisibility, Priority.NO_PRIORITY)
+
+                    item(key = "spacer") {
+                        Spacer(modifier = Modifier.height(300.uiDp()))
+                    }
+                }
+            }
         }
+
+        BackgroundCircle()
+        MainBlock()
+        BottomBar()
+        topBar()
+    }
+}
+
+@Composable
+private fun BackgroundCircle() {
+    Canvas(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(180.uiDp()),
+    ) {
+        val radius = 180.uiDp().toPx()
+        val center = Offset(
+            x = size.width / 2f,
+            y = 0f,
+        )
+
+        drawCircle(
+            brush = Brush.radialGradient(
+                colorStops = arrayOf(
+                    0f to Color(0xFF5C5C5C).copy(alpha = 0.24f),
+                    1f to Color.Transparent,
+                ),
+                center = center,
+                radius = radius,
+            ),
+            radius = radius,
+            center = center,
+        )
     }
 }

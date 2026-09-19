@@ -254,11 +254,6 @@ fun HabitStatistics(screenChanger: (newScreen: ScreenManager) -> Unit) {
                     ) {
                         TextWithDeployableEllipsis(
                             backgroundColor = UIC_black,
-                            newStatusBarInfo = changeStatusBarInfo(
-                                backgroundColor = Color.Black,
-                                downPanelSize = 48.67.dp,
-                                isProcessed = false
-                            ),
                             hazeState = hazeState,
                             contentBefore = {
                                 Text(
@@ -471,8 +466,7 @@ fun HabitStatistics(screenChanger: (newScreen: ScreenManager) -> Unit) {
                                             index = habit_statistics_and_edit_x,
                                             onColorUpdate = { newColor ->
                                                 seeColorByHabitAndStatisticsEditX = newColor
-                                            },
-                                            oldColor = seeColorByHabitAndStatisticsEditX
+                                            }
                                         )
                                     }
                                 }
@@ -676,11 +670,6 @@ private fun GoalContent(
             Column {
                 TextWithDeployableEllipsis(
                     backgroundColor = UIC_dark,
-                    newStatusBarInfo = changeStatusBarInfo(
-                        backgroundColor = UIC_dark,
-                        downPanelSize = 48.67.dp,
-                        isProcessed = false
-                    ),
                     hazeState = null,
                     text = text,
                     fontFamily = jetBrainsFont(),

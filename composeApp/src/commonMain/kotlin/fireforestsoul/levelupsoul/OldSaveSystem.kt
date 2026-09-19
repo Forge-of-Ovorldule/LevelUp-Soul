@@ -7,6 +7,8 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
+@file:Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING", "UNCHECKED_CAST")
+
 package fireforestsoul.levelupsoul
 
 import androidx.compose.ui.graphics.Color
@@ -97,11 +99,11 @@ object OldSaveSystem {
         HABITS_LIST_UPDATER
     }
 
-    fun OldAppStatus.toScreenManager() : ScreenManager {
+    private fun OldAppStatus.toScreenManager(): ScreenManager {
         return when (this) {
             OldAppStatus.CREATE_HABIT -> ScreenManager.CREATE_HABIT
             OldAppStatus.EDIT_HABIT -> ScreenManager.EDIT_HABIT
-            OldAppStatus.TABLE_UPDATER -> ScreenManager.TABLE_UPDATER
+            OldAppStatus.TABLE_UPDATER -> ScreenManager.TABLE
             OldAppStatus.HABITS_LIST -> ScreenManager.HABITS_LIST
             OldAppStatus.HABITS_LIST_UPDATER -> ScreenManager.HABITS_LIST_UPDATER
             OldAppStatus.HABIT_STATISTICS -> ScreenManager.HABIT_STATISTICS

@@ -13,30 +13,12 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderColors
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,11 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.times
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.isoDayNumber
-import kotlinx.datetime.number
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.*
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -473,20 +451,7 @@ fun DatePickerDialog(
 }
 
 @Composable
-fun SettingsDialog() {
-    var showDialog by remember { mutableStateOf(false) }
-
-    IconButton(onClick = {
-        showDialog = true
-    }) {
-        Image(
-            painter = painterResource(Res.drawable.settings),
-            contentDescription = ts_Settings,
-            modifier = Modifier.size(28.dp),
-            colorFilter = ColorFilter.tint(getSoulRealColor())
-        )
-    }
-
+fun SettingsDialog(onImport: () -> Unit = {}, onDismissRequest: () -> Unit) {
     var typeOfColor by remember { mutableStateOf(LocalSaveManager.data.soulColorType) }
     var exponent by remember { mutableStateOf(LocalSaveManager.data.withExponent) }
     var soulName by remember { mutableStateOf(LocalSaveManager.data.soulName) }
@@ -497,208 +462,314 @@ fun SettingsDialog() {
         )
     }
     var smartSort by remember { mutableStateOf(LocalSaveManager.data.smartSort) }
+    var uiScaling by remember { mutableStateOf(LocalSaveManager.data.settings.uiDpScale) }
+    var uiScalingString by remember { mutableStateOf(uiScaling.toString()) }
 
-    if (showDialog) {
-        AlertDialog(
-            containerColor = UIC_dark,
-            onDismissRequest = { showDialog = false },
-            title = {
-                Text(
-                    ts_Settings,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = UICT_see
-                )
-            },
-            text = {
-                Column {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "$ts_Soul:",
-                            fontSize = 16.sp,
+    AlertDialog(
+        containerColor = UIC_dark,
+        onDismissRequest = { onDismissRequest() },
+        title = {
+            Text(
+                ts_Settings,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = UICT_see
+            )
+        },
+        text = {
+            Column {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "$ts_Soul:",
+                        fontSize = 16.sp,
+                        color = UICT_see
+                    )
+                    OutlinedTextField(
+                        value = soulName,
+                        onValueChange = {
+                            soulName = it
+                        },
+                        label = {
+                            Text(
+                                ts_Mr,
+                                fontSize = 12.sp,
+                                color = UICT_no_see
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        singleLine = true,
+                        textStyle = TextStyle(
+                            fontSize = 14.sp,
                             color = UICT_see
-                        )
-                        OutlinedTextField(
-                            value = soulName,
-                            onValueChange = {
-                                soulName = it
-                            },
-                            label = {
-                                Text(
-                                    ts_Mr,
-                                    fontSize = 12.sp,
-                                    color = UICT_no_see
-                                )
-                            },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                            singleLine = true,
-                            textStyle = TextStyle(
-                                fontSize = 14.sp,
-                                color = UICT_see
-                            ),
-                            shape = RoundedCornerShape(15.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = UICT_see,
-                                unfocusedTextColor = UICT_no_see,
-                                disabledTextColor = UICT_no_see,
-                                focusedContainerColor = UIC_dark_x2,
-                                unfocusedContainerColor = UIC_dark_x2,
-                                disabledContainerColor = UIC_dark_x2,
-                                cursorColor = UICT_see,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent
-                            ),
-                            modifier = Modifier.height(55.dp)
-                        )
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        var expanded by remember { mutableStateOf(false) }
+                        ),
+                        shape = RoundedCornerShape(15.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedTextColor = UICT_see,
+                            unfocusedTextColor = UICT_no_see,
+                            disabledTextColor = UICT_no_see,
+                            focusedContainerColor = UIC_dark_x2,
+                            unfocusedContainerColor = UIC_dark_x2,
+                            disabledContainerColor = UIC_dark_x2,
+                            cursorColor = UICT_see,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
+                        modifier = Modifier.height(55.dp)
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    var expanded by remember { mutableStateOf(false) }
 
-                        ColorPickerBox(soulColor) {
-                            soulColor = it
+                    ColorPickerBox(soulColor) {
+                        soulColor = it
+                    }
+                    Column {
+                        Button(
+                            onClick = { expanded = true },
+                            colors = ButtonColors(
+                                containerColor = UIC_extra_dark,
+                                contentColor = UICT_see,
+                                disabledContainerColor = UIC_extra_dark,
+                                disabledContentColor = UICT_no_see
+                            )
+                        ) {
+                            Text(
+                                "$ts_type: ${typeOfColor.name}",
+                                fontSize = 16.sp,
+                                color = UICT_see,
+                            )
                         }
-                        Column {
-                            Button(
-                                onClick = { expanded = true },
-                                colors = ButtonColors(
-                                    containerColor = UIC_extra_dark,
-                                    contentColor = UICT_see,
-                                    disabledContainerColor = UIC_extra_dark,
-                                    disabledContentColor = UICT_no_see
-                                )
-                            ) {
-                                Text(
-                                    "$ts_type: ${typeOfColor.name}",
-                                    fontSize = 16.sp,
-                                    color = UICT_see,
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier.background(Color.Black)
+                        ) {
+                            TypeOfColorHabit.entries.forEach { mode ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        typeOfColor = mode
+                                        expanded = false
+                                    },
+                                    text = {
+                                        Text(
+                                            text = mode.name,
+                                            fontSize = 16.sp,
+                                            color = UICT_no_see
+                                        )
+                                    }
                                 )
                             }
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false },
-                                modifier = Modifier.background(Color.Black)
-                            ) {
-                                TypeOfColorHabit.entries.forEach { mode ->
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            typeOfColor = mode
-                                            expanded = false
-                                        },
-                                        text = {
-                                            Text(
-                                                text = mode.name,
-                                                fontSize = 16.sp,
-                                                color = UICT_no_see
-                                            )
-                                        }
-                                    )
+                        }
+                    }
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = exponent,
+                        onCheckedChange = { exponent = it },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = UICT_no_see,
+                            uncheckedColor = UICT_no_see,
+                            checkmarkColor = UICT_see
+                        )
+                    )
+                    Text(
+                        text = if (exponent) ts_Write_with_an_exponent else ts_Write_without_exponents,
+                        fontSize = 16.sp,
+                        color = UICT_see
+                    )
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = sortHabitStatisticsSectionsByFrequencyOfUse,
+                        onCheckedChange = { sortHabitStatisticsSectionsByFrequencyOfUse = it },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = UICT_no_see,
+                            uncheckedColor = UICT_no_see,
+                            checkmarkColor = UICT_see
+                        )
+                    )
+                    Text(
+                        text = ts_Sort_habit_statistics_sections_by_frequency_of_use,
+                        fontSize = 16.sp,
+                        color = UICT_see
+                    )
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = smartSort,
+                        onCheckedChange = { smartSort = it },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = UICT_no_see,
+                            uncheckedColor = UICT_no_see,
+                            checkmarkColor = UICT_see
+                        )
+                    )
+                    Text(
+                        text = ts_Smart_sort,
+                        fontSize = 16.sp,
+                        color = UICT_see
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${TranslatedStrings.Settings.Interface_scale}:",
+                        fontSize = 16.sp,
+                        color = UICT_see
+                    )
+                    OutlinedTextField(
+                        value = uiScalingString,
+                        onValueChange = {
+                            uiScalingString = it
+                            uiScaling = uiScalingString.toFloatOrNull() ?: LocalSaveManager.data.settings.uiDpScale
+                        },
+                        label = {
+                            Text(
+                                "x",
+                                fontSize = 12.sp,
+                                color = UICT_no_see
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        singleLine = true,
+                        textStyle = TextStyle(
+                            fontSize = 14.sp,
+                            color = UICT_see
+                        ),
+                        shape = RoundedCornerShape(15.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedTextColor = UICT_see,
+                            unfocusedTextColor = UICT_no_see,
+                            disabledTextColor = UICT_no_see,
+                            focusedContainerColor = UIC_dark_x2,
+                            unfocusedContainerColor = UIC_dark_x2,
+                            disabledContainerColor = UIC_dark_x2,
+                            cursorColor = UICT_see,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
+                        modifier = Modifier.height(55.dp)
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(45.uiDp()),
+                    horizontalArrangement = Arrangement.spacedBy(12.uiDp())
+                ) {
+                    Box(
+                        modifier = Modifier.weight(109f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(13.uiDp()))
+                            .clickable {
+                                LocalSaveManager.save()
+                                SaveImportExport.importSave {
+                                    if (it) onImport()
                                 }
                             }
-                        }
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(
-                            checked = exponent,
-                            onCheckedChange = { exponent = it },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = UICT_no_see,
-                                uncheckedColor = UICT_no_see,
-                                checkmarkColor = UICT_see
-                            )
-                        )
+                            .background(Color(0xFF111114))
+                            .insideBorder(
+                                1.uiDp(),
+                                Color(0xFF36363D),
+                                RoundedCornerShape(13.uiDp())
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
                         Text(
-                            text = if (exponent) ts_Write_with_an_exponent else ts_Write_without_exponents,
-                            fontSize = 16.sp,
-                            color = UICT_see
+                            text = TranslatedStrings.Settings.Import,
+                            color = Color(0xFF848484),
+                            fontSize = 12.uiSp(),
+                            maxLines = 1,
+                            fontFamily = jetBrainsFont(),
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
                         )
                     }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(
-                            checked = sortHabitStatisticsSectionsByFrequencyOfUse,
-                            onCheckedChange = { sortHabitStatisticsSectionsByFrequencyOfUse = it },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = UICT_no_see,
-                                uncheckedColor = UICT_no_see,
-                                checkmarkColor = UICT_see
-                            )
-                        )
+
+                    Box(
+                        modifier = Modifier.weight(154f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(13.uiDp()))
+                            .clickable {
+                                LocalSaveManager.save()
+                                SaveImportExport.exportSave()
+                            }
+                            .background(Color(0xFF111114))
+                            .insideBorder(
+                                1.uiDp(),
+                                Color(0xFF36363D),
+                                RoundedCornerShape(13.uiDp())
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
                         Text(
-                            text = ts_Sort_habit_statistics_sections_by_frequency_of_use,
-                            fontSize = 16.sp,
-                            color = UICT_see
+                            text = TranslatedStrings.Settings.Export,
+                            color = Color(0xFF848484),
+                            fontSize = 12.uiSp(),
+                            maxLines = 1,
+                            fontFamily = jetBrainsFont(),
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
                         )
                     }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(
-                            checked = smartSort,
-                            onCheckedChange = { smartSort = it },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = UICT_no_see,
-                                uncheckedColor = UICT_no_see,
-                                checkmarkColor = UICT_see
-                            )
-                        )
-                        Text(
-                            text = ts_Smart_sort,
-                            fontSize = 16.sp,
-                            color = UICT_see
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        LocalSaveManager.data.withExponent = exponent
-                        LocalSaveManager.data.soulName = soulName
-                        LocalSaveManager.data.soulColor = soulColor
-                        LocalSaveManager.data.soulColorType = typeOfColor
-                        LocalSaveManager.data.sortHabitStatisticsSectionsByFrequencyOfUse =
-                            sortHabitStatisticsSectionsByFrequencyOfUse
-                        LocalSaveManager.data.smartSort = smartSort
-                        LocalSaveManager.save()
-                        showDialog = false
-                    },
-                    colors = ButtonColors(
-                        containerColor = UIC,
-                        contentColor = UICT_see,
-                        disabledContainerColor = Color.Transparent,
-                        disabledContentColor = Color.Transparent
-                    )
-                ) {
-                    Text(
-                        text = "✅ $ts_Apply",
-                        fontSize = 16.sp,
-                        color = Color(150, 200, 150),
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showDialog = false },
-                    colors = ButtonColors(
-                        containerColor = UIC,
-                        contentColor = UICT_see,
-                        disabledContainerColor = Color.Transparent,
-                        disabledContentColor = Color.Transparent
-                    )
-                ) {
-                    Text(
-                        "❌ $ts_Cancel",
-                        fontSize = 16.sp,
-                        color = Color(200, 150, 150),
-                    )
                 }
             }
-        )
-    }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    LocalSaveManager.data.withExponent = exponent
+                    LocalSaveManager.data.soulName = soulName
+                    LocalSaveManager.data.soulColor = soulColor
+                    LocalSaveManager.data.soulColorType = typeOfColor
+                    LocalSaveManager.data.sortHabitStatisticsSectionsByFrequencyOfUse =
+                        sortHabitStatisticsSectionsByFrequencyOfUse
+                    LocalSaveManager.data.smartSort = smartSort
+                    LocalSaveManager.data.settings.uiDpScale = uiScaling
+                    LocalSaveManager.save()
+                    onDismissRequest()
+                },
+                colors = ButtonColors(
+                    containerColor = UIC,
+                    contentColor = UICT_see,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.Transparent
+                )
+            ) {
+                Text(
+                    text = "✅ $ts_Apply",
+                    fontSize = 16.sp,
+                    color = Color(150, 200, 150),
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = { onDismissRequest() },
+                colors = ButtonColors(
+                    containerColor = UIC,
+                    contentColor = UICT_see,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.Transparent
+                )
+            ) {
+                Text(
+                    "❌ $ts_Cancel",
+                    fontSize = 16.sp,
+                    color = Color(200, 150, 150),
+                )
+            }
+        }
+    )
 }
 
 @Composable
