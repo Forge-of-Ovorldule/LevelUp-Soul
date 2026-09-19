@@ -3,6 +3,7 @@ package fireforestsoul.levelupsoul
 import androidx.annotation.FloatRange
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.RoundRect
@@ -186,3 +187,66 @@ fun Modifier.outsideBorder(
     blendMode = blendMode,
     pathEffect = pathEffect,
 )
+
+fun Modifier.sideHills(
+    color: Color,
+    cutoutRadius: Dp,
+): Modifier {
+    return drawBehind {
+        val radius = cutoutRadius
+            .toPx()
+            .coerceIn(0f, size.height)
+
+        if (radius == 0f) {
+            return@drawBehind
+        }
+
+        val kappa = 0.5522848f
+        val bottomY = size.height
+        val topY = bottomY - radius
+
+        val leftHill = Path().apply {
+            moveTo(0f, topY)
+            lineTo(0f, bottomY)
+            lineTo(-radius, bottomY)
+
+            cubicTo(
+                -radius + radius * kappa,
+                bottomY,
+                0f,
+                topY + radius * kappa,
+                0f,
+                topY,
+            )
+
+            close()
+        }
+
+        val rightHill = Path().apply {
+            moveTo(size.width, topY)
+            lineTo(size.width, bottomY)
+            lineTo(size.width + radius, bottomY)
+
+            cubicTo(
+                size.width + radius - radius * kappa,
+                bottomY,
+                size.width,
+                topY + radius * kappa,
+                size.width,
+                topY,
+            )
+
+            close()
+        }
+
+        drawPath(
+            path = leftHill,
+            color = color,
+        )
+
+        drawPath(
+            path = rightHill,
+            color = color,
+        )
+    }
+}
